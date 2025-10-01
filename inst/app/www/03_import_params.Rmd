@@ -1,0 +1,18 @@
+# Import parameters
+
+**Abbreviations:**\
+RT - retention time\
+IR - isotope ratio\
+MI - main isotope\
+SI - secondary isotope\
+amu - atomic mass unit
+
+Isotope ratio calculation formula for IR mode:\
+$$IR=\frac{Intensity  (SI)}{Intensity(MI)}$$
+
+Isotope ratio calculation formula for IDMS mode:\
+$$IR=\frac{Intensity  (MI)}{Intensity(SI)}$$
+
+After files are uploaded into IsoCor, the App reads column names, and shows them as a dropdown menu to make a selection for RT, MI, SI columns. The App calculates IR for one pair of isotopes at once. To perform calculation of isotope ratio for several pairs, the processing should be done separately.
+
+Atomic weights of isotopes are written manually by the user. They are used for mass bias correction.

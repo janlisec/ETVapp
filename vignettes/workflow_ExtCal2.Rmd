@@ -1,0 +1,238 @@
+---
+title: "External calibration (ExtCal) workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{workflow_ExtCal}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+External calibration with dried liquid standards, matrix-matched standards or 
+reference materials is a common approach for calibrating transient signal from 
+ETV/ICP-MS and -OES measurements. Most ETV time scans do not exceed two peaks 
+per analyte. However, matrix influences on the acquired isotope or emission line 
+might lead to signal splitting or an uneven background signal, where peak 
+detection algorithms fail and manual peak identification is necessary. On the 
+other hand, co-vaporization of analyte and matrix components alternates the 
+plasma and thus the signal response. The use of an internal standard allows to 
+correct for non-linearity and enables accurate analysis.      
+
+As an example, we provide the data of fluorine measurements included in [paper].
+
+The ETV/ICP-MS raw data for the external calibration workflow is included in the 
+*ETVapp* package. A file path is created by running:
+
+## Calibration data
+### Import
+
+Currently, the import of ICP-MS raw data from four different instrument types is 
+supported. Additionally, .csv-file from Spectro ICP-OES instruments can be read 
+in. As an example for the external calibration workflow, we provide .csv-files 
+aquired *via* an Agilent triple quadrupole instrument. The output *data.frame* 
+consists of a time column and additional intensity columns. 
+
+```{r import}
+library(ETVapp)
+# import list of cali files
+cali_imp <- ETVapp::ETVapp_testdata[['ExtCal']][['Cali']]
+head(cali_imp[[1]])
+```
+### Data processing
+
+*ETVapp* provides options for data processing prior to peak evaluation through 
+two algorithms, internal standardization and Savitzky-Golay smoothing, 
+respectively. Internal standardization requires two columns from the input 
+*data.frame* which need to be determined as analyte and standard column. 
+The smoothing function is directed by the parameter filter length *fl*. *Fl* 
+should be an odd integer >=3. Omitting the smoothing step can be achieved by 
+setting *fl* to NULL. 
+
+```{r cali_processing}
+time_col <- "Time"
+int_col <- "157"
+cali_pro <- lapply(cali_imp, function(x) {
+  process_data(data = x, c1 = int_col, fl = 9, wf = "ExtCal")
+})
+head(cali_pro[[1]])
+```
+
+### Peak evaluation
+
+Prior to peak integration, the peak boundaries need to be defined either 
+manually or *via* a simple algorithm based on a given minimum peak height. 
+Modified polynomial fitting is implemented for estimating the baseline. 
+Therefore, an excerpt of the pre-processed data is evaluated to avoid impact 
+of signal fluctuations. The time window can be adjusted through the correction 
+factor *cf* which determines the number of data points used around the detected 
+peak. *Cf* will be automatically adapted to the length of the time scan. 
+By default, a linear fitting will be computed. However, the parameter *deg* 
+allows the use of specified degrees of polynomial fitting. In our example, 
+we opted for a manual peak definition due to additional signals present in the 
+time scan. Peak data is collected in a *data.frame* and information on the 
+analyte mass are transferred through the function `tab_cali()`. 
+
+```{r get_cali_peaks}
+ps <- rep(145, length(cali_pro))
+pe <- seq(180, 230, length.out=length(cali_pro))
+cf <- 50
+
+cali_peaks <- ldply_base(1:length(cali_pro), function(i) {
+  get_peakdata(
+    cali_pro[[i]], 
+    int_col = int_col,
+    PPmethod = "Peak (manual)", 
+    peak_start = ps[i], 
+    peak_end = pe[i]
+  )
+})
+
+cali_peaks <- tab_cali(peak_data = cali_peaks, wf = "ExtCal", std_info = seq(0,50,10))
+print(cali_peaks)
+```
+
+```{r get_cali_BL}
+cali_BL <- lapply(1:length(cali_pro), function(i) {
+  flt <- (min(which(cali_pro[[i]][,time_col]>=ps[i]))-cf):(max(which(cali_pro[[i]][,time_col]<=pe[i]))+cf)
+  ETVapp:::blcorr_col(
+    df = cali_pro[[i]][flt, c(time_col, int_col)],
+    nm = int_col, 
+    BLmethod = "modpolyfit",
+    rval = "baseline", 
+    amend = "_BL"
+  )
+})
+```
+
+The following code will plot the processed time scans of the selected 
+calibration standards. The grey vertical lines mark the peak integration range. 
+The baseline is drawn in [color].
+
+```{r cali_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
+par(mfrow=c(2,3))
+for (i in 1:6) {
+  plot(cali_pro[[i]], type="l", 
+       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste(cali_peaks[i,6], "ng"))
+  lines(x = cali_BL[[i]][,c(time_col)], y = cali_BL[[i]][,3], col = "blue")
+  abline(v=cali_peaks[i,2:3], col=grey(0.8))
+}
+par(mfrow=c(1,1))
+```
+
+Peak areas are plotted against the analyte mass. Calibration parameter obtained 
+through linear regression are provided as output *data.frame*.
+
+```{r calibration_model, fig.width=3, fig.height=3}
+(cm <- calc_cali_mod(df = cali_peaks[,c(6,4)], wf = "ExtCal"))
+plot(cali_peaks[,c(6,4)])
+abline(a = cm[1,3], b = cm[1,1])
+```
+
+## Sample analysis
+
+File import, data processing and peak evaluation of the sample measurement is 
+accomplished analog to the calibration measurements.
+
+```{r load_sample}
+smpl_imp <- ETVapp::ETVapp_testdata[['ExtCal']][['Sample']][[1]]
+smpl_pro <- process_data(data = smpl_imp, c1 = int_col, fl = 7, wf = "ExtCal")
+smpl_peak <- get_peakdata(smpl_pro, PPmethod = "Peak (manual)", BLmethod = "none", int_col = int_col, time_col = time_col, peak_start = 230, peak_end = 320)
+smpl_peak
+```
+
+```{r get_sample_BL}
+cf <- 50
+flt <- (min(which(smpl_pro[,time_col]>=230))-cf):(max(which(smpl_pro[,time_col]<=320))+cf)
+smpl_BL <- ETVapp:::blcorr_col(
+  df = smpl_pro[flt,],
+  nm = int_col, 
+  BLmethod = "modpolyfit",
+  rval = "baseline", 
+  amend = "_BL")
+```
+
+The following code plots the sample time scan with the peak boundaries.
+
+```{r sample_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
+par(mfrow=c(1,1))
+  plot(smpl_pro, type="l", ylab = "Intensity [cps]", xlab = "Time [s]", main = "Sample")
+  #lines(cali_pro[[i]], col=3)
+  #lines(x = smpl_BL[,time_col], y = smpl_BL[,3], col = "blue")
+  abline(v=smpl_peak[1,2:3], col=grey(0.8))
+par(mfrow=c(1,1))
+```
+
+Compute sample result based on calibration model with the following code. The 
+input of a mass fraction allows for result calculation if the elemental 
+composition of the analyte is not fully captured by the acquired element,*e.g.* 
+Sn in organo tin compounds or C in micro plastics.
+
+```{r tab_sample_result}
+t(tab_result(
+  smpl_peak, 
+  a = cm[1,3], 
+  b = cm[1,1], 
+  wf = "ExtCal",
+  mass_fraction2 = 1, 
+  sample_mass = 1
+))
+```
+
+## Limits of detection and quantification
+
+Blank measurements are imported, processed and plotted as follows. Data 
+treatment analog to the sample data is recommended.
+
+```{r load_blanks, fig.width=3*5, fig.height=3*2, out.width='100%', fig.align='center'}
+blnk_imp <- ETVapp::ETVapp_testdata[['ExtCal']][['Blanks']]
+blnk_pro <- lapply(1:length(blnk_imp), function(i) {
+  process_data(data = blnk_imp[[i]], c1 = int_col, fl = 7, wf = "ExtCal")
+})
+
+par(mfrow=c(2,5))
+par(mar=c(5,3,0,0)+0.1)
+for (i in 1:min(length(blnk_pro), 10)) {
+  ylim <- c(0, max(sapply(blnk_pro, function(x) {max(x[,2])})))
+  plot(blnk_pro[[i]], type="l", main = names(blnk_pro)[i], ylab="", ylim=ylim)
+  abline(v=smpl_peak[1,2:3], col=grey(0.8))
+}
+par(mfrow=c(1,1))
+```
+
+For estimating the limit of detection (LOD) and quantification (LOQ) according 
+to the blank value method, integrate the blank signals in the peak time window.
+
+```{r process_blanks}
+#blnk_imp <- import_data(file.path(dir(file.path(pth, 'Blanks'), full.names = TRUE)))
+#blnk_pro <- lapply(1:length(blnk_imp), function(i) {
+  #process_data(data = blnk_imp[[i]], c1 = int_col, fl = 7, wf = "ExtCal")
+#})
+blnk_peaks <- ldply_base(1:length(blnk_pro), function(i) {
+  get_peakdata(
+    blnk_pro[[i]], 
+    int_col = int_col, 
+    time_col = time_col,
+    peak_start = smpl_peak[1,2], 
+    peak_end = smpl_peak[1,3]
+  )
+})
+head(blnk_peaks)
+```
+
+The LOD and LOQ are estimated as three and ten times the standard deviation of 
+the blank values divided by the slope of the linear calibration curve. At least 
+three input values are required for statistical evaluation. Less than the 
+recommended 10 entries will still give a result. The input of a theoretical 
+sample mass will compute the LOD and LOQ per sample mass.
+
+```{r get_LOX}
+t(tab_LOX(x = blnk_peaks[,4], cali_slope = cm[1,1], wf = "ExtCal", mass_fraction2 = 1, sample_mass = 1))
+```

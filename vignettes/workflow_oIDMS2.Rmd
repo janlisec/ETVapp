@@ -1,0 +1,436 @@
+---
+title: "online-Isotope dilution mass spectrometry (oIDMS) workflow"
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{workflow_oIDMS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+On-line IDMS is a variation of IDMS. The isotope-enriched spike is not mixed 
+with sample prior to a separation technique but continuously added before the 
+mass spectrometer. This provides the advantage of using a species &shy; unspecific 
+spike since the spike does not undergo the same treatment as the sample. For 
+ETV measurements, on-line IDMS enables utilizing a spike with a different 
+vaporization behavior to the analyte and automatizes the spike introduction.
+
+This workflow describes the data treatment for on-line IDMS based on a 
+[published](https://link.springer.com/article/10.1007/s00216-025-06064-y) on-line 
+ETV/ICP-IDMS approach. The spike aerosol was generated through a low-flow 
+nebulizer and merged with the ETV sample aerosol in a modified cyclonic spray 
+chamber prior to ionization in the plasma. In the following, the enriched spike 
+isotope will be referred as **isotope 1** or **spike isotope** while 
+**isotope 2** or **sample isotope** denotes the isotope used for calculating the 
+isotope ratios.
+
+It has to be noted that although it is possible to compute the calculations for 
+ICP-OES data only MS data will provide valid results.
+
+Example measurements of tin in a sediment reference material are provided 
+the *ETVapp* package and can be accessed through the library.
+
+```{r setup}
+library(ETVapp)
+```
+
+## Mass bias
+
+The transmission of ions is influenced in regard to their mass during ionization, 
+passing the ion optics, mass separation and detection. To correct the mass bias, 
+a correction factor *K* is determined by the analysis of a sample (or standard) 
+without spike addition. The package provides a triplicate measurement of the 
+reference material. The following code will import the raw data files, calculate 
+the isotope ratios based on the peak areas and return *K* for each input data.
+
+```{r MassBias}
+mb_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Massbias"]]
+
+head(mb_imp[[1]])
+
+mb_peaks <- ldply_base(1:length(mb_imp), function(i) {
+  get_isoratio(
+    data = mb_imp[[i]], 
+    iso1_col = "117Sn", 
+    iso2_col = "122Sn", 
+    PPmethod = "Peak (manual)", 
+    peak_start = 70, 
+    peak_end = 105
+  )
+})
+
+head(mb_peaks)
+
+K <- calc_massbias(
+  mb_peaks[,"R_m"], 
+  As_iso1 = 7.68, 
+  As_iso2 = 4.63
+)
+
+print(K)
+
+```
+
+View time scans of the spike and sample isotope with peak integration parameter 
+by computing the following code.
+
+```{r mass_bias_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
+mb_pro <- lapply(mb_imp, function(x) {
+  process_data(data = x, wf = "IDMS", c1 = "117Sn", c2 = "122Sn", fl = NULL)
+})
+
+peak_start <- rep(70, length(mb_pro))
+peak_end <- rep(105, length(mb_pro))
+int_col <- c("117Sn", "122Sn")
+iso_col1_BL <- lapply(1:length(mb_pro), function(i) {
+  int_col <- "117Sn"
+  time_col<- ETVapp:::check_Time_col(mb_pro[[i]])
+  
+  peak_data <- ETVapp:::get_peak(df = mb_pro[[i]][,c(time_col, int_col)], 
+                        PPmethod = "Peak (manual)", 
+                        peak_start = peak_start[i], 
+                        peak_end = peak_end[i], 
+                        minpeakheight = 1000, 
+                        cf = 50)
+                        
+  corr_data <- ETVapp:::blcorr_col(
+                          df = mb_pro[[i]][peak_data$Start_corr:peak_data$End_corr,c(time_col, int_col)],
+                          nm = int_col, 
+                          BLmethod = "modpolyfit",
+                          rval = "baseline", 
+                          amend = "_BL")
+})
+
+iso_col2_BL <- lapply(1:length(mb_pro), function(i) {
+  int_col <- "122Sn"
+  time_col<- ETVapp:::check_Time_col(mb_pro[[i]])
+  
+  peak_data <- ETVapp:::get_peak(df = mb_pro[[i]][,c(time_col, int_col)], 
+                        PPmethod = "Peak (manual)", 
+                        peak_start = peak_start[i], 
+                        peak_end = peak_end[i], 
+                        minpeakheight = 1000, 
+                        cf = 50)
+                        
+  corr_data <- ETVapp:::blcorr_col(
+                          df = mb_pro[[i]][peak_data$Start_corr:peak_data$End_corr,c(time_col, int_col)],
+                          nm = int_col, 
+                          BLmethod = "modpolyfit",
+                          rval = "baseline", 
+                          amend = "_BL")
+})
+
+mb_no <- seq(1,3,1)
+par(mfrow=c(2,3))
+for (i in 1:3) {
+  plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,"117Sn"], type="l", 
+       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("117Sn", mb_no[i]))
+  #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
+  lines(x = iso_col1_BL[[i]][,c("Time")], y = iso_col1_BL[[i]][,3], col = "blue")
+  abline(v=c(peak_start[[1]],peak_end[[1]]), col=grey(0.8))
+}
+for (i in 1:3) {
+  plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("122Sn")], type="l", 
+       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("122Sn", mb_no[i]))
+  #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
+  lines(x = iso_col2_BL[[i]][,c("Time")], y = iso_col2_BL[[i]][,3], col = "blue")
+  abline(v=c(peak_start[[1]],peak_end[[1]]), col=grey(0.8))
+}
+par(mfrow=c(1,1))
+```
+
+## Transport efficiency
+
+Inserting the spike aerosol after sample vaporization may lead to a loss in 
+regard to the sample aerosol. We included the calculation of a transport 
+efficiency *n_trans* through the particle size method using a nano particle 
+standard to correct for this effect. Equations and data processing steps 
+included in the package are based on the Excel sheet RIKILT single particle 
+calculation tool (version 2). 
+
+The package provides measurement data of 
+
+* ionic solutions to establish a linear calibration curve and
+* a nano particle standard of known size.
+
+Import the files form **sp_ionic**. The mean signal of a selected time window is 
+obtained *via* the `get_peakdata()`-function using the peak picking method 
+"mean_signal". `tab_cali()` collects in a *data.frame* with the standard 
+concentrations. Calibration parameter are obtained through linear regression.
+
+```{r load_TransportEfficiency_data}
+spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
+
+head(spion_imp[[1]])
+
+sp_cali <- ldply_base(1:length(spion_imp), function(i) {
+  get_peakdata(spion_imp[[i]][,c("Time", "197Au")], "197Au", PPmethod = "mean_signal", peak_start = 0.006, peak_end = 60)
+})
+
+conc_ion <- c(20, 50, 100, 200, 500)
+sp_cali <- tab_cali(peak_data = sp_cali, wf = "oIDMS", std_info = conc_ion)
+sp_cali
+
+cali_lm <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = "oIDMS")
+cali_lm
+```
+
+Signal curves of the ionic measurements and the resulting calibration curve are 
+plotted through:
+
+```{r TransportEfficiency_data, fig.width=3*5, fig.height=3*1, out.width='100%', fig.align='center'} 
+par(mfrow=c(1,5))
+for (i in 1:min(length(spion_imp), 10)) {
+  ylim <- c(0, max(sapply(spion_imp, function(x) {max(x[,2])})))
+  plot(spion_imp[[i]], type="l", main = sp_cali[i,5], ylab="Intensity [cps]", ylim=ylim)
+  abline(v=sp_cali[i,2:3], col=grey(0.8))
+}
+par(mfrow=c(1,1))
+```
+```{r calibration_model, fig.width=3, fig.height=3}
+(cm <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = "oIDMS"))
+plot(sp_cali[,c(5,4)])
+abline(a = cm[1,3], b = cm[1,1])
+```
+
+To determine the limit for particle detection (LFD), import the single particle 
+data and plot the signal distribution. The LFD is shown in red. For a detailed 
+tutorial of on single particle measurements, view the [standard operating procedure](https://www.google.com/url?client=internal-element-cse&cx=a5297c89c4bbec8e2&q=https://www.wur.nl/nl/show/spicpms-procedure-version-2.htm&sa=U&ved=2ahUKEwjJh7y-2uuPAxV3SfEDHcl4KTAQFnoECAEQAQ&usg=AOvVaw1dElg273-ODufTr_qkAMiq). 
+Output parameter of the single particle analysis are obtain by `calc_transeff()` 
+and a histogram of the particle size distribution is provided by the following code.
+
+```{r get_Transportefficiency_LFD}
+sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
+
+  time_col <- "Time"
+  int_col <- "197Au"
+  t_fltr <- 60
+  LFD <- 20000
+
+  if (!is.null(t_fltr) && is.numeric(t_fltr) && t_fltr>min(sp_data[,time_col], na.rm=TRUE)) {
+    message("calc_transeff(): remove data with ", time_col, " > ", t_fltr)
+    sp_data_flt <- sp_data[sp_data[,time_col]<t_fltr,]
+  }
+  
+  sig_data <- table(sp_data_flt[,int_col])
+  
+  plot(sig_data, ylim = c(0, 10), log = 'x', ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution")
+  abline(v=LFD, col=2)
+```
+```{r TransportEfficiency}
+n_trans <- calc_transeff(
+  sp_data_flt, 
+  int_col = "197Au",
+  LFD = 20000, 
+  cali_slope = cali_lm[,1], 
+  V_fl = 0.0075, 
+  part_mat = c("Au"),
+  dia_part = 60
+)
+
+print(n_trans)
+```
+```{r Particle_size_distribution, fig.width=3*2, fig.height=3*2, out.width='100%', fig.align='center'}
+  sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
+
+  cali_slope <- cali_lm[,1]
+  V_fl <- 0.0075
+  part_mat <- c("Au")
+  dia_part = 60
+  t_dw <- stats::median(diff(sp_data[,time_col]),na.rm=TRUE) * 1000
+  fac <- (V_fl * t_dw * (100/6)) / cali_slope
+
+  #part_mat <- match.arg(part_mat)
+  den_mat <- switch(
+    part_mat,
+    "Au" = 19.30,
+    "Ag" = 10.49
+  )
+  part_mass <- 4/3 * pi * (dia_part / 2 / 10^7)^3 * den_mat * 10^15
+
+  sig_back <- mean(sp_data[sp_data[,int_col]<LFD, int_col], na.rm=TRUE)
+
+  sp_data <- sp_data[sp_data[,int_col]>LFD, ]
+  sp_data[,"Particle"] <- sp_data[,int_col] - sig_back
+  sp_data[,"Mass"] <- sp_data[,"Particle"] / mean(sp_data[,"Particle"]) * part_mass
+  sp_data[,"Diameter"] <- pracma::nthroot(6 * sp_data[,"Mass"] / (10^15 * pi * 19.30), 3) * 10^7
+  
+  Diameter <- sp_data[,"Diameter"] 
+  hist(Diameter)
+```
+
+## Sample evaluation
+
+Import and process the spike containing sample measurement file using the 
+workflow "oIDMS". Computing `correct_ratio()` on the isotope ratio column "R_m" 
+provides mass bias corrected values "R_corr". The implemented IDMS equation for 
+the mass flow calculation is adapted from 
+[Rottmann and Heumann](https://link.springer.com/article/10.1007/BF00322473). A 
+minimum isotope ratio is required determined by the ratio of the natural isotope 
+abundances. A result table is obtained by consequent peak evaluation. 
+
+```{r Samples}
+samp_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]]
+
+samp_ion <- lapply(1:length(samp_imp), function(i) {
+  x <- process_data(data = samp_imp[[i]], wf = "oIDMS", c1 = "117Sn", c2 = "122Sn", fl = 5)
+  x[,"R_corr"] <- correct_ratio(x = x[,"R_m"], K = mean(K), As_iso1 = 7.68, As_iso2 = 4.63)
+  return(x)
+})
+head(samp_ion[[1]])
+
+sample_mass <- c(1.0119, 0.9042, 0.9151)
+result_df <- ldply_base(1:length(samp_ion), function(i) {#'
+  x <- samp_ion[[i]][,c("Time","R_corr")]
+  x[,"mf_s"] <- calc_massflow(x = x[,"R_corr"], n_trans = n_trans[,4], As_iso1 = 7.68, As_iso2 = 4.63, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = 0.0075, c_sp = 19581.71, DF = 20)
+  pk <- get_peakdata(x, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = 70, peak_end = 100, minpeakheight = 1000)
+  tab_result(pk, wf = "oIDMS", K = K, amae = pk[,4], mass_fraction2 = 1, sample_mass = 1)
+})
+
+print(result_df)
+```
+
+View the mass flow diagram to check the integration of the mass flow peak(s).
+
+```{r mass_flow_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
+mf_BL <- lapply(1:length(samp_ion), function(i) {
+  x <- samp_ion[[i]][,c("Time","R_corr")]
+})
+  As_iso1 <- 7.68
+  As_iso2 <- 4.63
+  Asp_iso1 <- 91.06
+  Asp_iso2 <- 0.08
+  V_fl <- 0.0075
+  c_sp <- 19581.71
+  DF <- 20
+  mf_sp <- V_fl * n_trans[,4] * (1 / 60) * (c_sp / DF)
+
+mf_BL <- lapply(1:length(mf_BL), function(i) {
+  mf_s <- mf_sp * ((Asp_iso1 - (mf_BL[[i]][,"R_corr"] * Asp_iso2)) / ((As_iso2 * mf_BL[[i]][,"R_corr"]) - As_iso1))
+  x <- cbind(mf_BL[[i]], mf_s)
+}) 
+
+mf_BL <- lapply(1:length(mf_BL), function(i) {
+  int_col <- c("mf_s")
+  time_col<- ETVapp:::check_Time_col(mf_BL[[i]])
+  
+  peak_data <- ETVapp:::get_peak(df = mf_BL[[i]][,c(time_col, int_col)], 
+                        PPmethod = c("Peak (manual)"), 
+                        peak_start = peak_start[i], 
+                        peak_end = peak_end[i], 
+                        minpeakheight = c("1000"), 
+                        cf = 50)
+                        
+  corr_data <- ETVapp:::blcorr_col(
+                          df = mf_BL[[i]][peak_data$Start_corr:peak_data$End_corr,c(time_col, int_col)],
+                          nm = int_col, 
+                          BLmethod = c("modpolyfit"),
+                          rval = c("baseline"), 
+                          amend = "_BL")
+})
+
+par(mfrow=c(1,3))
+for (i in 1:length(mf_BL)){
+  plot(x = mf_BL[[i]][,"Time"], y = mf_BL[[i]][,"mf_s"], type="l", ylab="Mass flow [pg/s]", xlab="Time [s]")
+  lines(x = mf_BL[[i]][,c("Time")], y = mf_BL[[i]][,3], col = "blue")
+  abline(v=c(result_df[i,1:2]), col=grey(0.8))
+}
+par(mfrow=c(1,1))
+```
+
+## Limits of detection and quantification
+
+To determine the limit of detection (LOD) and quantification (LOQ), the *ETVapp* 
+package includes ten blank measurements with spike. Perform data treatment of 
+the blank files analog to the samples files (import, optional smoothing, mass 
+bias correction, and mass flow calculation). A *data.frame* containing result 
+data is generated by the following code. 
+
+```{r LODLOQ}
+blk_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Blanks"]]
+
+blk_ion <- lapply(1:length(blk_imp), function(i) {
+  x <- process_data(data = blk_imp[[i]], wf = "oIDMS", c1 = "117Sn", c2 = "122Sn", fl = 5)
+  x[,"R_corr"] <- correct_ratio(x = x[,"R_m"], K = K, As_iso1 = 7.68, As_iso2 = 4.63)
+  x[,"mf_s"] <- calc_massflow(x = x[,"R_corr"], n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = 0.0075, c_sp = 19581.71, DF = 20)
+  return(x)
+})
+
+head(blk_ion[[1]])
+
+LOX_df <- ldply_base(1:length(blk_ion), function(i) {
+  pk <- get_peakdata(pro_data = blk_ion[[i]], int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = 70, peak_end = 100, minpeakheight = 1000)
+  tab_result(pk, wf = "oIDMS", K = K, amae = pk[,4], mass_fraction2 = 1, sample_mass = 1)
+})
+  
+print(LOX_df)
+
+```
+
+Mass flow diagrams of the blank measurements are plotted as follows.
+
+```{r load_blanks, fig.width=3*5, fig.height=3*2, out.width='100%', fig.align='center'}
+blk_BL <- lapply(1:length(blk_ion), function(i) {
+  x <- blk_ion[[i]][,c("Time","R_corr")]
+})
+  As_iso1 <- 7.68
+  As_iso2 <- 4.63
+  Asp_iso1 <- 91.06
+  Asp_iso2 <- 0.08
+  V_fl <- 0.0075
+  c_sp <- 19581.71
+  DF <- 20
+  mf_sp <- V_fl * n_trans[,4] * (1 / 60) * (c_sp / DF)
+
+blk_BL <- lapply(1:length(blk_BL), function(i) {
+  mf_s <- mf_sp * ((Asp_iso1 - (blk_BL[[i]][,"R_corr"] * Asp_iso2)) / ((As_iso2 * blk_BL[[i]][,"R_corr"]) - As_iso1))
+  x <- cbind(blk_BL[[i]], mf_s)
+}) 
+
+blk_BL <- lapply(1:length(blk_BL), function(i) {
+  int_col <- c("mf_s")
+  time_col<- ETVapp:::check_Time_col(blk_BL[[i]])
+  
+  peak_data <- ETVapp:::get_peak(df = blk_BL[[i]][,c(time_col, int_col)], 
+                        PPmethod = c("Peak (manual)"), 
+                        peak_start = peak_start[1], 
+                        peak_end = peak_end[1], 
+                        minpeakheight = c("1000"), 
+                        cf = 50)
+                        
+  corr_data <- ETVapp:::blcorr_col(
+                          df = blk_BL[[i]][peak_data$Start_corr:peak_data$End_corr,c(time_col, int_col)],
+                          nm = int_col, 
+                          BLmethod = c("modpolyfit"),
+                          rval = c("baseline"), 
+                          amend = "_BL")
+})
+
+par(mfrow=c(2,5))
+par(mar=c(5,3,0,0)+0.1)
+for (i in 1:min(length(blk_ion), 10)) {
+  plot(x = blk_ion[[i]][,"Time"], y = blk_ion[[i]][,"mf_s"], type="l", main = names(blk_ion)[i], ylab="Mass flow", xlab = "Time [s]")
+  lines(x = blk_BL[[i]][,c("Time")], y = blk_BL[[i]][,3], col = "blue")
+  abline(abline(v=c(LOX_df[i,1:2]), col=grey(0.8)))
+}
+par(mfrow=c(1,1))
+```
+
+The LOD and LOQ are computed as three and ten times the standard deviation by 
+calling `tab_LOX()`.
+
+```{r Result}
+tab_LOX(
+  x = LOX_df[,6], 
+  wf = "oIDMS"
+)
+```

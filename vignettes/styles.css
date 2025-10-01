@@ -1,0 +1,6 @@
+.rmarkdown p, .rmarkdown li {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  word-break: normal;
+}

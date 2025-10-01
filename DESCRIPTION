@@ -1,0 +1,31 @@
+Package: ETVapp
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.3.1
+Date: 2025-09-25
+Authors@R: c(
+    person("Jan", "Lisec", , "jan.lisec@bam.de", role = c("cre", "aut"),
+           comment = c(ORCID = "0000-0003-1220-2286")),
+    person("Vera", "Scharek", email = "vera.scharek@bam.de", role = c("aut", "ctb"))
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 4.1.0)
+Imports:
+    baseline,
+    bslib,
+    config,
+    DT,
+    markdown (>= 1.5.0),
+    pracma,
+    shiny,
+    shinyjs
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 7.3.2

@@ -1,0 +1,11 @@
+default:
+  app_name: ETVapp
+  app_version: !expr as.character(utils::packageVersion("ETVapp"))
+  app_date: !expr as.character(utils::packageDate("ETVapp"))
+  app_wd: !expr system.file(package = "ETVapp")
+  app_prod: no
+  bam_server: true
+production:
+  app_prod: yes
+dev:
+  app_wd: !expr here::here()
