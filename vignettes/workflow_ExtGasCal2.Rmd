@@ -17,8 +17,8 @@ knitr::opts_chunk$set(
 ## Introduction
 
 External gas calibration is a new approach used in combination with ICP techniques 
-and has been applied for the determination of microplastics with single particle 
-ICP-MS and ETV/ICP-MS [paper citation]. The working principle is based on the 
+and has been applied for the determination of microplastics with [single particle 
+ICP-MS](https://link.springer.com/article/10.1007/s00216-025-05934-9) and [ETV/ICP-MS](paper link). The working principle is based on the 
 introduction of a dynamically diluted calibration gas into the ICP-MS system. 
 Consequently, data processing requires calculation of a mean value from the 
 continuous signal curves.
@@ -26,8 +26,7 @@ continuous signal curves.
 The workflow external gas calibration (ExtGasCal) is compatible with ICP-MS or 
 -OES data.
 
-In the package *ETVapp*, we provide the example data of microplastic measurements 
-included in [paper](https-Link). They can be accessed by `ETVapp::ETVapp_testdata`.
+In the package *ETVapp*, we provide the example data of [published microplastic measurements](https-Link). They can be accessed by `ETVapp::ETVapp_testdata`.
 
 ## Calibration data
 
@@ -72,7 +71,7 @@ cali_sig <- ldply_base(1:length(cali_pro), function(i) {
 })
 
 fac <- 1.661 * 0.01104347 * 12/44
-cali_peaks <- tab_cali(peak_data = cali_sig, wf = "ExtGasCal", std_info = seq(0,50,length.out=nrow(cali_sig)), fac = fac)
+cali_peaks <- tab_cali(peak_data = cali_sig, wf = "ExtGasCal", gas_flow = seq(0,50,length.out=nrow(cali_sig)), fac = fac)
 print(cali_peaks)
 ```
 
@@ -125,6 +124,7 @@ smpl_peaks <- ldply_base(1:length(smpl_pro), function(i) {
 })
 print(smpl_peaks)
 ```
+Generate baseline data from a time scan excerpt and plot the sample time scan with integration parameter.
 
 ```{r get_sample_BL}
 smpl_BL <- lapply(1:length(smpl_pro), function(i) {
@@ -172,7 +172,7 @@ Blank measurements are imported and processed as follows. For estimating the
 limit of detection (LOD) and quantification (LOQ) according to the blank value 
 method, integrate the blank signals in the peak time window. 
 
-```{r load_blanks, fig.width=3*5, fig.height=3*2, out.width='100%', fig.align='center'}
+```{r load_blanks, fig.width=2*4, fig.height=3*2, out.width='100%', fig.align='center'}
 blnk_imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Blanks']]
 blnk_pro <- lapply(1:length(blnk_imp), function(i) {
   process_data(data = blnk_imp[[i]], c1 = anlt, fl = 9, wf = "ExtGasCal")
