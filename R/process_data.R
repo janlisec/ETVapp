@@ -1,5 +1,5 @@
 #' @title process_data
-#' @description Correct a numeric values in a data.frame column with respect to
+#' @description Corrects a numeric values in a data.frame column with respect to
 #'     a column containing standard values and applies Savitzky-Golay smoothing.
 #' @param data Data.frame with at least two numeric columns.
 #' @param wf Calibration method/Workflow.
