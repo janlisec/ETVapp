@@ -29,7 +29,7 @@ ldply_base <- function(.data, .fun = identity) {
   return(df)
 }
 
-#' @title ldply_base
+#' @title str_sort_num
 #' @param x character vector.
 #' @examples
 #' x <- paste0("File", c(20, 1, 9, 11, 32, 100))
@@ -86,12 +86,12 @@ calc_N_sp <- function(c_sp, V_sp, VF1, M_sp, M_sa) {
 
 #' @title calc_analyte_mass_as_element.
 #' @param R_m A vector of isotope ratios.
-#' @param K Massbias K.
+#' @param K Massbias correction factor.
 #' @param As_iso1 Natural abundance of the spike isotope.
 #' @param As_iso2 Natural abundance of the sample isotope.
 #' @param Asp_iso1 Abundance of the spike isotope in the spike.
 #' @param Asp_iso2 Abundance of the sample isotope in the spike.
-#' @param N_sp N_sp * Molar mass of sample.
+#' @param N_sp Amount of spike.
 #'
 #' @export
 calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As_iso2, N_sp) {
@@ -112,7 +112,7 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
 
 #' @title correct_ratio.
 #' @param x Numeric vector of mass ratios (R_m).
-#' @param K Massbias K.
+#' @param K Massbias correction factor.
 #' @param As_iso1 Natural abundance of the spike isotope.
 #' @param As_iso2 Natural abundance of the sample isotope.
 #'
@@ -164,7 +164,7 @@ calc_massbias <- function (R_m, As_iso1, As_iso2) {
 #' @title calc_massflow.
 #' @description Transforms one column in a data.frame with respect to parameters.
 #' @param x Input data.
-#' @param n_trans n_trans.
+#' @param n_trans Transport efficiency.
 #' @param As_iso1 Natural abundance of the spike isotope.
 #' @param As_iso2 Natural abundance of the sample isotope.
 #' @param Asp_iso1 Abundance of the spike isotope in the spike.
@@ -189,7 +189,7 @@ calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36,
 }
 
 #' @title calc_cali_mod.
-#' @description \code{calc_cali_mod} will provide calibration results based on linear
+#' @description \code{calc_cali_mod} will provide calibration results based on a linear
 #'     regression model.
 #' @details A calibration curve is provided by a linear fit of peak areas or mean
 #'     signal intensities against analyte masses or gas flows from a data.frame
@@ -238,7 +238,7 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS")){
 
 #' @title calc_transeff
 #' @description The transport efficiency will be calculated based on particle
-#'     mass approach from single particle-ICP-MS data.
+#'     size approach from single particle-ICP-MS data.
 #' @details Determination of the transport efficiency from measurements with
 #'     gold or silver nano particle standards.
 #' @param data A data.frame containing at least two columns.
