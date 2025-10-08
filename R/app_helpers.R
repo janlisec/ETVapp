@@ -34,7 +34,7 @@
 #' @examples
 #' df <- ETVapp::ETVapp_testdata[["ExtGasCal"]][["Samples"]][[1]]
 #' head(df)
-#' head(blcorr_col(df = df, nm = "80Se"))
+#' head(blcorr_col(df = df, nm = "13C"))
 #' head(blcorr_col(df = df, nm = 2, amend = "_BLcorr"))
 #' head(blcorr_col(df = df, nm = 3, rval = "baseline", amend = "_BL"))
 #'
@@ -64,7 +64,7 @@ blcorr_col <- function(df, nm = NULL, BLmethod = c("modpolyfit", "none"), deg = 
     }
   }
   if (BLmethod == "none") {
-    message("BLmethod 'none' sselected. BL correction step omitted.")
+    message("BLmethod 'none' selected. BL correction step omitted.")
   }
   return(df)
 }
@@ -223,11 +223,11 @@ check_peak_boundaries <- function(peak_start, peak_end, time) {
 }
 
 #' @title get_peak.
-#' @description Applies Savitzky-Golay smoothing to a specific column of a data.frame.
+#' @description Peak boundary detection or mean signal value computing.
 #' @param df Input data.frame with numeric data in the second column.
 #' @param PPmethod Peak picking method.
-#' @param peak_start Value which is taken as peak start point, when manual peak picking is chosen.
-#' @param peak_end Value which is taken as peak end point, when manual peak picking is chosen.
+#' @param peak_start Value which is taken as peak start point, when manual peak picking or evaluation of the mean value is chosen.
+#' @param peak_end Value which is taken as peak end point, when manual peak picking or evaluation of the mean value is chosen.
 #' @param minpeakheight A threshold value for peak picking via peak height.
 #' @param cf A correction value for cutting the area around the detected peak.
 #'
