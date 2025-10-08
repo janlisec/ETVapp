@@ -3,9 +3,10 @@
 #'     a column containing standard values and applies Savitzky-Golay smoothing.
 #' @param data Data.frame with at least two numeric columns.
 #' @param wf Calibration method/Workflow.
-#' @param c1 Column name of the intensity column to be used (ExtCal) or of the spike isotope (IDMS).
-#' @param c2 Column name of the intensity column to be used as internal standard for Argon correction (ExtCal) or sample isotope (IDMS).
+#' @param c1 Column name of the intensity column to be used (ExtCal/ExtGasCal) or of the spike isotope (IDMS/oIDMS).
+#' @param c2 Column name of the intensity column to be used as internal standard for Argon correction (ExtCal/ExtGasCal) or sample isotope (IDMS/oIDMS).
 #' @param fl Filter length, has to be odd.
+# $$ VS: amend parameter als Bezeichnung z.B. _BL, _smooth?
 #' @param amend Set TRUE to amend transformed columns instead of replacing them.
 #'
 #' @details
