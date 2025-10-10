@@ -6,8 +6,8 @@
 #' @param c1 Column name of the intensity column to be used (ExtCal/ExtGasCal) or of the spike isotope (IDMS/oIDMS).
 #' @param c2 Column name of the intensity column to be used as internal standard (ExtCal/ExtGasCal) or of the sample isotope (IDMS/oIDMS).
 #' @param fl Filter length, has to be odd and >= 3.
-# $$ VS: amend parameter als Bezeichnung z.B. _BL, _smooth?
-#' @param amend Set TRUE to amend transformed columns instead of replacing them.
+#' 
+#' @param amend Set TRUE to amend transformed columns instead of replacing them. The input of "0" as filter length will omnit the smoothing step.
 #'
 #'
 #' @return A data.frame with at least two columns.
