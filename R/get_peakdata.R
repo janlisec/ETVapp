@@ -1,3 +1,4 @@
+#' $$VS: Peak picking method "Peak (height)" returns peak max as peak start and end.
 #' @title get_peakdata.
 #' @description \code{get_peakdata} will generate a table with peak data (atart
 #'     and end point, peak area) or the data of a signal range (start and end point, mean signal intensity) from a data.frame.
