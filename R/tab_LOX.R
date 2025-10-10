@@ -3,9 +3,9 @@
 #'     quantification (LOQ) and returns a data.frame.
 #' @details The LOD and LOQ will be calculated as three and ten times the
 #'     standard deviation of at least three peak areas divided by the slope
-#'     of a linear calibration curve (for workflow ExtCal). Results are provided
+#'     of a linear calibration curve (for workflow ExtCal/ExtGasCal). Results are provided
 #'     as element, analyte and relative to a sample mass.
-#' @param x Variable containing the numeric data to infer SD (either peak area (for ExtCal) or analyte mass (for IDMS)).
+#' @param x Variable containing the numeric data to infer SD (either peak area (for ExtCal/ExtGasCal) or analyte mass (for IDMS/oIDMS)).
 #' @param cali_slope A slope from the calibration data.
 #' @param wf Calibration method/Workflow.
 #' @param mass_fraction2 Mass fraction of the analyte element in the analyte component.
