@@ -2,6 +2,7 @@
 #'
 #' # function reimplementations (to avoid dependencies)
 #' - ldply_base
+#' - str_sort_num
 #'
 #' perform simple calculations
 #' - calc_N_sp
@@ -37,6 +38,7 @@ ldply_base <- function(.data, .fun = identity) {
 #' x <- c("Z1", x, "a", "Z10")
 #' str_sort_num(x)
 #' x <- c("b1_3", "b2_1_3", x)
+#' str_sort_num(x)
 #' @export
 str_sort_num <- function(x) {
   # Zerlege die Strings in numerische und nicht-numerische Teile
