@@ -112,10 +112,11 @@ ic_specplot <- function(
   }
 }
 
+# $$VS: Title plot_particle_diameter would fit better                                                         
 #' @title plot_particle_size_distribution.
-#' @description plot_particle_size_distribution.
-#' @details Determination of the transport efficiency from measurements with
-#'     gold or silver nano particle standards.
+#' @description Plots a histogram of the particle size distribution of a single particle-ICP-MS measurement.
+#' @details Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet. 
+#'     Densities for gold or silver nano particle standards are deposited.
 #' @param x A data.frame containing at least two columns.
 #' @param cali_slope Calibration lm slope result for ionic standards.
 #' @param V_fl Sample inlet flow in mL/min.
@@ -152,14 +153,14 @@ plot_particle_size_distribution <- function(
   x[,"Particle"] <- x[,2] - sig_bg
   x[,"Mass"] <- x[,"Particle"] / mean(x[,"Particle"]) * part_mass
   x[,"Diameter"] <- pracma::nthroot(6 * x[,"Mass"] / (10^15 * pi * 19.30), 3) * 10^7
-  graphics::hist(x[,"Diameter"], main="", xlab="Particle Diameter")
+  graphics::hist(x[,"Diameter"], main="", xlab="Particle diameter [nm]")
   invisible(x)
 }
 
+# $$VS: Title plot_signal_distribution would fit better. Output plot should have same layout as plot in vignette (no histogram).                                                          
 #' @title plot_particle_diameter
-#' @description plot_particle_diameter
-#' @details Determination of the transport efficiency from measurements with
-#'     gold or silver nano particle standards.
+#' @description Plots the signal distribution of a single particle-ICP-MS measurement.
+#' @details Determination of the intensity limit for the differentiation between particle and background signals.
 #' @param x A data.frame containing at least two columns.
 #' @param LFD Intensity limit for the detection of particle signals.
 #'
