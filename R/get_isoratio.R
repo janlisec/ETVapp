@@ -1,4 +1,3 @@
-#' $$VS: Peak picking method "Peak (height)" returns peak max as peak start and end.
 #' @title get_isoratio
 #' @description \code{get_isoratio} calculate an isotope ratio based on peak areas.
 #' @details Time-resolved ICP-MS data will be integration and optionally baseline corrected. 
