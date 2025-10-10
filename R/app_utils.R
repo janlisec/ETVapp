@@ -112,8 +112,9 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
   }
 }
 
+#' $$VS: Check for minimum isotope ratio would be better in function calc_massflow.
 #' @title correct_ratio.
-#' @param x Numeric vector of mass ratios (R_m).
+#' @param x Numeric vector of isotope ratios (R_m).
 #' @param K Massbias correction factor.
 #' @param As_iso1 Natural abundance of the spike isotope.
 #' @param As_iso2 Natural abundance of the sample isotope.
@@ -126,19 +127,18 @@ correct_ratio <- function(x, K = 1, As_iso1 = 7.68, As_iso2 = 4.63) {
   }
   return(out)
 }
-
+ 
 #' @title calc_massbias
 #'
 #' @description A mass bias correction factor will be determined from measurements
 #'     without added spike.
 #'
-#' @details The factor can be entered manually, selected as mean value of several
-#'     measurements or a specific value can be selected.
-#'
-#' @param R_m R_m.
+#' @param R_m Isotope ratio.
 #' @param As_iso1 Natural abundance of the spike isotope.
 #' @param As_iso2 Natural abundance of the sample isotope.
-#'
+#' 
+#' @details Ratio of the spike to sample isotope peak area from measurements without spike addition.
+#' 
 #' @return Numeric values K for each R_m.
 #'
 #' @examples
@@ -148,7 +148,7 @@ correct_ratio <- function(x, K = 1, As_iso1 = 7.68, As_iso2 = 4.63) {
 #'   get_isoratio(mb_imp[[i]], iso1_col = "117Sn", iso2_col = "122Sn",
 #'     PPmethod = "Peak (manual)", peak_start = 70, peak_end = 105)
 #' })
-#'
+#' head(mb_peaks)
 #' calc_massbias(mb_peaks[,"R_m"], As_iso1 = 7.68, As_iso2 = 4.63)
 #'
 #' @export
@@ -175,8 +175,6 @@ calc_massbias <- function (R_m, As_iso1, As_iso2) {
 #' @param c_sp Concentration of spike isotope in spike stock solution.
 #' @param DF Dilution factor of spike solution.
 #'
-#' @details
-#' xx
 #' @return A numeric vector.
 #'
 #' @examples
@@ -239,10 +237,10 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS")){
 }
 
 #' @title calc_transeff
-#' @description The transport efficiency will be calculated based on particle
+#' @description The transport efficiency will be calculated based on the particle
 #'     size approach from single particle-ICP-MS data.
 #' @details Determination of the transport efficiency from measurements with
-#'     gold or silver nano particle standards.
+#'     gold or silver nano particle standards of known size.
 #' @param data A data.frame containing at least two columns.
 #' @param int_col Intensity column.
 #' @param LFD Intensity limit for the detection of particle signals.
@@ -315,6 +313,7 @@ calc_transeff <- function (data, int_col, LFD = 100, cali_slope = 1, V_fl, part_
   return(out)
 }
 
+#' $$VS: Amu is not used in the calculations, but natural isotope abundance would be useful.
 #' @title get_iso_amu.
 #' @description \code{get_iso_amu} will take a string and try to identify an
 #'   isotope name contained within. It will return the amu for this isotope.
@@ -422,8 +421,8 @@ ensure_that <- function(test, msg = "Fehler", opt = c("stop", "warn", "message")
 
 
 #' @title extract_shift_and_cut.
-#' @description Will extract_shift_and_cut objecst from a list of tables which
-#'     contain #'     similar columns used as RT/mass and intensity source
+#' @description Will extract_shift_and_cut objects from a list of tables which
+#'     contain similar columns used as RT/mass and intensity source
 #'     respectively.
 #' @param data List of data.frames with at least two numeric columns.
 #' @param rt_col Column name of the RT/mass column to be used.
@@ -459,11 +458,11 @@ extract_shift_and_cut <- function(data, rt_col = "Minutes", c1, c2 = "", cut_ran
 }
 
 #' @title spec_pre_process
-#' @description Applies smoothing and BL correction..
+#' @description Applies smoothing and BL correction.
 #' @param data List of data.frames containing a "Time" and intensity columns.
 #' @param wf Calibration method/Workflow.
-#' @param c1 Column name of the intensity column to be used (ExtCal) or of the spike isotope (IDMS).
-#' @param c2 Column name of the intensity column to be used as internal standard for Argon correction (ExtCal) or sample isotope (IDMS).
+#' @param c1 Column name of the intensity column to be used (ExtCal/ExtGasCal) or of the spike isotope (IDMS/oIDMS).
+#' @param c2 Column name of the intensity column to be used as internal standard for Argon correction (ExtCal/ExtGasCal) or sample isotope (IDMS/oIDMS).
 #' @param fl Filter length, has to be odd.
 #' @return A list of data.frames.
 #' @keywords internal
@@ -491,6 +490,7 @@ limit_digits <- function(df, n=6, cols=NULL) {
   return(df)
 }
 
+#' $$VS: Could be another peak picking method "Peak (globmax)"?
 #' @title find_peak_boundaries
 #' @description \code{find_peak_boundaries} will find the start and end point
 #'     of a peak based on curve derivative.
