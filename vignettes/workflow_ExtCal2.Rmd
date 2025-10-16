@@ -28,9 +28,6 @@ correct for non-linearity and enables accurate analysis.
 
 As an example, we provide the data of fluorine measurements included in [paper].
 
-The ETV/ICP-MS raw data for the external calibration workflow is included in the 
-*ETVapp* package. A file path is created by running:
-
 ## Calibration data
 ### Import
 
@@ -98,6 +95,7 @@ cali_peaks <- ldply_base(1:length(cali_pro), function(i) {
 cali_peaks <- tab_cali(peak_data = cali_peaks, wf = "ExtCal", std_info = seq(0,50,10))
 print(cali_peaks)
 ```
+Generate baseline data.
 
 ```{r get_cali_BL}
 cali_BL <- lapply(1:length(cali_pro), function(i) {
@@ -143,21 +141,21 @@ accomplished analog to the calibration measurements.
 
 ```{r load_sample}
 smpl_imp <- ETVapp::ETVapp_testdata[['ExtCal']][['Sample']][[1]]
-smpl_pro <- process_data(data = smpl_imp, c1 = int_col, fl = 7, wf = "ExtCal")
+smpl_pro <- process_data(data = smpl_imp, c1 = int_col, fl = 9, wf = "ExtCal")
 smpl_peak <- get_peakdata(smpl_pro, PPmethod = "Peak (manual)", BLmethod = "none", int_col = int_col, time_col = time_col, peak_start = 230, peak_end = 320)
 smpl_peak
 ```
-
-```{r get_sample_BL}
-cf <- 50
-flt <- (min(which(smpl_pro[,time_col]>=230))-cf):(max(which(smpl_pro[,time_col]<=320))+cf)
-smpl_BL <- ETVapp:::blcorr_col(
-  df = smpl_pro[flt,],
-  nm = int_col, 
-  BLmethod = "modpolyfit",
-  rval = "baseline", 
-  amend = "_BL")
-```
+# $$VS no baseline for the sample data
+#```{r get_sample_BL}
+#cf <- 50
+#flt <- (min(which(smpl_pro[,time_col]>=230))-cf):(max(which(smpl_pro[,time_col]<=320))+cf)
+#smpl_BL <- ETVapp:::blcorr_col(
+#  df = smpl_pro[flt,],
+#  nm = int_col, 
+#  BLmethod = "modpolyfit",
+#  rval = "baseline", 
+#  amend = "_BL")
+#```
 
 The following code plots the sample time scan with the peak boundaries.
 
@@ -170,7 +168,7 @@ par(mfrow=c(1,1))
 par(mfrow=c(1,1))
 ```
 
-Compute sample result based on calibration model with the following code. The 
+Compute sample result based on the calibration model with the following code. The 
 input of a mass fraction allows for result calculation if the elemental 
 composition of the analyte is not fully captured by the acquired element,*e.g.* 
 Sn in organo tin compounds or C in micro plastics.
@@ -194,7 +192,7 @@ treatment analog to the sample data is recommended.
 ```{r load_blanks, fig.width=3*5, fig.height=3*2, out.width='100%', fig.align='center'}
 blnk_imp <- ETVapp::ETVapp_testdata[['ExtCal']][['Blanks']]
 blnk_pro <- lapply(1:length(blnk_imp), function(i) {
-  process_data(data = blnk_imp[[i]], c1 = int_col, fl = 7, wf = "ExtCal")
+  process_data(data = blnk_imp[[i]], c1 = int_col, fl = 9, wf = "ExtCal")
 })
 
 par(mfrow=c(2,5))
@@ -220,6 +218,7 @@ blnk_peaks <- ldply_base(1:length(blnk_pro), function(i) {
     blnk_pro[[i]], 
     int_col = int_col, 
     time_col = time_col,
+    BLmethod = "none",
     peak_start = smpl_peak[1,2], 
     peak_end = smpl_peak[1,3]
   )

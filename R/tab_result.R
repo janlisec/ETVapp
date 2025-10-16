@@ -1,16 +1,16 @@
 #' @title tab_result
 #' @description \code{tab_result} computes result data from peak data or a data.frame containing at least two numeric columns.
-#' @details Result data table for data of the type "sample". Depending on the selected method, the analyte mass will be
-#' calculated from the peak area and calibration data which are provided in data.frames. For an external gas calibration, values of the
+#' @details Result data table. Depending on the selected method, the analyte mass will be
+#' calculated from the peak area and calibration data which are provided in data.frames. For the on-line IDMS workflow, values of the
 #' intensity column from a data.frame containing at least two columns are transferred into mass flow data using calibration data from a
 #' data.frame. The analyte mass will be determined via peak integration using the function \code{get_peakdata}. Result data will be provided
 #' for the analyte component itself and as element, as well as content value related to the sample mass.
 #' @param peak_data Data.frame containing peak information.
 #' @param wf Calibration method/Workflow.
-#' @param a Intercept from a calibration model (for ExtCal).
-#' @param b Slope from a calibration model (for ExtCal).
-#' @param K K (for IMDS).
-#' @param amae Analyte mass as element  (for IMDS).
+#' @param a Intercept from a calibration model (for ExtCal/ExtGasCal).
+#' @param b Slope from a calibration model (for ExtCal/ExtGasCal).
+#' @param K K (for IDMS).
+#' @param amae Analyte mass as element (for IDMS/oIDMS).
 #' @param mass_fraction2 Mass fraction of the analyte element in the analyte component.
 #' @param sample_mass Sample mass in [mg].
 #' @return A data.frame.

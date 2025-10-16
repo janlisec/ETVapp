@@ -1,9 +1,10 @@
+#' $$VS: Peak picking method "Peak (height)" returns peak max as peak start and end.
 #' @title get_peakdata.
-#' @description \code{get_peakdata} will generate a table with peak data (Start
-#'     and end point, peak area) from a data.frame.
+#' @description \code{get_peakdata} will generate a table with peak data (atart
+#'     and end point, peak area) or the data of a signal range (start and end point, mean signal intensity) from a data.frame.
 #' @details This function provides a simple detection algorithm for peak boundaries
 #'     based on the peak height and alternatively allows for manual setting of the
-#'     peak boundaries. It has implemented a method for baseline correction based on
+#'     peak boundaries or selecting a signal range. It has implemented a method for baseline correction based on
 #'     polynomial fitting and will compute the peak area using the trapezoidal rule.
 #' @param pro_data Data.frame with at least two numeric columns.
 #' @param int_col Column name of the intensity column to be used.

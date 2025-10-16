@@ -18,7 +18,7 @@
 #' @title blcorr_col.
 #' @description Applies baseline correction to a specific column of a data.frame.
 #' @param df Input data.frame with at least one numeric column `nm`.
-#' @param nm Column name of the column to be smoothed or numeric index.
+#' @param nm Column name of the column to be baseline corrected or numeric index.
 #' @param BLmethod Method for baseline correction.
 #' @param deg Degree of polynomial for baseline correction.
 #' @param rval Specify to return the 'baseline' itself instead of the 'corrected' values.
@@ -34,7 +34,7 @@
 #' @examples
 #' df <- ETVapp::ETVapp_testdata[["ExtGasCal"]][["Samples"]][[1]]
 #' head(df)
-#' head(blcorr_col(df = df, nm = "80Se"))
+#' head(blcorr_col(df = df, nm = "13C"))
 #' head(blcorr_col(df = df, nm = 2, amend = "_BLcorr"))
 #' head(blcorr_col(df = df, nm = 3, rval = "baseline", amend = "_BL"))
 #'
@@ -64,7 +64,7 @@ blcorr_col <- function(df, nm = NULL, BLmethod = c("modpolyfit", "none"), deg = 
     }
   }
   if (BLmethod == "none") {
-    message("BLmethod 'none' sselected. BL correction step omitted.")
+    message("BLmethod 'none' selected. BL correction step omitted.")
   }
   return(df)
 }
@@ -202,9 +202,9 @@ check_Time_col <- function(df) {
 #' @keywords internal
 #' @noRd
 check_std_info <- function(std_info, n=1) {
-  ensure_that(is.numeric(std_info), "Please enter a numeric value as <<std_info>>.")
-  ensure_that(length(std_info) == n, "Provide as many <<std_info>> values as you have peaks.")
-  ensure_that(all(std_info >= 0), "Please enter only positive values in <<std_info>>.")
+  ensure_that(is.numeric(std_info), "Please enter a numeric value as standard information (analyte mass, gas flow, ...).")
+  ensure_that(length(std_info) == n, "Provide as many values for standard information (analyte mass, gas flow, ...) as you have peaks.")
+  ensure_that(all(std_info >= 0), "Please enter only positive values as standard information (analyte mass, gas flow, ...).")
   invisible(std_info)
 }
 
@@ -218,16 +218,16 @@ check_peak_boundaries <- function(peak_start, peak_end, time) {
   ensure_that(is.numeric(peak_start), "Please enter a numeric value as <<Signalstart>>.")
   ensure_that(is.numeric(peak_end), "Please enter a numeric value as <<Signalend>>.")
   ensure_that(peak_start < peak_end, "Please enter a signal start before the signal end.")
-  ensure_that(peak_start <= max(time, na.rm=TRUE) & peak_end >= min(time, na.rm=TRUE), "Please enter signal boundaries within the analysis time or change 'Peak Method'.")
+  ensure_that(peak_start <= max(time, na.rm=TRUE) & peak_end >= min(time, na.rm=TRUE), "Please enter signal boundaries within the analysis time or change the peak picking method.")
   invisible(NULL)
 }
 
 #' @title get_peak.
-#' @description Applies Savitzky-Golay smoothing to a specific column of a data.frame.
+#' @description Peak boundary detection or mean signal value computing.
 #' @param df Input data.frame with numeric data in the second column.
 #' @param PPmethod Peak picking method.
-#' @param peak_start Value which is taken as peak start point, when manual peak picking is chosen.
-#' @param peak_end Value which is taken as peak end point, when manual peak picking is chosen.
+#' @param peak_start Value which is taken as peak start point, when manual peak picking or evaluation of the mean value is chosen.
+#' @param peak_end Value which is taken as peak end point, when manual peak picking or evaluation of the mean value is chosen.
 #' @param minpeakheight A threshold value for peak picking via peak height.
 #' @param cf A correction value for cutting the area around the detected peak.
 #'
@@ -250,6 +250,7 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean_si
     x <- df[,2]
     ensure_that(is.numeric(minpeakheight) && minpeakheight > 0, "Please enter a minimum peakheight >0.", opt = "stop")
     # $$JL: substituted findpeaks call
+    # $$VS: Peak picking is not working anymore. Output of peak maximum instead of peak start and end. 
     #peak_data <- pracma::findpeaks(x, minpeakheight = minpeakheight, npeaks=3, sortstr=TRUE)
     peak_data <- pracma::findpeaks(x, sortstr = TRUE)
     ensure_that(length(peak_data) >= 1, msg = "No peak found. Adjust the minimal peakheight or try manual peak detection.", opt = "stop")

@@ -1,17 +1,18 @@
 #' @title get_isoratio
-#' @description \code{get_isoratio} will be calculate an isotope ratio based on peak areas.
-#' @details Time-resolved ICP-MS data will be integration and optionally baseline corrected.
+#' @description \code{get_isoratio} calculate an isotope ratio based on peak areas.
+#' @details Time-resolved ICP-MS data will be integration and optionally baseline corrected. 
+#' Peak boundaries will be checked regarding the similarity beween the isotopes.
 #' @param data A data.frame containing at least two columns.
 #' @param iso1_col Spike isotope.
 #' @param iso2_col Sample isotope.
 #' @param PPmethod Peak picking method.
-#' @param peak_start Value which is taken as peak start point, when manual peakpicking is choosen.
-#' @param peak_end Value which is taken as peak end point, when manual peakpicking is choosen.
-#' @param minpeakheight A threshold value for peakpicking via peakheight.
+#' @param peak_start Value which is taken as peak start point, when manual peak picking is chosen.
+#' @param peak_end Value which is taken as peak end point, when manual peak picking is chosen.
+#' @param minpeakheight A threshold value for peak picking via peakheight.
 #' @param BLmethod Method for baseline correction.
 #' @param deg Degree of polynomial for baseline correction.
 #' @param cf A correction value for cutting the area around the detected peak.
-#' @param fl fl.
+#' @param fl Filter length of smoother, has to be odd and >=3.
 #' @return A data.frame.
 #' @examples
 #' # for sample measurements

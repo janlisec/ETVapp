@@ -1,5 +1,5 @@
 ---
-title: "online-Isotope dilution mass spectrometry (oIDMS) workflow"
+title: "On-line isotope dilution mass spectrometry (oIDMS) workflow"
 output: 
   rmarkdown::html_vignette
 vignette: >
@@ -25,8 +25,7 @@ ETV measurements, on-line IDMS enables utilizing a spike with a different
 vaporization behavior to the analyte and automatizes the spike introduction.
 
 This workflow describes the data treatment for on-line IDMS based on a 
-[published](https://link.springer.com/article/10.1007/s00216-025-06064-y) on-line 
-ETV/ICP-IDMS approach. The spike aerosol was generated through a low-flow 
+[published on-line ETV/ICP-IDMS approach](https://link.springer.com/article/10.1007/s00216-025-06064-y). The spike aerosol was generated through a low-flow 
 nebulizer and merged with the ETV sample aerosol in a modified cyclonic spray 
 chamber prior to ionization in the plasma. In the following, the enriched spike 
 isotope will be referred as **isotope 1** or **spike isotope** while 
@@ -57,11 +56,16 @@ mb_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Massbias"]]
 
 head(mb_imp[[1]])
 
+iso1 <- "117Sn"
+iso2 <- "122Sn"
+abnd1 <- 7.68
+abnd2 <- 4.63
+
 mb_peaks <- ldply_base(1:length(mb_imp), function(i) {
   get_isoratio(
     data = mb_imp[[i]], 
-    iso1_col = "117Sn", 
-    iso2_col = "122Sn", 
+    iso1_col = iso1, 
+    iso2_col = iso2,
     PPmethod = "Peak (manual)", 
     peak_start = 70, 
     peak_end = 105
@@ -72,8 +76,8 @@ head(mb_peaks)
 
 K <- calc_massbias(
   mb_peaks[,"R_m"], 
-  As_iso1 = 7.68, 
-  As_iso2 = 4.63
+  As_iso1 = abnd1, 
+  As_iso2 = abnd2
 )
 
 print(K)
@@ -84,49 +88,32 @@ View time scans of the spike and sample isotope with peak integration parameter
 by computing the following code.
 
 ```{r mass_bias_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
+ps <- 70
+pe <- 105
+time_col <- "Time"
+cf <- 50
+
 mb_pro <- lapply(mb_imp, function(x) {
-  process_data(data = x, wf = "IDMS", c1 = "117Sn", c2 = "122Sn", fl = NULL)
+  process_data(data = x, wf = "IDMS", c1 = iso1, c2 = iso2, fl = NULL)
 })
 
-peak_start <- rep(70, length(mb_pro))
-peak_end <- rep(105, length(mb_pro))
-int_col <- c("117Sn", "122Sn")
-iso_col1_BL <- lapply(1:length(mb_pro), function(i) {
-  int_col <- "117Sn"
-  time_col<- ETVapp:::check_Time_col(mb_pro[[i]])
-  
-  peak_data <- ETVapp:::get_peak(df = mb_pro[[i]][,c(time_col, int_col)], 
-                        PPmethod = "Peak (manual)", 
-                        peak_start = peak_start[i], 
-                        peak_end = peak_end[i], 
-                        minpeakheight = 1000, 
-                        cf = 50)
-                        
-  corr_data <- ETVapp:::blcorr_col(
-                          df = mb_pro[[i]][peak_data$Start_corr:peak_data$End_corr,c(time_col, int_col)],
-                          nm = int_col, 
-                          BLmethod = "modpolyfit",
-                          rval = "baseline", 
-                          amend = "_BL")
+mb_BL <- lapply(1:length(mb_pro), function(i) {
+  flt <- (min(which(mb_pro[[i]][,time_col]>=ps))-cf):(max(which(mb_pro[[i]][,time_col]<=pe))+cf)
+  ETVapp:::blcorr_col(
+    df = mb_pro[[i]][flt,c(time_col, iso1, iso2)],
+    nm = iso1, 
+    BLmethod = "modpolyfit",
+    rval = "baseline", 
+    amend = "_BL")
 })
 
-iso_col2_BL <- lapply(1:length(mb_pro), function(i) {
-  int_col <- "122Sn"
-  time_col<- ETVapp:::check_Time_col(mb_pro[[i]])
-  
-  peak_data <- ETVapp:::get_peak(df = mb_pro[[i]][,c(time_col, int_col)], 
-                        PPmethod = "Peak (manual)", 
-                        peak_start = peak_start[i], 
-                        peak_end = peak_end[i], 
-                        minpeakheight = 1000, 
-                        cf = 50)
-                        
-  corr_data <- ETVapp:::blcorr_col(
-                          df = mb_pro[[i]][peak_data$Start_corr:peak_data$End_corr,c(time_col, int_col)],
-                          nm = int_col, 
-                          BLmethod = "modpolyfit",
-                          rval = "baseline", 
-                          amend = "_BL")
+mb_BL <- lapply(1:length(mb_BL), function(i) {
+  ETVapp:::blcorr_col(
+    df = mb_BL[[i]],
+    nm = iso2, 
+    BLmethod = "modpolyfit",
+    rval = "baseline", 
+    amend = "_BL")
 })
 
 mb_no <- seq(1,3,1)
@@ -135,15 +122,15 @@ for (i in 1:3) {
   plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,"117Sn"], type="l", 
        ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("117Sn", mb_no[i]))
   #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
-  lines(x = iso_col1_BL[[i]][,c("Time")], y = iso_col1_BL[[i]][,3], col = "blue")
-  abline(v=c(peak_start[[1]],peak_end[[1]]), col=grey(0.8))
+  lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,"117Sn_BL"], col = "blue")
+  abline(v=c(ps,pe), col=grey(0.8))
 }
 for (i in 1:3) {
   plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("122Sn")], type="l", 
        ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("122Sn", mb_no[i]))
   #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
-  lines(x = iso_col2_BL[[i]][,c("Time")], y = iso_col2_BL[[i]][,3], col = "blue")
-  abline(v=c(peak_start[[1]],peak_end[[1]]), col=grey(0.8))
+  lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,"122Sn_BL"], col = "blue")
+  abline(v=c(ps,pe), col=grey(0.8))
 }
 par(mfrow=c(1,1))
 ```
@@ -155,7 +142,8 @@ regard to the sample aerosol. We included the calculation of a transport
 efficiency *n_trans* through the particle size method using a nano particle 
 standard to correct for this effect. Equations and data processing steps 
 included in the package are based on the Excel sheet RIKILT single particle 
-calculation tool (version 2). 
+calculation tool (version 2) published in [this article](https://pubs.rsc.org/en/content/articlelanding/2015/ja/c4ja00357h).
+For a detailed tutorial of on single particle measurements, view the [standard operating procedure](https://www.google.com/url?client=internal-element-cse&cx=a5297c89c4bbec8e2&q=https://www.wur.nl/nl/show/spicpms-procedure-version-2.htm&sa=U&ved=2ahUKEwjJh7y-2uuPAxV3SfEDHcl4KTAQFnoECAEQAQ&usg=AOvVaw1dElg273-ODufTr_qkAMiq).
 
 The package provides measurement data of 
 
@@ -203,69 +191,52 @@ abline(a = cm[1,3], b = cm[1,1])
 ```
 
 To determine the limit for particle detection (LFD), import the single particle 
-data and plot the signal distribution. The LFD is shown in red. For a detailed 
-tutorial of on single particle measurements, view the [standard operating procedure](https://www.google.com/url?client=internal-element-cse&cx=a5297c89c4bbec8e2&q=https://www.wur.nl/nl/show/spicpms-procedure-version-2.htm&sa=U&ved=2ahUKEwjJh7y-2uuPAxV3SfEDHcl4KTAQFnoECAEQAQ&usg=AOvVaw1dElg273-ODufTr_qkAMiq). 
-Output parameter of the single particle analysis are obtain by `calc_transeff()` 
+data and plot the signal distribution. The LFD is shown in red. Output parameter of the single particle analysis are obtain by `calc_transeff()` 
 and a histogram of the particle size distribution is provided by the following code.
 
 ```{r get_Transportefficiency_LFD}
 sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
+# $$VS: The output of this function should look like the plot generated by the code below (no histgram for better LFD recognition). Name "plot_particle_size_distribution" would fit better.
+# plot_particle_diameter(x = sp_data[,2])
 
-  time_col <- "Time"
-  int_col <- "197Au"
-  t_fltr <- 60
-  LFD <- 20000
+time_col <- "Time"
+anlt <- "197Au"
+t_fltr <- 60
+LFD <- 20000
 
-  if (!is.null(t_fltr) && is.numeric(t_fltr) && t_fltr>min(sp_data[,time_col], na.rm=TRUE)) {
-    message("calc_transeff(): remove data with ", time_col, " > ", t_fltr)
-    sp_data_flt <- sp_data[sp_data[,time_col]<t_fltr,]
-  }
+if (!is.null(t_fltr) && is.numeric(t_fltr) && t_fltr>min(sp_data[,time_col], na.rm=TRUE)) {
+  message("calc_transeff(): remove data with ", time_col, " > ", t_fltr)
+  sp_data_flt <- sp_data[sp_data[,time_col]<t_fltr,]
+}
   
-  sig_data <- table(sp_data_flt[,int_col])
+sig_data <- table(sp_data_flt[,anlt])
   
-  plot(sig_data, ylim = c(0, 10), log = 'x', ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution")
-  abline(v=LFD, col=2)
+plot(sig_data, ylim = c(0, 10), log = 'x', ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution")
+abline(v=LFD, col=2, lwd=3)
 ```
 ```{r TransportEfficiency}
+V_fl <- 0.0075
+size <- 60
+
 n_trans <- calc_transeff(
   sp_data_flt, 
-  int_col = "197Au",
-  LFD = 20000, 
+  int_col = anlt,
+  LFD = LFD, 
   cali_slope = cali_lm[,1], 
-  V_fl = 0.0075, 
+  V_fl = V_fl, 
   part_mat = c("Au"),
-  dia_part = 60
+  dia_part = size
 )
 
 print(n_trans)
 ```
 ```{r Particle_size_distribution, fig.width=3*2, fig.height=3*2, out.width='100%', fig.align='center'}
-  sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
+sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
 
-  cali_slope <- cali_lm[,1]
-  V_fl <- 0.0075
-  part_mat <- c("Au")
-  dia_part = 60
-  t_dw <- stats::median(diff(sp_data[,time_col]),na.rm=TRUE) * 1000
-  fac <- (V_fl * t_dw * (100/6)) / cali_slope
-
-  #part_mat <- match.arg(part_mat)
-  den_mat <- switch(
-    part_mat,
-    "Au" = 19.30,
-    "Ag" = 10.49
-  )
-  part_mass <- 4/3 * pi * (dia_part / 2 / 10^7)^3 * den_mat * 10^15
-
-  sig_back <- mean(sp_data[sp_data[,int_col]<LFD, int_col], na.rm=TRUE)
-
-  sp_data <- sp_data[sp_data[,int_col]>LFD, ]
-  sp_data[,"Particle"] <- sp_data[,int_col] - sig_back
-  sp_data[,"Mass"] <- sp_data[,"Particle"] / mean(sp_data[,"Particle"]) * part_mass
-  sp_data[,"Diameter"] <- pracma::nthroot(6 * sp_data[,"Mass"] / (10^15 * pi * 19.30), 3) * 10^7
-  
-  Diameter <- sp_data[,"Diameter"] 
-  hist(Diameter)
+# $$VS: Name "plot_particle_diameter" would fit better. Diameter unit in legend is missing.
+plot_particle_size_distribution(
+  sp_data[,c(time_col, anlt)], cali_slope = cm[1,1], V_fl = V_fl, part_mat = "Au", dia_part = size, LFD = LFD
+)
 ```
 
 ## Sample evaluation
@@ -282,8 +253,8 @@ abundances. A result table is obtained by consequent peak evaluation.
 samp_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]]
 
 samp_ion <- lapply(1:length(samp_imp), function(i) {
-  x <- process_data(data = samp_imp[[i]], wf = "oIDMS", c1 = "117Sn", c2 = "122Sn", fl = 5)
-  x[,"R_corr"] <- correct_ratio(x = x[,"R_m"], K = mean(K), As_iso1 = 7.68, As_iso2 = 4.63)
+  x <- process_data(data = samp_imp[[i]], wf = "oIDMS", c1 = iso1, c2 = iso2, fl = 5)
+  x[,"R_corr"] <- correct_ratio(x = x[,"R_m"], K = mean(K), As_iso1 = abnd1, As_iso2 = abnd2)
   return(x)
 })
 head(samp_ion[[1]])
@@ -291,56 +262,43 @@ head(samp_ion[[1]])
 sample_mass <- c(1.0119, 0.9042, 0.9151)
 result_df <- ldply_base(1:length(samp_ion), function(i) {#'
   x <- samp_ion[[i]][,c("Time","R_corr")]
-  x[,"mf_s"] <- calc_massflow(x = x[,"R_corr"], n_trans = n_trans[,4], As_iso1 = 7.68, As_iso2 = 4.63, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = 0.0075, c_sp = 19581.71, DF = 20)
+  x[,"mf_s"] <- calc_massflow(x = x[,"R_corr"], n_trans = n_trans[,4], As_iso1 = abnd1, As_iso2 = abnd2, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = 0.0075, c_sp = 19581.71, DF = 20)
   pk <- get_peakdata(x, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = 70, peak_end = 100, minpeakheight = 1000)
   tab_result(pk, wf = "oIDMS", K = K, amae = pk[,4], mass_fraction2 = 1, sample_mass = 1)
 })
 
-print(result_df)
+DT::datatable(result_df, options = list(dom = "t"))
 ```
 
 View the mass flow diagram to check the integration of the mass flow peak(s).
 
 ```{r mass_flow_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
-mf_BL <- lapply(1:length(samp_ion), function(i) {
-  x <- samp_ion[[i]][,c("Time","R_corr")]
-})
-  As_iso1 <- 7.68
-  As_iso2 <- 4.63
-  Asp_iso1 <- 91.06
-  Asp_iso2 <- 0.08
-  V_fl <- 0.0075
-  c_sp <- 19581.71
-  DF <- 20
-  mf_sp <- V_fl * n_trans[,4] * (1 / 60) * (c_sp / DF)
+Asp_iso1 <- 91.06
+Asp_iso2 <- 0.08
+V_fl <- 0.0075
+c_sp <- 19581.71
+DF <- 20
 
-mf_BL <- lapply(1:length(mf_BL), function(i) {
-  mf_s <- mf_sp * ((Asp_iso1 - (mf_BL[[i]][,"R_corr"] * Asp_iso2)) / ((As_iso2 * mf_BL[[i]][,"R_corr"]) - As_iso1))
-  x <- cbind(mf_BL[[i]], mf_s)
+mf_sp <- 0.0075 * n_trans[,4] * (1 / 60) * (c_sp / DF)
+
+mf_data <- lapply(1:length(samp_ion), function(i) {
+ mf_s <- mf_sp * ((Asp_iso1 - (samp_ion[[i]][,"R_corr"] * Asp_iso2)) / ((abnd2 * samp_ion[[i]][,"R_corr"]) - abnd1))
+  x <- cbind(samp_ion[[i]][,c("Time","R_corr")], mf_s)
 }) 
 
-mf_BL <- lapply(1:length(mf_BL), function(i) {
-  int_col <- c("mf_s")
-  time_col<- ETVapp:::check_Time_col(mf_BL[[i]])
-  
-  peak_data <- ETVapp:::get_peak(df = mf_BL[[i]][,c(time_col, int_col)], 
-                        PPmethod = c("Peak (manual)"), 
-                        peak_start = peak_start[i], 
-                        peak_end = peak_end[i], 
-                        minpeakheight = c("1000"), 
-                        cf = 50)
-                        
-  corr_data <- ETVapp:::blcorr_col(
-                          df = mf_BL[[i]][peak_data$Start_corr:peak_data$End_corr,c(time_col, int_col)],
-                          nm = int_col, 
-                          BLmethod = c("modpolyfit"),
-                          rval = c("baseline"), 
-                          amend = "_BL")
-})
+mf_BL <- lapply(1:length(mf_data), function(i) {
+flt <- (min(which(mf_data[[i]][,time_col]>=ps))-cf):(max(which(mf_data[[i]][,time_col]<=pe))+cf)
+  ETVapp:::blcorr_col(
+    df = mf_data[[i]][flt,c(time_col,"mf_s")],
+    nm = "mf_s", 
+    BLmethod = "modpolyfit",
+    rval = "baseline", 
+    amend = "_BL")
+}) 
 
 par(mfrow=c(1,3))
 for (i in 1:length(mf_BL)){
-  plot(x = mf_BL[[i]][,"Time"], y = mf_BL[[i]][,"mf_s"], type="l", ylab="Mass flow [pg/s]", xlab="Time [s]")
+  plot(x = mf_data[[i]][,"Time"], y = mf_data[[i]][,"mf_s"], type="l", ylab="Mass flow [pg/s]", xlab="Time [s]")
   lines(x = mf_BL[[i]][,c("Time")], y = mf_BL[[i]][,3], col = "blue")
   abline(v=c(result_df[i,1:2]), col=grey(0.8))
 }
@@ -359,61 +317,34 @@ data is generated by the following code.
 blk_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Blanks"]]
 
 blk_ion <- lapply(1:length(blk_imp), function(i) {
-  x <- process_data(data = blk_imp[[i]], wf = "oIDMS", c1 = "117Sn", c2 = "122Sn", fl = 5)
-  x[,"R_corr"] <- correct_ratio(x = x[,"R_m"], K = K, As_iso1 = 7.68, As_iso2 = 4.63)
-  x[,"mf_s"] <- calc_massflow(x = x[,"R_corr"], n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = 0.0075, c_sp = 19581.71, DF = 20)
+  x <- process_data(data = blk_imp[[i]], wf = "oIDMS", c1 = iso1, c2 = iso2, fl = 5)
+  x[,"R_corr"] <- correct_ratio(x = x[,"R_m"], K = mean(K), As_iso1 = abnd1, As_iso2 = abnd2)
+  x[,"mf_s"] <- calc_massflow(x = x[,"R_corr"], n_trans = n_trans[1,4], As_iso1 = abnd1, As_iso2 = abnd2, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = V_fl, c_sp = c_sp, DF = DF)
   return(x)
 })
 
 head(blk_ion[[1]])
 
 LOX_df <- ldply_base(1:length(blk_ion), function(i) {
-  pk <- get_peakdata(pro_data = blk_ion[[i]], int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = 70, peak_end = 100, minpeakheight = 1000)
+  pk <- get_peakdata(pro_data = blk_ion[[i]], int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = pe, minpeakheight = 1000)
   tab_result(pk, wf = "oIDMS", K = K, amae = pk[,4], mass_fraction2 = 1, sample_mass = 1)
 })
   
 print(LOX_df)
-
 ```
 
 Mass flow diagrams of the blank measurements are plotted as follows.
 
 ```{r load_blanks, fig.width=3*5, fig.height=3*2, out.width='100%', fig.align='center'}
 blk_BL <- lapply(1:length(blk_ion), function(i) {
-  x <- blk_ion[[i]][,c("Time","R_corr")]
-})
-  As_iso1 <- 7.68
-  As_iso2 <- 4.63
-  Asp_iso1 <- 91.06
-  Asp_iso2 <- 0.08
-  V_fl <- 0.0075
-  c_sp <- 19581.71
-  DF <- 20
-  mf_sp <- V_fl * n_trans[,4] * (1 / 60) * (c_sp / DF)
-
-blk_BL <- lapply(1:length(blk_BL), function(i) {
-  mf_s <- mf_sp * ((Asp_iso1 - (blk_BL[[i]][,"R_corr"] * Asp_iso2)) / ((As_iso2 * blk_BL[[i]][,"R_corr"]) - As_iso1))
-  x <- cbind(blk_BL[[i]], mf_s)
+flt <- (min(which(blk_ion[[i]][,time_col]>=ps))-cf):(max(which(blk_ion[[i]][,time_col]<=pe))+cf)
+  ETVapp:::blcorr_col(
+    df = blk_ion[[i]][flt,c(time_col,"mf_s")],
+    nm = "mf_s", 
+    BLmethod = "modpolyfit",
+    rval = "baseline", 
+    amend = "_BL")
 }) 
-
-blk_BL <- lapply(1:length(blk_BL), function(i) {
-  int_col <- c("mf_s")
-  time_col<- ETVapp:::check_Time_col(blk_BL[[i]])
-  
-  peak_data <- ETVapp:::get_peak(df = blk_BL[[i]][,c(time_col, int_col)], 
-                        PPmethod = c("Peak (manual)"), 
-                        peak_start = peak_start[1], 
-                        peak_end = peak_end[1], 
-                        minpeakheight = c("1000"), 
-                        cf = 50)
-                        
-  corr_data <- ETVapp:::blcorr_col(
-                          df = blk_BL[[i]][peak_data$Start_corr:peak_data$End_corr,c(time_col, int_col)],
-                          nm = int_col, 
-                          BLmethod = c("modpolyfit"),
-                          rval = c("baseline"), 
-                          amend = "_BL")
-})
 
 par(mfrow=c(2,5))
 par(mar=c(5,3,0,0)+0.1)
@@ -429,8 +360,8 @@ The LOD and LOQ are computed as three and ten times the standard deviation by
 calling `tab_LOX()`.
 
 ```{r Result}
-tab_LOX(
+DT::datatable(tab_LOX(
   x = LOX_df[,6], 
   wf = "oIDMS"
-)
+), options = list(dom = "t"))
 ```
