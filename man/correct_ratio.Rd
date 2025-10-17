@@ -7,14 +7,14 @@
 correct_ratio(x, K = 1, As_iso1 = 7.68, As_iso2 = 4.63)
 }
 \arguments{
-\item{x}{Numeric vector of mass ratios (R_m).}
+\item{x}{Numeric vector of isotope ratios (R_m).}
 
-\item{K}{Massbias K.}
+\item{K}{Massbias correction factor.}
 
 \item{As_iso1}{Natural abundance of the spike isotope.}
 
 \item{As_iso2}{Natural abundance of the sample isotope.}
 }
 \description{
-correct_ratio.
+$$VS: Check for minimum isotope ratio would be better in function calc_massflow.
 }

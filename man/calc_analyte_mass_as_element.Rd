@@ -17,7 +17,7 @@ calc_analyte_mass_as_element(
 \arguments{
 \item{R_m}{A vector of isotope ratios.}
 
-\item{K}{Massbias K.}
+\item{K}{Massbias correction factor.}
 
 \item{Asp_iso1}{Abundance of the spike isotope in the spike.}
 
@@ -27,7 +27,7 @@ calc_analyte_mass_as_element(
 
 \item{As_iso2}{Natural abundance of the sample isotope.}
 
-\item{N_sp}{N_sp * Molar mass of sample.}
+\item{N_sp}{Amount of spike.}
 }
 \description{
 calc_analyte_mass_as_element.

@@ -18,23 +18,20 @@ process_data(
 
 \item{wf}{Calibration method/Workflow.}
 
-\item{c1}{Column name of the intensity column to be used (ExtCal) or of the spike isotope (IDMS).}
+\item{c1}{Column name of the intensity column to be used (ExtCal/ExtGasCal) or of the spike isotope (IDMS/oIDMS).}
 
-\item{c2}{Column name of the intensity column to be used as internal standard for Argon correction (ExtCal) or sample isotope (IDMS).}
+\item{c2}{Column name of the intensity column to be used as internal standard (ExtCal/ExtGasCal) or of the sample isotope (IDMS/oIDMS).}
 
-\item{fl}{Filter length, has to be odd.}
+\item{fl}{Filter length, has to be odd and >= 3.}
 
-\item{amend}{Set TRUE to amend transformed columns instead of replacing them.}
+\item{amend}{Set TRUE to amend transformed columns instead of replacing them. The input of "0" as filter length will omnit the smoothing step.}
 }
 \value{
-A data.frame with two columns.
+A data.frame with at least two columns.
 }
 \description{
-Correct a numeric values in a data.frame column with respect to
+Corrects a numeric values in a data.frame column with respect to
     a column containing standard values and applies Savitzky-Golay smoothing.
-}
-\details{
-Additional details...
 }
 \examples{
 imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']][[1]]

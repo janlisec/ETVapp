@@ -15,11 +15,10 @@ plot_particle_diameter(x, LFD = 20000)
 A data.frame containing single particle data (invisible) and a plot.
 }
 \description{
-plot_particle_diameter
+Plots the signal distribution of a single particle-ICP-MS measurement.
 }
 \details{
-Determination of the transport efficiency from measurements with
-    gold or silver nano particle standards.
+Determination of the intensity limit for the differentiation between particle and background signals.
 }
 \examples{
 sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]

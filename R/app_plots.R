@@ -43,21 +43,24 @@ ic_specplot <- function(
   BLmethod = "none",
   sel_pk = NULL
 ) {
-  par(cex = 1.4)
-  if (is.null(xrng)) xrng <- range(sapply(mi_spec, function(x) { range(x[,"Time"], na.rm=TRUE) }))
-  # get y range
-  yrng <- c(0, max(sapply(mi_spec, function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) })))
-  # modify plot margins
-  par(mar = c(4.5, 4.5, 0.5, ifelse("overlay_drift" %in% opt, 4.5, 0.5)))
-  # render base plot
-  plot(x = xrng, y = yrng, type = "n", xaxs = "i", xlab = xlab, ylab = ylab)
+  # determine data ranges to display
   if ("overlay_mi" %in% opt) {
     idx_all <- 1:length(mi_spec)
     cols <- 2:(length(idx_all)+1)
+    if (is.null(xrng)) xrng <- range(sapply(mi_spec, function(x) { range(x[,"Time"], na.rm=TRUE) }))
+    # get y range
+    yrng <- c(0, max(sapply(mi_spec, function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) })))
   } else {
     idx_all <- as.numeric(gsub("[^[:digit:]]", "", s_focus))
     cols <- rep(1, idx_all)
+    if (is.null(xrng)) xrng <- range(sapply(mi_spec[idx_all], function(x) { range(x[,"Time"], na.rm=TRUE) }))
+    yrng <- c(0, max(sapply(mi_spec[idx_all], function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) })))
   }
+  # modify plot margins
+  par(mar = c(4.5, 4.5, 0.5, ifelse("overlay_drift" %in% opt, 4.5, 0.5)))
+  par(cex = 1.4)
+  # render base plot
+  plot(x = xrng, y = yrng, type = "n", xaxs = "i", xlab = xlab, ylab = ylab)
   for (idx in idx_all) {
     if ("overlay_legend" %in% opt) {
       f_in <- names(mi_spec)
@@ -112,10 +115,10 @@ ic_specplot <- function(
   }
 }
 
-# $$VS: Title plot_particle_diameter would fit better                                                         
+# $$VS: Title plot_particle_diameter would fit better
 #' @title plot_particle_size_distribution.
 #' @description Plots a histogram of the particle size distribution of a single particle-ICP-MS measurement.
-#' @details Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet. 
+#' @details Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet.
 #'     Densities for gold or silver nano particle standards are deposited.
 #' @param x A data.frame containing at least two columns.
 #' @param cali_slope Calibration lm slope result for ionic standards.
@@ -157,7 +160,7 @@ plot_particle_size_distribution <- function(
   invisible(x)
 }
 
-# $$VS: Title plot_signal_distribution would fit better. Output plot should have same layout as plot in vignette (no histogram).                                                          
+# $$VS: Title plot_signal_distribution would fit better. Output plot should have same layout as plot in vignette (no histogram).
 #' @title plot_particle_diameter
 #' @description Plots the signal distribution of a single particle-ICP-MS measurement.
 #' @details Determination of the intensity limit for the differentiation between particle and background signals.

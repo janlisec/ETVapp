@@ -17,22 +17,21 @@ tab_cali(
 
 \item{wf}{Calibration method/Workflow.}
 
-\item{std_info}{A numeric value giving the analyte mass (ExtCal) or the Concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).}
+\item{std_info}{A numeric value giving the analyte mass (ExtCal), the concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).}
 
 \item{gas_flow}{Gas flow of calibration gas.}
 
 \item{fac}{A factor to convert the gas flow (gas_density x mass_fraction x mass_percentage).}
 }
 \value{
-A data.frame with the standard no, the isotope, the peak boundaries in seconds, the peak area in counts and information for the
+A data.frame with the standard no, the isotope, the peak/signal boundaries in seconds, the peak area in counts/mean signal in cps and information for the
 analyte content in the calibration standard.
 }
 \description{
-\code{tab_cali} will collect calibration data in a data.frame.
+\code{tab_cali} will transfer standard information to a data.frame containing peak/signal data.
 }
 \details{
-Peak data for the method "ExtCal" or mean signal intensities from a data.frame containing at least two numeric
-columns for "ExtGasCal" will be read incrementally in a data.frame.
+Selecting "ExtGasCal" enables the input of a conversion factor to calculate the gas flows. A conversion factor (mL/min to µL/s) is implemented in the function.
 }
 \examples{
 # import all cali files into a list from example data folder

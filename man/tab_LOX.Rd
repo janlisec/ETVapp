@@ -13,7 +13,7 @@ tab_LOX(
 )
 }
 \arguments{
-\item{x}{Variable containing the numeric data to infer SD (either peak area (for ExtCal) or analyte mass (for IDMS)).}
+\item{x}{Variable containing the numeric data to infer SD (either peak area (for ExtCal/ExtGasCal) or analyte mass (for IDMS/oIDMS)).}
 
 \item{cali_slope}{A slope from the calibration data.}
 
@@ -33,7 +33,7 @@ A data.frame.
 \details{
 The LOD and LOQ will be calculated as three and ten times the
     standard deviation of at least three peak areas divided by the slope
-    of a linear calibration curve (for workflow ExtCal). Results are provided
+    of a linear calibration curve (for workflow ExtCal/ExtGasCal). Results are provided
     as element, analyte and relative to a sample mass.
 }
 \examples{

@@ -27,11 +27,11 @@ get_isoratio(
 
 \item{PPmethod}{Peak picking method.}
 
-\item{peak_start}{Value which is taken as peak start point, when manual peakpicking is choosen.}
+\item{peak_start}{Value which is taken as peak start point, when manual peak picking is chosen.}
 
-\item{peak_end}{Value which is taken as peak end point, when manual peakpicking is choosen.}
+\item{peak_end}{Value which is taken as peak end point, when manual peak picking is chosen.}
 
-\item{minpeakheight}{A threshold value for peakpicking via peakheight.}
+\item{minpeakheight}{A threshold value for peak picking via peakheight.}
 
 \item{BLmethod}{Method for baseline correction.}
 
@@ -39,16 +39,17 @@ get_isoratio(
 
 \item{cf}{A correction value for cutting the area around the detected peak.}
 
-\item{fl}{fl.}
+\item{fl}{Filter length of smoother, has to be odd and >=3.}
 }
 \value{
 A data.frame.
 }
 \description{
-\code{get_isoratio} will be calculate an isotope ratio based on peak areas.
+\code{get_isoratio} calculate an isotope ratio based on peak areas.
 }
 \details{
-Time-resolved ICP-MS data will be integration and optionally baseline corrected.
+Time-resolved ICP-MS data will be integration and optionally baseline corrected. 
+Peak boundaries will be checked regarding the similarity beween the isotopes.
 }
 \examples{
 # for sample measurements

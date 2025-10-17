@@ -19,7 +19,7 @@ calc_massflow(
 \arguments{
 \item{x}{Input data.}
 
-\item{n_trans}{n_trans.}
+\item{n_trans}{Transport efficiency.}
 
 \item{As_iso1}{Natural abundance of the spike isotope.}
 
@@ -40,9 +40,6 @@ A numeric vector.
 }
 \description{
 Transforms one column in a data.frame with respect to parameters.
-}
-\details{
-xx
 }
 \examples{
 calc_massflow(1:10)

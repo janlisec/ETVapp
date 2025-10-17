@@ -22,10 +22,12 @@
 #' @examples
 #' raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]][[1]]
 #' pro_data <- process_data(raw_data, c1 = "117Sn", c2 = "80Se", fl = 151)
-#' peak_data <- get_peakdata(pro_data, int_col = "117Sn", peak_start = 80, peak_end = 130)
+#' peak_data <- get_peakdata(pro_data, int_col = "117Sn")
 #' plot(x = pro_data[,1:2], type = "l")
 #' abline(v = peak_data[1,2:3], col=grey(0.7))
 #'
+#' peak_data2 <- get_peakdata(pro_data, int_col = "117Sn", PPmethod = "Peak (manual)", peak_start = 80, peak_end = 130)
+#' abline(v = peak_data2[1,2:3], col=3)
 #' @export
 get_peakdata <- function (pro_data, int_col, time_col = "Time",
                           peak_start = NULL, peak_end = NULL, minpeakheight = 1000,

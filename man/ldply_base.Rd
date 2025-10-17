@@ -17,6 +17,7 @@ exported functions that solve minor problems
 \details{
 # function reimplementations (to avoid dependencies)
 - ldply_base
+- str_sort_num
 
 perform simple calculations
 - calc_N_sp

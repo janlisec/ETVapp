@@ -7,7 +7,7 @@
 calc_massbias(R_m, As_iso1, As_iso2)
 }
 \arguments{
-\item{R_m}{R_m.}
+\item{R_m}{Isotope ratio.}
 
 \item{As_iso1}{Natural abundance of the spike isotope.}
 
@@ -21,8 +21,7 @@ A mass bias correction factor will be determined from measurements
     without added spike.
 }
 \details{
-The factor can be entered manually, selected as mean value of several
-    measurements or a specific value can be selected.
+Ratio of the spike to sample isotope peak area from measurements without spike addition.
 }
 \examples{
 mb_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Massbias"]]
@@ -31,7 +30,7 @@ mb_peaks <- ldply_base(1:length(mb_imp), function(i) {
   get_isoratio(mb_imp[[i]], iso1_col = "117Sn", iso2_col = "122Sn",
     PPmethod = "Peak (manual)", peak_start = 70, peak_end = 105)
 })
-
+head(mb_peaks)
 calc_massbias(mb_peaks[,"R_m"], As_iso1 = 7.68, As_iso2 = 4.63)
 
 }

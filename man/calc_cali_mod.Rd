@@ -15,7 +15,7 @@ calc_cali_mod(df, wf = c("ExtCal", "ExtGasCal", "oIDMS"))
 A data.frame containing slope and intercept with errors and R square.
 }
 \description{
-\code{calc_cali_mod} will provide calibration results based on linear
+\code{calc_cali_mod} will provide calibration results based on a linear
     regression model.
 }
 \details{

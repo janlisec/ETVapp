@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{str_sort_num}
 \alias{str_sort_num}
-\title{ldply_base}
+\title{str_sort_num}
 \usage{
 str_sort_num(x)
 }
@@ -10,7 +10,7 @@ str_sort_num(x)
 \item{x}{character vector.}
 }
 \description{
-ldply_base
+str_sort_num
 }
 \examples{
 x <- paste0("File", c(20, 1, 9, 11, 32, 100))
@@ -18,4 +18,5 @@ str_sort_num(x)
 x <- c("Z1", x, "a", "Z10")
 str_sort_num(x)
 x <- c("b1_3", "b2_1_3", x)
+str_sort_num(x)
 }

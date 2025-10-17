@@ -33,12 +33,12 @@ calc_transeff(
 A data.frame containing single particle data.
 }
 \description{
-The transport efficiency will be calculated based on particle
-    mass approach from single particle-ICP-MS data.
+The transport efficiency will be calculated based on the particle
+    size approach from single particle-ICP-MS data.
 }
 \details{
 Determination of the transport efficiency from measurements with
-    gold or silver nano particle standards.
+    gold or silver nano particle standards of known size.
 }
 \examples{
 spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]

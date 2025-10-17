@@ -71,8 +71,8 @@ app_ui <- function() {
         selectInput(inputId = "baseline_method", label = "BL Method", choices = c("none", "modpolyfit"), selected = "modpolyfit") |> bslib::tooltip("Select method for baseline estimation or 'none' to omit this processing step."),
         selectInput(inputId = "peak_method", label = "Peak Method", choices = c("Peak (height)", "Peak (manual)", "mean_signal"), selected = c("Peak (height)", "Peak (manual)", "mean_signal")[3]) |> bslib::tooltip("Select method for Peak picking."),
         numericInput(inputId = "peak_start", label = "peak_start", value = 70, min=0, step=1) |> bslib::tooltip("Peak picking parameter: peak_start."),
-        numericInput(inputId = "peak_end", label = "peak_end", value = 105, min=1, max=1000, step=1) |> bslib::tooltip("Peak picking parameter: peak_end.")
-        #shinyjs::disabled(numericInput(inputId = "peak_height", label = "peak_height", value = 1000, min=0, step=1)) |> bslib::tooltip("Peak picking parameter: peak_height.")
+        numericInput(inputId = "peak_end", label = "peak_end", value = 105, min=1, max=1000, step=1) |> bslib::tooltip("Peak picking parameter: peak_end."),
+        shinyjs::disabled(numericInput(inputId = "peak_height", label = "peak_height", value = 1000, min=0, step=1)) |> bslib::tooltip("Peak picking parameter: peak_height.")
       )
     )
   )

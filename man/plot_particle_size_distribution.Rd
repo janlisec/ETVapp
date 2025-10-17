@@ -30,11 +30,11 @@ plot_particle_size_distribution(
 A data.frame containing single particle data (invisible) and a plot.
 }
 \description{
-plot_particle_size_distribution.
+Plots a histogram of the particle size distribution of a single particle-ICP-MS measurement.
 }
 \details{
-Determination of the transport efficiency from measurements with
-    gold or silver nano particle standards.
+Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet. 
+    Densities for gold or silver nano particle standards are deposited.
 }
 \examples{
 sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]

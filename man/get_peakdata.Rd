@@ -43,13 +43,15 @@ A data.frame with the peak boundaries in seconds and the peak area in cps
 .
 }
 \description{
-\code{get_peakdata} will generate a table with peak data (Start
-    and end point, peak area) from a data.frame.
+\code{get_peakdata} will generate a table with peak data (atart
+    and end point, peak area) or the data of a signal range (start and end point, mean signal intensity) from a data.frame.
 }
 \details{
+$$VS: Peak picking method "Peak (height)" returns peak max as peak start and end.
+
 This function provides a simple detection algorithm for peak boundaries
     based on the peak height and alternatively allows for manual setting of the
-    peak boundaries. It has implemented a method for baseline correction based on
+    peak boundaries or selecting a signal range. It has implemented a method for baseline correction based on
     polynomial fitting and will compute the peak area using the trapezoidal rule.
 }
 \examples{
