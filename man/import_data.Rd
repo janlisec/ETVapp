@@ -33,16 +33,4 @@ lapply(imp, head)
 
 import_data("not_existent.file")
 
-\dontrun{
-wfs <- c("ExtCal", "ExtGasCal", "IDMS", "oIDMS")
-ETVapp_testdata <- setNames(lapply(wfs, function(wf) {
-  subflds <- dir(system.file(package = "ETVapp", "extdata", wf))
-  setNames(lapply(subflds, function(sf) {
-  fls <- dir(system.file(package = "ETVapp", "extdata", wf, sf), full.names = TRUE)
-    import_data(fls, simplify = FALSE)
-  }), subfld)
-}), wfs)
-usethis::use_data(ETVapp_testdata)
-}
-
 }

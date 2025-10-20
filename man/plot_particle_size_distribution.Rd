@@ -33,7 +33,7 @@ A data.frame containing single particle data (invisible) and a plot.
 Plots a histogram of the particle size distribution of a single particle-ICP-MS measurement.
 }
 \details{
-Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet. 
+Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet.
     Densities for gold or silver nano particle standards are deposited.
 }
 \examples{

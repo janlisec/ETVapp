@@ -250,7 +250,7 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean_si
     x <- df[,2]
     ensure_that(is.numeric(minpeakheight) && minpeakheight > 0, "Please enter a minimum peakheight >0.", opt = "stop")
     # $$JL: substituted findpeaks call
-    # $$VS: Peak picking is not working anymore. Output of peak maximum instead of peak start and end. 
+    # $$VS: Peak picking is not working anymore. Output of peak maximum instead of peak start and end.
     #peak_data <- pracma::findpeaks(x, minpeakheight = minpeakheight, npeaks=3, sortstr=TRUE)
     peak_data <- pracma::findpeaks(x, sortstr = TRUE)
     ensure_that(length(peak_data) >= 1, msg = "No peak found. Adjust the minimal peakheight or try manual peak detection.", opt = "stop")
@@ -295,8 +295,15 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean_si
   return(peak_data)
 }
 
-#' @keywords internal
-#' @noRd
+#' @title extract_unique_number.
+#' @description Often numeric information is stored in character vectors like
+#'     file names. This function will extract such information, focusing on
+#'     numeric values which are different between files.
+#' @param x Charcter vector, i.e. of file names.
+#' @examples
+#' x <- paste("File123_conc", c(3, 21, 101), "endtext", sep="_")
+#' extract_unique_number(x=x)
+#' @export
 extract_unique_number <- function(x) {
   # extract numbers
   number_matches <- regmatches(x, gregexpr("\\d+", x))

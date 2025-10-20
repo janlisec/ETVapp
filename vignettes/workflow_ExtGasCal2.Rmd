@@ -71,7 +71,9 @@ cali_sig <- ldply_base(1:length(cali_pro), function(i) {
 })
 
 fac <- 1.661 * 0.01104347 * 12/44
-cali_peaks <- tab_cali(peak_data = cali_sig, wf = "ExtGasCal", gas_flow = seq(0,50,length.out=nrow(cali_sig)), fac = fac)
+
+gas_flow <- extract_unique_number(names(cali_pro))
+cali_peaks <- tab_cali(peak_data = cali_sig, wf = "ExtGasCal", gas_flow = gas_flow, fac = fac)
 print(cali_peaks)
 ```
 

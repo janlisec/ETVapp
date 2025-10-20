@@ -6,6 +6,7 @@
 #'     based on the peak height and alternatively allows for manual setting of the
 #'     peak boundaries or selecting a signal range. It has implemented a method for baseline correction based on
 #'     polynomial fitting and will compute the peak area using the trapezoidal rule.
+
 #' @param pro_data Data.frame with at least two numeric columns.
 #' @param int_col Column name of the intensity column to be used.
 #' @param time_col Column name of the time column to be used.
@@ -26,7 +27,8 @@
 #' plot(x = pro_data[,1:2], type = "l")
 #' abline(v = peak_data[1,2:3], col=grey(0.7))
 #'
-#' peak_data2 <- get_peakdata(pro_data, int_col = "117Sn", PPmethod = "Peak (manual)", peak_start = 80, peak_end = 130)
+#' peak_data2 <- get_peakdata(pro_data, int_col = "117Sn", PPmethod = "Peak (manual)",
+#'   peak_start = 80, peak_end = 130)
 #' abline(v = peak_data2[1,2:3], col=3)
 #' @export
 get_peakdata <- function (pro_data, int_col, time_col = "Time",
