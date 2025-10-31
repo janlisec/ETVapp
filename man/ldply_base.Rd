@@ -29,7 +29,7 @@ perform simple calculations
 - calc_transeff
 
 imported from IsoCor
-- get_iso_amu
+- get_iso_info
 - help_the_user
 - get_spectrum
 - spec_pre_process

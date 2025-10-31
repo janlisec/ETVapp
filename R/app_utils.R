@@ -14,7 +14,7 @@
 #' - calc_transeff
 #'
 #' imported from IsoCor
-#' - get_iso_amu
+#' - get_iso_info
 #' - help_the_user
 #' - get_spectrum
 #' - spec_pre_process
@@ -28,6 +28,29 @@ ldply_base <- function(.data, .fun = identity) {
   df <- do.call(rbind, result)
   df <- data.frame(df, row.names = NULL, check.names = FALSE)
   return(df)
+}
+
+#' @title laply_base
+#' @param .data list.
+#' @param .fun fun.
+#' @param ... additional parameters to lapply.
+#' @param .drop Avoid dropping dimensionality.
+#' @examples
+#' lst <- list(a = 1:3, b = 4:6, c = 7:9)
+#' laply_base(lst, function(x) x[1:2], .drop = FALSE)
+#' #plyr::laply(lst, function(x) x[1:2], .drop = FALSE)
+#' @export
+laply_base <- function(.data, .fun, ..., .drop = TRUE) {
+  result_list <- lapply(.data, .fun, ...)
+  lengths <- vapply(result_list, length, integer(1))
+  if (length(unique(lengths)) != 1) {
+    stop("All elements must return vectors of the same length to form a matrix.")
+  }
+  result_matrix <- do.call(rbind, result_list)
+  if (!.drop && is.null(dim(result_matrix))) {
+    result_matrix <- matrix(result_matrix, nrow = length(.data))
+  }
+  return(result_matrix)
 }
 
 #' @title str_sort_num
@@ -127,7 +150,7 @@ correct_ratio <- function(x, K = 1, As_iso1 = 7.68, As_iso2 = 4.63) {
   }
   return(out)
 }
- 
+
 #' @title calc_massbias
 #'
 #' @description A mass bias correction factor will be determined from measurements
@@ -136,9 +159,9 @@ correct_ratio <- function(x, K = 1, As_iso1 = 7.68, As_iso2 = 4.63) {
 #' @param R_m Isotope ratio.
 #' @param As_iso1 Natural abundance of the spike isotope.
 #' @param As_iso2 Natural abundance of the sample isotope.
-#' 
+#'
 #' @details Ratio of the spike to sample isotope peak area from measurements without spike addition.
-#' 
+#'
 #' @return Numeric values K for each R_m.
 #'
 #' @examples
@@ -261,7 +284,7 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS")){
 #' })
 #' conc_ion <- c(20, 50, 100, 200, 500)
 #' fac <- 1.661 * 0.01104347 * 12/44
-#' sp_cali <- tab_cali(sp_cali, wf = "oIDMS", std_info = conc_ion, gas_flow = 49.6512, fac = fac)
+#' sp_cali <- tab_cali(sp_cali, wf = "oIDMS", std_info = conc_ion, fac = fac)
 #'
 #' (cali_slope <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = "oIDMS")[,1])
 #'
@@ -313,31 +336,33 @@ calc_transeff <- function (data, int_col, LFD = 100, cali_slope = 1, V_fl, part_
   return(out)
 }
 
-#' $$VS: Amu is not used in the calculations, but natural isotope abundance would be useful.
-#' @title get_iso_amu.
-#' @description \code{get_iso_amu} will take a string and try to identify an
-#'   isotope name contained within. It will return the amu for this isotope.
+#' @title get_iso_info.
+#' @description \code{get_iso_info} will take a string and try to identify an
+#'   isotope name contained within. It will return the requested info for this isotope.
 #' @param x character.
 #' @param isotopes Two column dataframe with isotope definitions.
+#' @param info Column name of the requested parameter.
 #' @examples
 #' \dontrun{
-#' get_iso_amu(x="198Hg")
-#' get_iso_amu(x="198Hg_corr")
-#' get_iso_amu(x="X_32S_corr")
-#' get_iso_amu(x="15S")
+#' get_iso_info(x="198Hg")
+#' get_iso_info(x="198Hg_corr")
+#' get_iso_info(x="X_32S_corr")
+#' get_iso_info(x="15S")
+#' get_iso_info(x="32S", info = "abundance")
 #' }
 #' @return A single numeric value (0 in case that no isotope could be identified).
 #' @keywords internal
 #' @noRd
-get_iso_amu <- function(x, isotopes=data.frame("isotope"=c("198Hg","32S"), "mass"=c(197.999,31.995))) {
+get_iso_info <- function(x, isotopes=data.frame("isotope"=c("198Hg","32S"), "mass"=c(197.999,31.995), "abundance"=c(1,2)), info = c("mass", "abundance")) {
+  info <- match.arg(info)
   x <- as.character(x[1])
   val <- 0
   l <- which(isotopes[,"isotope"] == x)[1]
   if (!is.na(l)) {
-    val <- isotopes[l,"mass"]
+    val <- isotopes[l,info]
   } else {
     l <- unlist(sapply(isotopes[,"isotope"], function(i) {grep(i, x)}))
-    if (length(l)>=1) val <- isotopes[isotopes[,"isotope"] == names(l),"mass"][1]
+    if (length(l)>=1) val <- isotopes[isotopes[,"isotope"] == names(l),info][1]
   }
   return(val)
 }
@@ -486,7 +511,10 @@ limit_digits <- function(df, n=6, cols=NULL) {
   } else {
     ensure_that(all(cols %in% 1:ncol(df)), "[limit_digits] Check parameters 'cols'.")
   }
-  for (i in cols) df[,i] <- signif(x = df[,i], digits = n)
+  for (i in cols) {
+    # do not round cols with integer values
+    if (!all(df[,i] %% 1 == 0)) df[,i] <- signif(x = df[,i], digits = n)
+  }
   return(df)
 }
 

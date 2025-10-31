@@ -49,15 +49,15 @@ app_ui <- function() {
       bslib::card_header(shiny::actionLink(inputId = "ic_help03", label = "Import")),
       bslib::layout_column_wrap(
         width = 120, gap = "5px",
-        shinyjs::disabled(selectInput(inputId = "ic_par_rt_col", label = "RT column", choices = c(""))) |> bslib::tooltip("Select RT column."),
+        shinyjs::hidden(selectInput(inputId = "ic_par_rt_col", label = "RT column", choices = "Time")) |> bslib::tooltip("Select RT column."),
         selectInput(inputId = "ic_par_mi_col", label = "Iso1 column", choices = c("")) |> bslib::tooltip("Select Spike Isotope column."),
         selectInput(inputId = "ic_par_si_col", label = "Iso2 column", choices = c("")) |> bslib::tooltip("Select Sample Isotope column."),
-        textInput(inputId = "ic_par_mi_rt_unit", label = "RT unit", value = "min"),
+        shinyjs::hidden(textInput(inputId = "ic_par_mi_rt_unit", label = "RT unit", value = "s")),
         textInput(inputId = "ic_par_mi_col_name", label = "Iso1 Name"),
         textInput(inputId = "ic_par_si_col_name", label = "Iso2 Name"),
         shiny::HTML(""),
-        numericInput(inputId = "ic_par_mi_amu", label = "Spike amu", value = 0, step = 0.0001),
-        numericInput(inputId = "ic_par_si_amu", label = "Sample amu", value = 0, step = 0.0001)
+        numericInput(inputId = "ic_par_mi_amu", label = "Iso1 abundance", value = 0, step = 0.0001),
+        numericInput(inputId = "ic_par_si_amu", label = "Iso2 abundance", value = 0, step = 0.0001)
       )
     )
   )
@@ -70,9 +70,9 @@ app_ui <- function() {
         numericInput(inputId = "smoothing_fl", label = "Smoothing", value = 9, min=1, max=151, step=2) |> bslib::tooltip("Smoothing parameter 'filter length'. Set to '1' to omit this processing step. Set to '151' to use smooth.spline()."),
         selectInput(inputId = "baseline_method", label = "BL Method", choices = c("none", "modpolyfit"), selected = "modpolyfit") |> bslib::tooltip("Select method for baseline estimation or 'none' to omit this processing step."),
         selectInput(inputId = "peak_method", label = "Peak Method", choices = c("Peak (height)", "Peak (manual)", "mean_signal"), selected = c("Peak (height)", "Peak (manual)", "mean_signal")[3]) |> bslib::tooltip("Select method for Peak picking."),
-        numericInput(inputId = "peak_start", label = "peak_start", value = 70, min=0, step=1) |> bslib::tooltip("Peak picking parameter: peak_start."),
-        numericInput(inputId = "peak_end", label = "peak_end", value = 105, min=1, max=1000, step=1) |> bslib::tooltip("Peak picking parameter: peak_end."),
-        shinyjs::disabled(numericInput(inputId = "peak_height", label = "peak_height", value = 1000, min=0, step=1)) |> bslib::tooltip("Peak picking parameter: peak_height.")
+        numericInput(inputId = "peak_start", label = "Peak start [s]", value = 70, min=0, step=1) |> bslib::tooltip("Peak picking parameter: peak_start."),
+        numericInput(inputId = "peak_end", label = "Peak end [s]", value = 105, min=1, max=1000, step=1) |> bslib::tooltip("Peak picking parameter: peak_end."),
+        shinyjs::disabled(numericInput(inputId = "peak_height", label = "Threshold height [cps]", value = 1000, min=0, step=1)) |> bslib::tooltip("Peak picking parameter: peak_height.")
       )
     )
   )
@@ -85,7 +85,8 @@ app_ui <- function() {
       shinyjs::disabled(numericInput(inputId = "K", label = "K", value = 1)),
       numericInput(inputId = "Asp_iso1", label = "Asp_iso1", value = 92.61),
       numericInput(inputId = "Asp_iso2", label = "Asp_iso2", value = 0.22),
-      numericInput(inputId = "c_sp", label = "c_sp", value = 2.5)
+      numericInput(inputId = "c_sp", label = "Spike concentration", value = 2.5),
+      selectInput(inputId = "c_sp_unit", label = "Spike unit", choices = c("\u00b5g/L", "mg/L"))
     )
   )
   IDMS_pars <- shiny::div(
@@ -93,10 +94,10 @@ app_ui <- function() {
     bslib::layout_column_wrap(
       width = 120, gap = "5px",
       numericInput(inputId = "V_sp", label = "V_sp", value = 6),
-      numericInput(inputId = "VF1", label = "VF1", value = 1000),
-      numericInput(inputId = "M_sp", label = "M_sp", value = 113.01),
-      numericInput(inputId = "M_sa", label = "M_sa", value = 112.41),
-      shinyjs::disabled(numericInput(inputId = "N_sp", label = "N_sp", value = 1))
+      numericInput(inputId = "VF1", label = "Dilution factor", value = 1000),
+      numericInput(inputId = "M_sp", label = "Molar Mass Spike", value = 113.01),
+      numericInput(inputId = "M_sa", label = "Molar Mass Sample", value = 112.41),
+      shinyjs::disabled(numericInput(inputId = "N_sp", label = "Spike amount", value = 1))
     )
   )
   oIDMS_pars <- shiny::div(
@@ -116,8 +117,8 @@ app_ui <- function() {
     id = "ExtIDMS_pars_common",
     bslib::layout_column_wrap(
       width = 120, gap = "5px",
-      numericInput(inputId = "mass_fraction2", label = "mass_frac", value = 1),
-      numericInput(inputId = "sample_mass", label = "sample_mass", value = 1),
+      numericInput(inputId = "mass_fraction2", label = "Mass fraction", value = 1, min = 10^-6, max = 1, step = 10^-6),
+      numericInput(inputId = "sample_mass", label = "Sample mass [mg]", value = 1, min = 1),
       shiny::HTML("")
     )
   )
@@ -125,14 +126,17 @@ app_ui <- function() {
     id = "ExtCal_pars",
     bslib::layout_column_wrap(
       width = 120, gap = "5px",
+      selectInput(inputId = "ExtCal_unit", label = "Analyte mass unit", choices = c("pg","ng","\u00b5g")),
+      shiny::HTML(""),
+      shiny::HTML("")
     )
   )
   ExtGasCal_pars <- shiny::div(
     id = "ExtGasCal_pars",
     bslib::layout_column_wrap(
       width = 120, gap = "5px",
-      numericInput(inputId = "cali_fac", label = "cali_fac", value = 0.005002692),
-      shiny::HTML(""),
+      numericInput(inputId = "cali_fac", label = "Conversion factor", value = 0.005002692),
+      selectInput(inputId = "ExtGasCal_unit", label = "Gas flow unit", choices = c("\u00b5L/min", "mL/min")),
       shiny::HTML("")
     )
   )
@@ -143,9 +147,9 @@ app_ui <- function() {
       IDMS_pars_common,
       IDMS_pars,
       oIDMS_pars,
-      ExtIDMS_pars_common,
       ExtCal_pars,
-      ExtGasCal_pars
+      ExtGasCal_pars,
+      ExtIDMS_pars_common
     )
   )
 
@@ -181,13 +185,13 @@ app_ui <- function() {
                 "show all samples" = "overlay_mi",
                 "show peak boundaries"="overlay_pb",
                 "show sample IDs" = "overlay_legend",
-                "overlay SI trace" = "overlay_si"
-                #"overlay ratio points" = "overlay_drift"
+                "show Temp program" = "overlay_Temp"
               ),
-              selected = c("overlay_pb", "overlay_mi", "overlay_legend")
+              selected = c("overlay_pb", "overlay_mi", "overlay_legend", "overlay_Temp")
             ),
             actionButton(inputId = "ic_par_cut_range", label = "cut range") |> bslib::tooltip("Cut samples to currently visible range."),
-            actionButton(inputId = "ic_par_align_rt", label = "align rt") |> bslib::tooltip("Align samples at peak maxima.")
+            read_clipboard_UI(id = "T_prog") |> bslib::tooltip("Specify Temp program.")
+            #actionButton(inputId = "T_prog", label = "Set Temp Prog") |> bslib::tooltip("Specify Temp program.")
           ),
           plotOutput(
             outputId = "ic_specplot",
@@ -299,8 +303,6 @@ app_server <- function(input, output, session) {
   rt_shift <- reactiveVal(0)
   # indicator if range cut is currently applied
   status_range_cut <- reactiveVal("off")
-  # indicator if alignment is currently applied
-  status_align <- reactiveVal("off")
 
   pars <- shiny::reactiveValues(
     "smoothing_fl" = 7,
@@ -321,11 +323,22 @@ app_server <- function(input, output, session) {
     "IDMS_cali" = NULL,
     #"IDMS_cm" = NULL,
     "IDMS_sam" = NULL,
-    "IDMS_lox" = NULL
+    "IDMS_lox" = NULL,
+    "T_prog" = "",
+    "Iso_labels" = stats::setNames("Time","Time")
   )
 
+  T_prog <- read_clipboard_Server(id = "T_prog", btn_txt="Set Temp program", value=shiny::reactive(pars$T_prog))
+
+  observeEvent(T_prog$d, {
+    if (!is.null(dim(T_prog$d))) {
+      pars$T_prog <- stats::setNames(as.data.frame(T_prog$d), c("Time", "Temp"))
+    } else {
+      pars$T_prog <- ""
+    }
+  }, ignoreInit = TRUE, ignoreNULL = FALSE)
+
   shiny::observeEvent(input$smoothing_fl, {
-    #browser()
     if (ensure_that(input$smoothing_fl %in% seq(1,151,2), "Smoothing parameter should be odd integer >=3 (or use '1' to omit smoothing).", opt = "warn")) {
       pars$smoothing_fl <- input$smoothing_fl
     } else {
@@ -344,13 +357,20 @@ app_server <- function(input, output, session) {
     shinyjs::toggleElement(id = "IDMS_pars_common", condition = input$par_wf %in% c("IDMS","oIDMS"))
     tmp <- list("ExtCal"=c("Cali","Sample","Blanks"),"ExtGasCal"=c("Cali","Samples","Blanks"),"IDMS"=c("Massbias","Samples","Blanks"),"oIDMS"=c("Massbias","sp_ionic","sp_particle","Samples","Blanks"))
     shiny::updateRadioButtons(inputId = "par_filetype", choices = tmp[[input$par_wf]])
-    if (input$par_wf=="IDMS") {
-      # updateCheckboxGroupInput(inputId = "ic_par_specplot", selected = c("overlay_pb", "overlay_mi"))
-      # shinyjs::disable(selector = "#ic_par_specplot input[value='overlay_si']")
-      # shinyjs::disable(selector = "#ic_par_specplot input[value='overlay_drift']")
+    if (input$par_wf %in% c("ExtCal", "ExtGasCal")) {
+      updateSelectInput(inputId = "ic_par_mi_col", label = "Analyte column")
+      updateSelectInput(inputId = "ic_par_si_col", label = "Standard column")
+      updateSelectInput(inputId = "ic_par_mi_col_name", label = "Analyte Label")
+      updateSelectInput(inputId = "ic_par_si_col_name", label = "Standard Label")
+      shinyjs::hide(id = "ic_par_mi_amu")
+      shinyjs::hide(id = "ic_par_si_amu")
     } else {
-      # shinyjs::enable(selector = "#ic_par_specplot input[value='overlay_si']")
-      # shinyjs::enable(selector = "#ic_par_specplot input[value='overlay_drift']")
+      updateSelectInput(inputId = "ic_par_mi_col", label = "Iso1 column")
+      updateSelectInput(inputId = "ic_par_si_col", label = "Iso2 column")
+      updateSelectInput(inputId = "ic_par_mi_col_name", label = "Iso1 Label")
+      updateSelectInput(inputId = "ic_par_si_col_name", label = "Iso2 Label")
+      shinyjs::show(id = "ic_par_mi_amu")
+      shinyjs::show(id = "ic_par_si_amu")
     }
   })
 
@@ -394,7 +414,7 @@ app_server <- function(input, output, session) {
       if (length(out)>1) {
         shinyjs::enable(selector = "#ic_par_specplot input[value='overlay_mi']")
       } else {
-        updateCheckboxGroupInput(inputId = "ic_par_specplot", selected = c("overlay_pb", "overlay_si"))
+        updateCheckboxGroupInput(inputId = "ic_par_specplot", selected = c("overlay_pb"))
         shinyjs::disable(selector = "#ic_par_specplot input[value='overlay_mi']")
         shinyjs::hide(id = "ic_par_focus_sample")
       }
@@ -467,10 +487,7 @@ app_server <- function(input, output, session) {
   ic_mi_peaks <- reactive({
     req(ic_mi_spectra(), input$peak_start, input$peak_end, input$baseline_method)
     message("ic_mi_peaks")
-    # disable button here, will be enabled potentially if consistent number of peaks is found
-    shinyjs::disable(id = "ic_par_align_rt")
     # wrap peak detection in try to account for extreme parameter selections
-    #browser()
     pks <- try(lapply(ic_mi_spectra(), function(x) {
       get_peakdata(
         pro_data = x,
@@ -497,8 +514,6 @@ app_server <- function(input, output, session) {
     n <- length(ic_mi_peaks())
     pn <- unname(sapply(ic_mi_peaks(), nrow))
     out <- data.frame("Sample" = rep(1:n, times=pn), "Peak ID" = sapply(pn, function(x) {1:x}), ldply_base(ic_mi_peaks()), check.names = FALSE)
-    # enable ic_par_align_rt only if consistent number of peaks are found in all samples and more than 2 samples are available
-    if (length(ic_mi_peaks())>=2 & length(unique(table(out[,"Peak ID"])))==1) { shinyjs::enable(id = "ic_par_align_rt") }
     return(out)
   })
 
@@ -547,8 +562,6 @@ app_server <- function(input, output, session) {
       updateActionButton(inputId = "ic_par_cut_range", label = "cut range")
       # reset alignment
       rt_shift(rep(0, length(file_in())))
-      status_align("off")
-      updateActionButton(inputId = "ic_par_align_rt", label = "align rt")
       # ...reset display range
       spec_plots_xmin(cut_range$min)
       spec_plots_xmax(cut_range$max)
@@ -561,12 +574,12 @@ app_server <- function(input, output, session) {
     n <- length(fic)
     mi_old <- shiny::isolate(input$ic_par_mi_col)
     si_old <- shiny::isolate(input$ic_par_si_col)
-    rt_selected <- ifelse("Time" %in% fic, "Time", fic[1])
+    #rt_selected <- ifelse("Time" %in% fic, "Time", fic[1])
     mi_sel <- ifelse(mi_old %in% fic, mi_old, fic[2])
     si_sel <- ifelse(si_old %in% fic, si_old, ifelse(length(fic)>=3, fic[3], fic[2]))
-    updateSelectInput(inputId = "ic_par_rt_col", choices = I(fic), selected = rt_selected)
-    updateSelectInput(inputId = "ic_par_mi_col", choices = I(fic), selected = mi_sel)
-    updateSelectInput(inputId = "ic_par_si_col", choices = I(fic), selected = si_sel)
+    #updateSelectInput(inputId = "ic_par_rt_col", choices = I(fic), selected = rt_selected)
+    updateSelectInput(inputId = "ic_par_mi_col", choices = I(fic[-1]), selected = mi_sel)
+    updateSelectInput(inputId = "ic_par_si_col", choices = I(fic[-1]), selected = si_sel)
     reset_times()
   })
 
@@ -576,17 +589,43 @@ app_server <- function(input, output, session) {
     reset_times()
   }, ignoreInit = TRUE)
 
+  observeEvent(input$mass_fraction2, {
+    if (input$mass_fraction2>1 | input$mass_fraction2<=0) {
+      updateNumericInput(inputId = "mass_fraction2", value = 1)
+    }
+  }, ignoreInit = TRUE)
+
   # update MI/SI name inputs when input columns change
   observeEvent(input$ic_par_mi_col, {
-    updateTextInput(inputId = "ic_par_mi_col_name", value = input$ic_par_mi_col)
-    updateNumericInput(inputId = "ic_par_mi_amu", value = get_iso_amu(x=input$ic_par_mi_col, isotopes=isotopes))
-  })
+    if (input$ic_par_mi_col %in% names(pars$Iso_labels)) {
+      val <- unname(pars$Iso_labels[input$ic_par_mi_col])
+    } else {
+      val <- input$ic_par_mi_col
+      pars$Iso_labels <- c(pars$Iso_labels, stats::setNames(input$ic_par_mi_col, input$ic_par_mi_col))
+    }
+    updateTextInput(inputId = "ic_par_mi_col_name", value = val)
+    updateNumericInput(inputId = "ic_par_mi_amu", value = get_iso_info(x=input$ic_par_mi_col, isotopes=isotopes, info="abundance"))
+  }, ignoreNULL = TRUE, ignoreInit = TRUE)
+
+  observeEvent(input$ic_par_mi_col_name, {
+    if (!identical(unname(pars$Iso_labels[input$ic_par_mi_col]), input$ic_par_mi_col_name)) pars$Iso_labels[input$ic_par_mi_col] <- input$ic_par_mi_col_name
+  }, ignoreNULL = TRUE, ignoreInit = TRUE)
+
+  observeEvent(input$ic_par_si_col_name, {
+    if (!identical(unname(pars$Iso_labels[input$ic_par_si_col]), input$ic_par_si_col_name)) pars$Iso_labels[input$ic_par_si_col] <- input$ic_par_si_col_name
+  }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
   # update MI/SI name inputs when input columns change
   observeEvent(input$ic_par_si_col, {
-    updateTextInput(inputId = "ic_par_si_col_name", value = input$ic_par_si_col)
-    updateNumericInput(inputId = "ic_par_si_amu", value = get_iso_amu(x=input$ic_par_si_col, isotopes=isotopes))
-  })
+    if (input$ic_par_si_col %in% names(pars$Iso_labels)) {
+      val <- unname(pars$Iso_labels[input$ic_par_si_col])
+    } else {
+      val <- input$ic_par_si_col
+      pars$Iso_labels <- c(pars$Iso_labels, stats::setNames(input$ic_par_si_col, input$ic_par_si_col))
+    }
+    updateTextInput(inputId = "ic_par_si_col_name", value = val)
+    updateNumericInput(inputId = "ic_par_si_amu", value = get_iso_info(x=input$ic_par_si_col, isotopes=isotopes, info="abundance"))
+  }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
   # set cut range to displayed spectrum range when user triggers this action button
   observeEvent(input$ic_par_cut_range, {
@@ -609,34 +648,6 @@ app_server <- function(input, output, session) {
       shinyjs::runjs('document.getElementById("ic_par_cut_range").style.backgroundColor = "#FFA500";')
     } else {
       shinyjs::runjs('document.getElementById("ic_par_cut_range").style.backgroundColor = "#FFFFFF";')
-    }
-  })
-  observeEvent(status_align(), {
-    btn_col <- if (status_align()=="on") {
-      shinyjs::runjs('document.getElementById("ic_par_align_rt").style.backgroundColor = "#FFA500";')
-    } else {
-      shinyjs::runjs('document.getElementById("ic_par_align_rt").style.backgroundColor = "#FFFFFF";')
-    }
-  })
-
-  # set cut range to displayed spectrum range when user triggers this action button
-  observeEvent(input$ic_par_align_rt, {
-    if (status_align()=="off") {
-      out <- apply(sapply(split(ic_table_peaks_pre(), ic_table_peaks_pre()[,"Peak ID"]), function(x) {
-        rt_max <- sapply(x[,"Sample"], function(i) {
-          tmp <- ic_mi_spectra()[[i]][,c("Time", x[i,"Isotope"])]
-          flt <- tmp[,1]>=x[i,4] & tmp[,1]<=x[i,5]
-          tmp[flt,1][which.max(tmp[flt,2])]
-        })
-        rt_max-stats::median(rt_max)
-      }), 1, stats::median)
-      rt_shift(out)
-      updateActionButton(inputId = "ic_par_align_rt", label = "undo align")
-      status_align("on")
-    } else {
-      rt_shift(rep(0, length(file_in())))
-      updateActionButton(inputId = "ic_par_align_rt", label = "align rt")
-      status_align("off")
     }
   })
 
@@ -774,7 +785,8 @@ app_server <- function(input, output, session) {
         cali_slope = if (is.null(cm)) 1 else cm[1,1],
         wf = input$par_wf,
         mass_fraction2 = input$mass_fraction2,
-        sample_mass = input$sample_mass
+        sample_mass = input$sample_mass,
+        unit = switch(input$par_wf, "ExtCal" = input$ExtCal_unit, "ExtGasCal" = input$ExtGasCal_unit, "ng")
       )
       req(df)
       if (input$par_wf=="ExtCal") pars$ExtCal_lox <- df
@@ -782,7 +794,12 @@ app_server <- function(input, output, session) {
       if (input$par_wf=="IDMS") pars$IDMS_lox <- df
       if (input$par_wf=="oIDMS") pars$oIDMS_lox <- df
     }
-    style_tab_peaks(data = limit_digits(ic_table_peaks_edit()))
+    out <- ic_table_peaks_edit()
+    # remove column 'Peak ID' if all IDs are unique
+    if ("Peak ID" %in% colnames(out) && length(unique(out[,"Peak ID"]))==1) out <- out[,!colnames(out) %in% "Peak ID",drop=FALSE]
+    # remove smooth annotation from ion name
+    if ("Isotope" %in% colnames(out) && length(grep("_smooth", out[,"Isotope"]))>=1) out[,"Isotope"] <- gsub("_smooth", "", out[,"Isotope"])
+    style_tab_peaks(data = limit_digits(out))
   })
 
    # enables manual editing of the peak borders in the peak table
@@ -859,17 +876,13 @@ app_server <- function(input, output, session) {
     req(ic_mi_spectra(), input$ic_par_mi_col_name)
     message("output$ic_specplot")
     c1 <- input$ic_par_mi_col
-    c2 <- input$ic_par_si_col
     bl <- FALSE
     ylab <- input$ic_par_mi_col_name
     if (pars$smoothing_fl >= 3) {
       c1 <- paste0(c1, "_smooth")
-      c2 <- paste0(c2, "_smooth")
     }
-    #browser()
     if (input$par_wf == "oIDMS" & input$par_filetype %in% c("Samples", "Blanks")) {
       c1 <- "mf_s"
-      c2 <- ""
       ylab <- "mf_s"
     }
     opt <- input$ic_par_specplot
@@ -878,10 +891,9 @@ app_server <- function(input, output, session) {
       xrng = c(spec_plots_xmin(), spec_plots_xmax()),
       mi_spec = ic_mi_spectra(),
       c1 = c1,
-      c2 = if ("overlay_si" %in% opt) c2 else "",
       xlab = paste0("Time [", input$ic_par_mi_rt_unit, "]"),
       ylab = ylab,
-      ylab2 = paste0("TEST", "/", input$ic_par_mi_col_name),
+      T_prog = pars$T_prog,
       s_focus = input$ic_par_focus_sample,
       pks = ic_table_peaks_edit(),
       BLmethod = input$baseline_method,
@@ -896,9 +908,18 @@ app_server <- function(input, output, session) {
     message("output$caliplot")
     cali_peaks <- cbind("std_info" = pars$std_info, ic_table_peaks_edit()[,6,drop=FALSE])
     cm <- calc_cali_mod(df = cali_peaks, wf = input$par_wf)
-    if (input$par_wf == "ExtCal") pars$ExtCal_cm <- cm
-    if (input$par_wf == "ExtGasCal") pars$ExtGasCal_cm <- cm
-    if (input$par_wf == "oIDMS") pars$oIDMS_cm <- cm
+    if (input$par_wf == "ExtCal") {
+      pars$ExtCal_cm <- cm
+      colnames(cali_peaks)[1] <- paste0("Analyte mass [", input$ExtCal_unit, "]")
+    }
+    if (input$par_wf == "ExtGasCal") {
+      pars$ExtGasCal_cm <- cm
+      colnames(cali_peaks)[1] <- paste0("Analyte mass [", input$ExtGasCal_unit, "]")
+    }
+    if (input$par_wf == "oIDMS") {
+      #browser()
+      pars$oIDMS_cm <- cm
+    }
     par(cex = 1.4)
     plot(cali_peaks)
     abline(a = cm[1,3], b = cm[1,1])
@@ -931,13 +952,13 @@ app_server <- function(input, output, session) {
   output$sp_particle_plot <- shiny::renderPlot({
     shiny::req(oIMDS_particle_flt(), input$LFD)
     message("output$sp_particle_plot")
-    plot_particle_diameter(x = oIMDS_particle_flt()[,input$ic_par_mi_col], LFD = input$LFD)
+    plot_signal_distribution(x = oIMDS_particle_flt()[,input$ic_par_mi_col], LFD = input$LFD)
   })
 
   output$sp_particle_size_distribution_plot <- shiny::renderPlot({
     shiny::req(oIMDS_particle_flt(), input$LFD, pars$oIDMS_cm)
     message("output$sp_particle_size_distribution_plot")
-    plot_particle_size_distribution(x = oIMDS_particle_flt(), cali_slope = pars$oIDMS_cm[1,1], V_fl = input$V_fl, part_mat = input$part_mat, dia_part = input$dia_part, LFD = input$LFD)
+    plot_particle_diameter(x = oIMDS_particle_flt(), cali_slope = pars$oIDMS_cm[1,1], V_fl = input$V_fl, part_mat = input$part_mat, dia_part = input$dia_part, LFD = input$LFD)
   })
 
   # help modals ----

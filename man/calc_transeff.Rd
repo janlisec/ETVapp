@@ -50,7 +50,7 @@ sp_cali <- ldply_base(1:length(spion_imp), function(i) {
 })
 conc_ion <- c(20, 50, 100, 200, 500)
 fac <- 1.661 * 0.01104347 * 12/44
-sp_cali <- tab_cali(sp_cali, wf = "oIDMS", std_info = conc_ion, gas_flow = 49.6512, fac = fac)
+sp_cali <- tab_cali(sp_cali, wf = "oIDMS", std_info = conc_ion, fac = fac)
 
 (cali_slope <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = "oIDMS")[,1])
 

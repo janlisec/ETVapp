@@ -9,7 +9,8 @@ tab_LOX(
   cali_slope = 1,
   wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"),
   mass_fraction2 = 1,
-  sample_mass = 1
+  sample_mass = 1,
+  unit = c("pg", "ng", "µg")
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ tab_LOX(
 \item{mass_fraction2}{Mass fraction of the analyte element in the analyte component.}
 
 \item{sample_mass}{Sample mass.}
+
+\item{unit}{The measurement unit of the workflow to correctly format the output.}
 }
 \value{
 A data.frame.
@@ -40,6 +43,6 @@ The LOD and LOQ will be calculated as three and ten times the
 #'
 tab_LOX(x = runif(2))
 tab_LOX(x = runif(5), wf = "IDMS")
-tab_LOX(x = runif(10), mass_fraction2 = 2, sample_mass = 3)
+tab_LOX(x = runif(10), mass_fraction2 = 2, sample_mass = 3, unit = "ng")
 
 }

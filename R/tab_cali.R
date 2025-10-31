@@ -1,10 +1,9 @@
 #' @title tab_cali.
 #' @description \code{tab_cali} will transfer standard information to a data.frame containing peak/signal data.
-#' @details Selecting "ExtGasCal" enables the input of a conversion factor to calculate the gas flows. A conversion factor (mL/min to µL/s) is implemented in the function. 
+#' @details Selecting "ExtGasCal" enables the input of a conversion factor to calculate the gas flows. A conversion factor (mL/min to µL/s) is implemented in the function.
 #' @param peak_data Data.frame containing peak information.
 #' @param wf Calibration method/Workflow.
 #' @param std_info A numeric value giving the analyte mass (ExtCal), the concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).
-#' @param gas_flow Gas flow of calibration gas.
 #' @param fac A factor to convert the gas flow (gas_density x mass_fraction x mass_percentage).
 #'
 #' @return A data.frame with the standard no, the isotope, the peak/signal boundaries in seconds, the peak area in counts/mean signal in cps and information for the
@@ -42,7 +41,7 @@
 #'
 #' @export
 
-tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"), std_info = 0, gas_flow = 0, fac = 0) {
+tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"), std_info = 0, fac = 0) {
 
   wf <- match.arg(wf)
 
@@ -56,7 +55,7 @@ tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"), std_inf
     out <- cbind(peak_data, "Analyte mass [ng]" = std_info)
   }
   if (wf == "ExtGasCal") {
-    std_info <- check_std_info(std_info = gas_flow, n = nrow(peak_data))
+    std_info <- check_std_info(std_info = std_info, n = nrow(peak_data))
     out <- cbind(
       peak_data,
       "Gas flow [mL/min]" = std_info,

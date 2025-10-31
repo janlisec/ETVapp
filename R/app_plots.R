@@ -5,9 +5,8 @@
 #' @param xrng Numeric vector of length 2 specifying plotting range for x.
 #' @param mi_spec Spectra (list of data.frame objects).
 #' @param c1 Main isotope.
-#' @param c2 Secondary isotope.
 #' @param ylab Character to be used for left axis labeling.
-#' @param ylab2 Character to be used for secondary axis labeling.
+#' @param T_prog Temperature program (a data frame with columns Time and Temp).
 #' @param s_focus Index of sample within focus.
 #' @param pks Data frame of peaks with columns 'Sample', 'Peak ID', 'Scan start' and 'Scan end'.
 #' @param BLmethod Hide or show baseline.
@@ -23,9 +22,14 @@
 #'   })
 #'   ETVapp:::ic_specplot(mi_spec=mi_spec)
 #'   ETVapp:::ic_specplot(
-#'     opt = c("overlay_mi", "overlay_legend", "overlay_si", "overlay_drift"),
-#'     mi_spec=mi_spec, c1="13C", c2="80Se"
+#'     opt = c("overlay_mi", "overlay_legend", "overlay_drift"),
+#'     mi_spec=mi_spec, c1="13C"
 #'   )
+#'   T_prog <- data.frame(
+#'     "Time"=seq(min(mi_spec[[1]][,"Time"]), max(mi_spec[[1]][,"Time"]), length.out=7),
+#'     "Temp"=c(20,20,50,50,150,170,170)
+#'   )
+#'   ETVapp:::ic_specplot(mi_spec=mi_spec, T_prog=T_prog)
 #' }
 #' @keywords internal
 #' @noRd
@@ -34,16 +38,16 @@ ic_specplot <- function(
   xrng = NULL,
   mi_spec = NULL,
   c1 = "13C",
-  c2 = "80Se",
   xlab = paste0("Time [", "s", "]"),
   ylab = "Intensity [cps]",
-  ylab2 = paste0("32S", "/", "34S"),
+  T_prog = NULL,
   s_focus = "Sample 1",
   pks = NULL,
   BLmethod = "none",
   sel_pk = NULL
 ) {
   # determine data ranges to display
+  c2 <- "hglmpfh"
   if ("overlay_mi" %in% opt) {
     idx_all <- 1:length(mi_spec)
     cols <- 2:(length(idx_all)+1)
@@ -57,10 +61,18 @@ ic_specplot <- function(
     yrng <- c(0, max(sapply(mi_spec[idx_all], function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) })))
   }
   # modify plot margins
-  par(mar = c(4.5, 4.5, 0.5, ifelse("overlay_drift" %in% opt, 4.5, 0.5)))
+  par(mar = c(4.5, 4.5, 0.5, ifelse(is.null(T_prog), 0.5, 4.5)))
   par(cex = 1.4)
   # render base plot
   plot(x = xrng, y = yrng, type = "n", xaxs = "i", xlab = xlab, ylab = ylab)
+  if (!is.null(dim(T_prog)) & "overlay_Temp" %in% opt) {
+    Temp_ticks <- pretty(range(T_prog[,"Temp"]))
+    Temp_ori <- seq(yrng[1], yrng[2], length.out=length(Temp_ticks))
+    T_prog[,"Temp_rescaled"] <- stats::predict(stats::lm(Temp_ori ~ Temp_ticks), newdata = data.frame("Temp_ticks" = T_prog[,"Temp"]))
+    lines(x=T_prog[,1], y = T_prog[,3])
+    axis(side = 4, at = Temp_ori, labels = Temp_ticks)
+    mtext(text = "Temperature [\u00b0C]", side = 4, line = 3, cex=par("cex.lab")*par("cex"))
+  }
   for (idx in idx_all) {
     if ("overlay_legend" %in% opt) {
       f_in <- names(mi_spec)
@@ -70,23 +82,11 @@ ic_specplot <- function(
     si <- mi_spec[[idx]][,c1]
     flt <- sm>=xrng[1] & sm<=xrng[2]
     lines(x = sm[flt], y = si[flt], col=cols[idx])
-    if ("overlay_si" %in% opt && c2 %in% colnames(mi_spec[[idx]])) {
-      lines(
-        x = mi_spec[[idx]][flt,"Time"],
-        y = mi_spec[[idx]][flt,c2],
-        col = cols[idx],
-        lty = 2
-      )
-    }
-
     if (!is.null(pks) && nrow(pks)>=1) {
       # highlight peak selected in table
       if (!is.null(sel_pk) && pks[sel_pk,"Sample"]==idx) {
         flt <- sm>=pks[sel_pk,"Start [s]"] & sm<=pks[sel_pk,"End [s]"]
         lines(x = sm[flt], y = si[flt], col=cols[pks[sel_pk,"Sample"]], lwd=3)
-      }
-      if ("overlay_drift" %in% opt) {
-        # tbd
       }
       if ("overlay_pb" %in% opt) {
         pks_sam <- pks[pks[,"Sample"]==idx,]
@@ -116,7 +116,7 @@ ic_specplot <- function(
 }
 
 # $$VS: Title plot_particle_diameter would fit better
-#' @title plot_particle_size_distribution.
+#' @title plot_particle_diameter
 #' @description Plots a histogram of the particle size distribution of a single particle-ICP-MS measurement.
 #' @details Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet.
 #'     Densities for gold or silver nano particle standards are deposited.
@@ -131,10 +131,10 @@ ic_specplot <- function(
 #'
 #' @examples
 #' sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
-#' head(plot_particle_size_distribution(x = sp_data))
+#' head(plot_particle_diameter(x = sp_data))
 #'
 #' @export
-plot_particle_size_distribution <- function(
+plot_particle_diameter <- function(
     x, cali_slope = 1488, V_fl = 0.0075, part_mat = c("Au", "Ag"), dia_part = 60, LFD = 20000
 ) {
   par(mar=c(5,4,0,0)+0.5)
@@ -161,29 +161,40 @@ plot_particle_size_distribution <- function(
 }
 
 # $$VS: Title plot_signal_distribution would fit better. Output plot should have same layout as plot in vignette (no histogram).
-#' @title plot_particle_diameter
+#' @title plot_signal_distribution
 #' @description Plots the signal distribution of a single particle-ICP-MS measurement.
 #' @details Determination of the intensity limit for the differentiation between particle and background signals.
 #' @param x A data.frame containing at least two columns.
 #' @param LFD Intensity limit for the detection of particle signals.
+#' @param style Choose plotting style
 #'
 #' @return A data.frame containing single particle data (invisible) and a plot.
 #'
 #' @examples
 #' sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
-#' plot_particle_diameter(x = sp_data[,2])
-#'
+#' plot_signal_distribution(x = sp_data[,2])
+#' plot_signal_distribution(x = sp_data[,2], style="counts")
 #' @export
-plot_particle_diameter <- function(x, LFD = 20000) {
-  par(mar=c(5,4,0,0)+0.5)
-  par(cex = 1.4)
-  rng <- floor(min(log10(x[x>0]))):floor(max(log10(x[x>0])))
-  brks <- log10(unique(unlist(lapply(rng, function(i) { seq(10^i,10^(i+1),length.out=10) }))))
-  par(cex = 1.4)
-  graphics::hist(log10(x[x>0]), breaks=brks, axes = FALSE, xlab = "Intensity [cps]", main = "")
-  axis(2)
-  axis(1, at = c(rng, max(rng)+1), labels = 10^c(rng, max(rng)+1))
-  axis(1, at = brks, labels = FALSE, tcl=-0.25)
-  abline(v=log10(LFD), col=2)
+plot_signal_distribution <- function(x, LFD = 20000, style = c("hist", "counts")) {
+  style <- match.arg(style)
+  opar <- par(no.readonly = TRUE)
+  on.exit(par(opar))
+  if (style=="hist") {
+    par(mar=c(5,4,0,0)+0.5)
+    par(cex = 1.4)
+    rng <- floor(min(log10(x[x>0]))):floor(max(log10(x[x>0])))
+    brks <- log10(unique(unlist(lapply(rng, function(i) { seq(10^i,10^(i+1),length.out=10) }))))
+    par(cex = 1.4)
+    graphics::hist(log10(x[x>0]), breaks=brks, axes = FALSE, xlab = "Intensity [cps]", main = "")
+    axis(2)
+    axis(1, at = c(rng, max(rng)+1), labels = 10^c(rng, max(rng)+1))
+    axis(1, at = brks, labels = FALSE, tcl=-0.25)
+    abline(v=log10(LFD), col=2)
+  }
+  if (style=="counts") {
+    x <- table(x)
+    plot(x, log = "x", ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution")
+    abline(v=LFD, col=2, lwd=3)
+  }
   invisible(x)
 }
