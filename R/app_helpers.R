@@ -250,9 +250,10 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean_si
     x <- df[,2]
     ensure_that(is.numeric(minpeakheight) && minpeakheight > 0, "Please enter a minimum peakheight >0.", opt = "stop")
     # $$JL: substituted findpeaks call
-    # $$VS: Peak picking is not working anymore. Output of peak maximum instead of peak start and end.
     #peak_data <- pracma::findpeaks(x, minpeakheight = minpeakheight, npeaks=3, sortstr=TRUE)
-    peak_data <- pracma::findpeaks(x, sortstr = TRUE)
+    # $$VS: Peak picking is not working anymore. Output of peak maximum instead of peak start and end. Original findpeaks call.
+    peak_data <- pracma::findpeaks(x, minpeakheight = minpeakheight)
+    # peak_data <- pracma::findpeaks(x, sortstr=TRUE)
     ensure_that(length(peak_data) >= 1, msg = "No peak found. Adjust the minimal peakheight or try manual peak detection.", opt = "stop")
     ps <- peak_data[1,3]
     pe <- peak_data[1,4]
