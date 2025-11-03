@@ -4,10 +4,25 @@
 \alias{plot_particle_diameter}
 \title{plot_particle_diameter}
 \usage{
-plot_particle_diameter(x, LFD = 20000)
+plot_particle_diameter(
+  x,
+  cali_slope = 1488,
+  V_fl = 0.0075,
+  part_mat = c("Au", "Ag"),
+  dia_part = 60,
+  LFD = 20000
+)
 }
 \arguments{
 \item{x}{A data.frame containing at least two columns.}
+
+\item{cali_slope}{Calibration lm slope result for ionic standards.}
+
+\item{V_fl}{Sample inlet flow in mL/min.}
+
+\item{part_mat}{Particle material.}
+
+\item{dia_part}{Particle diameter in nm.}
 
 \item{LFD}{Intensity limit for the detection of particle signals.}
 }
@@ -15,13 +30,14 @@ plot_particle_diameter(x, LFD = 20000)
 A data.frame containing single particle data (invisible) and a plot.
 }
 \description{
-Plots the signal distribution of a single particle-ICP-MS measurement.
+Plots a histogram of the particle size distribution of a single particle-ICP-MS measurement.
 }
 \details{
-Determination of the intensity limit for the differentiation between particle and background signals.
+Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet.
+    Densities for gold or silver nano particle standards are deposited.
 }
 \examples{
 sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
-plot_particle_diameter(x = sp_data[,2])
+head(plot_particle_diameter(x = sp_data))
 
 }

@@ -8,7 +8,6 @@ tab_cali(
   peak_data,
   wf = c("ExtCal", "ExtGasCal", "oIDMS"),
   std_info = 0,
-  gas_flow = 0,
   fac = 0
 )
 }
@@ -18,8 +17,6 @@ tab_cali(
 \item{wf}{Calibration method/Workflow.}
 
 \item{std_info}{A numeric value giving the analyte mass (ExtCal), the concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).}
-
-\item{gas_flow}{Gas flow of calibration gas.}
 
 \item{fac}{A factor to convert the gas flow (gas_density x mass_fraction x mass_percentage).}
 }

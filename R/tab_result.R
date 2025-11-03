@@ -45,5 +45,7 @@ tab_result <- function(peak_data, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS")
     "Content as element [ppm]" = result / sample_mass,
     "Content as analyte [ppm]" = result / mass_fraction2 / sample_mass
   )
+  if (all(mass_fraction2==1)) out <- out[,!(colnames(out) %in% c("Analyte mass [\u00b5g]", "Mass fraction", "Content as analyte [ppm]")),drop=FALSE]
+  if (all(sample_mass==1)) out <- out[,!(colnames(out) %in% c("Sample mass [mg]", "Content as element [ppm]", "Content as analyte [ppm]")),drop=FALSE]
   return(out)
 }
