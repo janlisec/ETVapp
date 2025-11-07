@@ -1,5 +1,6 @@
 ^renv$
 ^renv\.lock$
+^app\.R$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$

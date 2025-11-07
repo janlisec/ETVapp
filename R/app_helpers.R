@@ -239,7 +239,15 @@ check_peak_boundaries <- function(peak_start, peak_end, time) {
 #' @examples
 #' raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]][[1]]
 #' df <- process_data(raw_data, c1 = "117Sn", c2 = "80Se", fl = 7)
-#' get_peak(df, peak_start = 80, peak_end = 130, minpeakheight = 1000)
+#' plot(df[,1:2])
+#' get_peak(df, peak_start = 80, peak_end = 130, PPmethod = "Peak (manual)")
+#'
+#' raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][[2]][[2]]
+#' df <- process_data(raw_data, c1 = "117Sn", c2 = "122Sn", fl = 7)
+#' plot(df[,c(1,3)], type="l")
+#' (pk <- get_peak(df[,c(1,3)], PPmethod = "Peak (height)", minpeakheight = 10^5, cf=0))
+#' abline(v=df[unlist(pk[1,4:5]),1], col=2)
+#' abline(h=10^5, col=3)
 #'
 #' @keywords internal
 #' @noRd
@@ -249,14 +257,20 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean_si
     #browser()
     x <- df[,2]
     ensure_that(is.numeric(minpeakheight) && minpeakheight > 0, "Please enter a minimum peakheight >0.", opt = "stop")
-    # $$JL: substituted findpeaks call
-    #peak_data <- pracma::findpeaks(x, minpeakheight = minpeakheight, npeaks=3, sortstr=TRUE)
-    # $$VS: Peak picking is not working anymore. Output of peak maximum instead of peak start and end. Original findpeaks call.
-    peak_data <- pracma::findpeaks(x, minpeakheight = minpeakheight)
-    # peak_data <- pracma::findpeaks(x, sortstr=TRUE)
-    ensure_that(length(peak_data) >= 1, msg = "No peak found. Adjust the minimal peakheight or try manual peak detection.", opt = "stop")
-    ps <- peak_data[1,3]
-    pe <- peak_data[1,4]
+    if (FALSE) {
+      # $$JL: substituted findpeaks call
+      # this would be the appropriate use of pracma::findpeaks(), however it requires much stronger smoothing
+      peak_data <- pracma::findpeaks(x, minpeakheight = minpeakheight, npeaks=3, sortstr=TRUE)
+      ensure_that(length(peak_data) >= 1, msg = "No peak found. Adjust the minimal peakheight or try manual peak detection.", opt = "stop")
+      ps <- peak_data[1,3]
+      pe <- peak_data[1,4]
+    } else {
+      # do it exactly as VS by simply accepting many peaks around a global maximum and using the range above a certain height
+      peak_data <- pracma::findpeaks(x, minpeakheight = minpeakheight)
+      ensure_that(length(peak_data) >= 1, msg = "No peak found. Adjust the minimal peakheight or try manual peak detection.", opt = "stop")
+      ps <- min(peak_data[,3])
+      pe <- max(peak_data[,4])
+    }
     n <- length(x)
     peak_data <- data.frame(
       "Peakheight" = max(peak_data[,1]),

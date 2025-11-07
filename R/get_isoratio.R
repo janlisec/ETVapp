@@ -1,6 +1,6 @@
 #' @title get_isoratio
 #' @description \code{get_isoratio} calculate an isotope ratio based on peak areas.
-#' @details Time-resolved ICP-MS data will be integration and optionally baseline corrected. 
+#' @details Time-resolved ICP-MS data will be integration and optionally baseline corrected.
 #' Peak boundaries will be checked regarding the similarity beween the isotopes.
 #' @param data A data.frame containing at least two columns.
 #' @param iso1_col Spike isotope.
@@ -37,8 +37,12 @@ get_isoratio <- function (data, iso1_col, iso2_col, PPmethod = c("Peak (height)"
     get_peakdata(pro_data, PPmethod = PPmethod, int_col = i, peak_start = peak_start, peak_end = peak_end,
                  minpeakheight = minpeakheight, BLmethod = BLmethod, deg = deg, cf = cf)
   })
+
   ##Checks
-  if (diff(c(iso_peak[1,2], iso_peak[2,2])) > 5 & diff(c(iso_peak[1,3], iso_peak[2,3])) > 5) {
+  ## @Vera:
+  ## I modified the condition using OR instead of AND and ensuring that also negative deviations can be >5
+  ## compare against previous and change against ensure_that() version if you want the App user to see the warning
+  if (diff(range(iso_peak[,2])) > 5 | diff(range(iso_peak[,3])) > 5) {
     warning("Different peak boundaries for the isotopes found. Please check the integration.
             Complete peak integration is necessary for an accurate isotope ratio determination.")
   }

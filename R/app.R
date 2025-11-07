@@ -17,7 +17,7 @@ app <- function() {
     ui = app_ui,
     server = app_server,
     onStart = NULL,
-    options = list("port" = 7462, "display.mode" = "normal"),
+    options = list("port" = 7462, "display.mode" = "normal", "launch.browser" = TRUE),
     enableBookmarking = "disable",
     uiPattern = "/"
   )
@@ -72,7 +72,7 @@ app_ui <- function() {
         selectInput(inputId = "peak_method", label = "Peak Method", choices = c("Peak (height)", "Peak (manual)", "mean_signal"), selected = c("Peak (height)", "Peak (manual)", "mean_signal")[3]) |> bslib::tooltip("Select method for Peak picking."),
         numericInput(inputId = "peak_start", label = "Peak start [s]", value = 70, min=0, step=1) |> bslib::tooltip("Peak picking parameter: peak_start."),
         numericInput(inputId = "peak_end", label = "Peak end [s]", value = 105, min=1, max=1000, step=1) |> bslib::tooltip("Peak picking parameter: peak_end."),
-        shinyjs::disabled(numericInput(inputId = "peak_height", label = "Threshold height [cps]", value = 1000, min=0, step=1)) |> bslib::tooltip("Peak picking parameter: peak_height.")
+        numericInput(inputId = "peak_height", label = "Threshold height [cps]", value = 1000, min=0, step=1) |> bslib::tooltip("Peak picking parameter: peak_height.")
       )
     )
   )
@@ -306,6 +306,7 @@ app_server <- function(input, output, session) {
 
   pars <- shiny::reactiveValues(
     "smoothing_fl" = 7,
+    "mass_frac" = 1,
     "std_info" = NULL,
     "amae" = NULL,
     "ExtCal_cali" = NULL,
@@ -589,11 +590,14 @@ app_server <- function(input, output, session) {
     reset_times()
   }, ignoreInit = TRUE)
 
-  observeEvent(input$mass_fraction2, {
-    if (input$mass_fraction2>1 | input$mass_fraction2<=0) {
-      updateNumericInput(inputId = "mass_fraction2", value = 1)
-    }
-  }, ignoreInit = TRUE)
+  mass_frac_debounce <- shiny::debounce(reactive(input$mass_fraction2), millis = 5000)
+  observeEvent(mass_frac_debounce(), {
+    # @Vera Ich speichere jetzt den Wert in einer Parameter-Liste zwischen. Er wird nur
+    # geändert, wenn ein korrekter Wert im Input gewählt wurde, d.h. der letzte valide Wert
+    # des Inputs wird genutzt. Die Warnung erscheint 1x
+    val <- as.numeric(mass_frac_debounce())
+    if (is.finite(val) && val<=1 & val>0) pars$mass_frac <- mass_frac_debounce() else showModal(modalDialog("Please correct the mass fraction value to be within 0<x<=1"))
+  })
 
   # update MI/SI name inputs when input columns change
   observeEvent(input$ic_par_mi_col, {
@@ -732,7 +736,7 @@ app_server <- function(input, output, session) {
       if (input$par_wf == "oIDMS") {
         x <- ic_mi_spectra()
         IDMS_pks <- ldply_base(1:length(x), function(i) {
-          get_peakdata(x[[i]], int_col = "mf_s", PPmethod = input$peak_method, peak_start = input$peak_start, peak_end = input$peak_end)
+          get_peakdata(x[[i]], int_col = "mf_s", PPmethod = input$peak_method, peak_start = input$peak_start, peak_end = input$peak_end, minpeakheight = input$peak_height)
         })
         # $$JL: sample_mass seems to be sample specific parameter; needs to get another input type and clearified if this is the case for all workflows
         #sample_mass <- c(1.0119, 0.9042, 0.9151)
@@ -745,7 +749,7 @@ app_server <- function(input, output, session) {
         b = if (is.null(cm)) 1 else cm[1,1],
         K = input$K,
         amae = amae,
-        mass_fraction2 = input$mass_fraction2,
+        mass_fraction2 = pars$mass_frac,
         sample_mass = input$sample_mass
       )
       req(df)
@@ -770,13 +774,13 @@ app_server <- function(input, output, session) {
         amae <- calc_analyte_mass_as_element(
           R_m = IDMS_pks[,"R_m"], K = input$K, Asp_iso1 = input$Asp_iso1, Asp_iso2 = input$Asp_iso2, As_iso1 = input$As_iso1, As_iso2 = input$As_iso2, N_sp = input$N_sp
         )
-        tmp <- tab_result(IDMS_pks, wf = input$par_wf, K = input$K, amae = amae, mass_fraction2 = input$mass_fraction2, sample_mass = input$sample_mass)[,"R_corr"]
+        tmp <- tab_result(IDMS_pks, wf = input$par_wf, K = input$K, amae = amae, mass_fraction2 = pars$mass_frac, sample_mass = input$sample_mass)[,"R_corr"]
       } else if (input$par_wf=="oIDMS") {
         x <- ic_mi_spectra()
         pk <- ldply_base(1:length(x), function(i) {
-          get_peakdata(x[[i]], int_col = "mf_s", PPmethod = input$peak_method, peak_start = input$peak_start, peak_end = input$peak_end)
+          get_peakdata(x[[i]], int_col = "mf_s", PPmethod = input$peak_method, peak_start = input$peak_start, peak_end = input$peak_end, minpeakheight = input$peak_height)
         })
-        tmp <- tab_result(pk, wf = "oIDMS", K = input$K, amae = pk[,4], mass_fraction2 = input$mass_fraction2, sample_mass = input$sample_mass)[,4]
+        tmp <- tab_result(pk, wf = "oIDMS", K = input$K, amae = pk[,4], mass_fraction2 = pars$mass_frac, sample_mass = input$sample_mass)[,4]
       } else {
         tmp <- ic_table_peaks_edit()[,-c(1:2)][,4]
       }
@@ -784,7 +788,7 @@ app_server <- function(input, output, session) {
         x = tmp,
         cali_slope = if (is.null(cm)) 1 else cm[1,1],
         wf = input$par_wf,
-        mass_fraction2 = input$mass_fraction2,
+        mass_fraction2 = pars$mass_frac,
         sample_mass = input$sample_mass,
         unit = switch(input$par_wf, "ExtCal" = input$ExtCal_unit, "ExtGasCal" = input$ExtGasCal_unit, "ng")
       )

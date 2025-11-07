@@ -48,7 +48,7 @@ A data.frame.
 \code{get_isoratio} calculate an isotope ratio based on peak areas.
 }
 \details{
-Time-resolved ICP-MS data will be integration and optionally baseline corrected. 
+Time-resolved ICP-MS data will be integration and optionally baseline corrected.
 Peak boundaries will be checked regarding the similarity beween the isotopes.
 }
 \examples{
