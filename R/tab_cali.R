@@ -41,9 +41,20 @@
 #'
 #' @export
 
-tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"), std_info = 0, fac = 0) {
+tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
+                      ExtCal_unit = c("pg", "ng", "\u00b5g"),
+                      ExtGasCal_unit = c("nL/min", "\u00b5L/min", "mL/min"),
+                      std_info = 0, fac = 0) {
 
   wf <- match.arg(wf)
+  ExtCal_unit <- match.arg(ExtCal_unit)
+  ExtGasCal_unit <- match.arg(ExtGasCal_unit)
+
+  unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit)
+  unit2 <- switch(ExtGasCal_unit,
+                  "nL/min" = "pg/s",
+                  "\u00b5L/min" = "ng/s",
+                  "mL/min" = "\u00b5L/s")
 
   # Additional parameters
   ml_to_mul <- 1000
@@ -52,19 +63,24 @@ tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"), std_inf
   # Calibration table
   if (wf == "ExtCal") {
     std_info <- check_std_info(std_info = std_info, n = nrow(peak_data))
-    out <- cbind(peak_data, "Analyte mass [ng]" = std_info)
+    out <- cbind(peak_data, "Analyte mass [unit]" = std_info)
   }
   if (wf == "ExtGasCal") {
     std_info <- check_std_info(std_info = std_info, n = nrow(peak_data))
     out <- cbind(
       peak_data,
-      "Gas flow [mL/min]" = std_info,
-      "Gas flow [\u00b5g/s]" = std_info * (ml_to_mul / min_to_s) * fac
+      "Gas flow [unit]" = std_info,
+      "Gas flow [unit2]" = std_info * (ml_to_mul / min_to_s) * fac
     )
   }
   if (wf == "oIDMS") {
     std_info <- check_std_info(std_info = std_info, n = nrow(peak_data))
     out <- cbind(peak_data, "Concentration [\u00b5g/L]" =  std_info)
   }
+
+  colnames(out) <- gsub("unit2", unit2, colnames(out))
+  colnames(out) <- gsub("unit", unit, colnames(out))
+
+
   return(out)
 }
