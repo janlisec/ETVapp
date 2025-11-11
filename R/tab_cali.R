@@ -3,6 +3,8 @@
 #' @details Selecting "ExtGasCal" enables the input of a conversion factor to calculate the gas flows. A conversion factor (mL/min to µL/s) is implemented in the function.
 #' @param peak_data Data.frame containing peak information.
 #' @param wf Calibration method/Workflow.
+#' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
+#' @param ExtGasCal_unit The measurement unit of the ExtGasCal workflow to correctly format the output.
 #' @param std_info A numeric value giving the analyte mass (ExtCal), the concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).
 #' @param fac A factor to convert the gas flow (gas_density x mass_fraction x mass_percentage).
 #'
@@ -29,6 +31,10 @@
 #' })
 #' tab_cali(peak_data = cali_pks, wf = "ExtCal", std_info = seq(0,50,10))
 #'
+#' # check if unit specification works
+#' tab_cali(peak_data = cali_pks, wf = "ExtCal", ExtCal_unit = "ng", std_info = seq(0,50,10))
+#' tab_cali(peak_data = cali_pks, wf = "ExtGasCal", ExtCal_unit = "ng", std_info = seq(0,50,10))
+#'
 #' # import and process cali data of `oIDMS` workflow
 #' spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
 #' cali_pks <- ldply_base(1:length(spion_imp), function(i) {
@@ -51,9 +57,11 @@ tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
   ExtGasCal_unit <- match.arg(ExtGasCal_unit)
 
   unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit)
+  # @VS do you really need an independent unit for ExtGasCal? I think it would be easier to provide just a single parameter unit and convert this into two different units for the ExtGasCal workflow only
   unit2 <- switch(ExtGasCal_unit,
                   "nL/min" = "pg/s",
                   "\u00b5L/min" = "ng/s",
+                  # @VS I believe this should be "\u00b5g/s" in the next line?
                   "mL/min" = "\u00b5L/s")
 
   # Additional parameters
