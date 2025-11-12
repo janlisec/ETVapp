@@ -57,12 +57,10 @@ tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
   ExtGasCal_unit <- match.arg(ExtGasCal_unit)
 
   unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit)
-  # @VS do you really need an independent unit for ExtGasCal? I think it would be easier to provide just a single parameter unit and convert this into two different units for the ExtGasCal workflow only
   unit2 <- switch(ExtGasCal_unit,
                   "nL/min" = "pg/s",
                   "\u00b5L/min" = "ng/s",
-                  # @VS I believe this should be "\u00b5g/s" in the next line?
-                  "mL/min" = "\u00b5L/s")
+                  "mL/min" = "\u00b5g/s")
 
   # Additional parameters
   ml_to_mul <- 1000
