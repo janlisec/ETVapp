@@ -10,14 +10,16 @@
 #' @param wf Calibration method/Workflow.
 #' @param mass_fraction2 Mass fraction of the analyte element in the analyte component.
 #' @param sample_mass Sample mass.
-#' @param unit The measurement unit of the workflow to correctly format the output.
+#' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
+#' @param ExtGasCal_unit The measurement unit of the ExtGasCal_unit workflow to correctly format the output.
+#' @param c_sp_unit The measurement unit of the "IDMS", "oIDMS" workflow to correctly format the output.
 #'
 #' @return A data.frame.
 #'
-#' @examples#'
+#' @examples
 #' tab_LOX(x = runif(2))
 #' tab_LOX(x = runif(5), wf = "IDMS")
-#' tab_LOX(x = runif(10), mass_fraction2 = 2, sample_mass = 3, unit = "ng")
+#' tab_LOX(x = runif(10), mass_fraction2 = 2, sample_mass = 3, ExtCal_unit = "ng")
 #'
 #' @export
 tab_LOX <- function(x, cali_slope = 1, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"),
