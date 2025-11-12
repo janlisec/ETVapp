@@ -23,7 +23,9 @@
 #' tab_result(peak_data=pd, wf="ExtCal")
 #' # wf "IDMS", "oIDMS" use col = "R_m"
 #' tab_result(peak_data=pd, wf="IDMS", c_sp_unit="g/L")
-#' tab_result(peak_data=pd, wf="IDMS", c_sp_unit="g/L", mass_fraction2 = 10^4)
+#' tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L")
+#' tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^3)
+#' tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^4)
 #' @export
 tab_result <- function(peak_data, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"),
                        ExtCal_unit = c("pg", "ng", "\u00b5g"),
