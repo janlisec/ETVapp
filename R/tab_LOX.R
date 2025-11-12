@@ -20,14 +20,32 @@
 #' tab_LOX(x = runif(10), mass_fraction2 = 2, sample_mass = 3, unit = "ng")
 #'
 #' @export
-tab_LOX <- function(x, cali_slope = 1, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"), mass_fraction2 = 1, sample_mass = 1, unit = c("pg", "ng", "\u00b5g")) {
+tab_LOX <- function(x, cali_slope = 1, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"),
+                    ExtCal_unit = c("pg", "ng", "\u00b5g"),
+                    ExtGasCal_unit = c("nL/min", "\u00b5L/min", "mL/min"),
+                    c_sp_unit = c("\u00b5g/L", "mg/L", "g/L"),
+                    mass_fraction2 = 1, sample_mass = 1, unit = c("pg", "ng", "\u00b5g")) {
   # Checks
   wf <- match.arg(wf)
-  unit <- match.arg(unit)
+  ExtCal_unit <- match.arg(ExtCal_unit)
+  ExtGasCal_unit <- match.arg(ExtGasCal_unit)
+  c_sp_unit <- match.arg(c_sp_unit)
 
-  # ensure that cali_slope = 1000 for workflows without cali
-  # this reflects Vera's Code where LOD and LOQ where devided by 1000 in output table
-  if (wf %in% c("IDMS", "oIDMS")) cali_slope <- 1000
+  unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit, IDMS = c_sp_unit, oIDMS = c_sp_unit)
+  unit <- switch(ExtGasCal_unit,
+                 "nL/min" = "pg",
+                 "\u00b5L/min" = "ng",
+                 "mL/min" = "\u00b5g")
+  unit <- switch(c_sp_unit,
+                 "\u00b5g/L" = "pg",
+                 "mg/L" = "ng",
+                 "g/L" = "\u00b5g")
+  unit2 <- switch(unit,
+                  "pg" = "ppb",
+                  "ng" = "ppm",
+                  "\u00b5g" = "g/100 g")
+
+  if (wf %in% c("IDMS", "oIDMS")) cali_slope <- 1
 
   ensure_that(is.numeric(cali_slope), "Calibration data (and derived slope) is required for estimating the LOD and LOQ.")
 
@@ -47,36 +65,25 @@ tab_LOX <- function(x, cali_slope = 1, wf = c("ExtCal", "ExtGasCal", "IDMS", "oI
 
   mass_fraction2 <- rep(mass_fraction2, length.out=length(LOD))
   sample_mass <- rep(sample_mass, length.out=length(LOD))
+  if (unit2 == "g/100 g"){fac2 <- 10} else {fac2 <- 1}
 
   out <- data.frame(
     "LOD as element [unit]" = LOD,
     "LOQ as element [unit]" = LOQ,
+    "Mass fraction" = mass_fraction2,
+    "Sample mass [mg]" = sample_mass,
+    "LOD as analyte [unit]" = LOD / mass_fraction2,
+    "LOQ as analyte [unit]" = LOQ / mass_fraction2,
+    "LOD per sample mass [unit2]" = LOD / (sample_mass * fac2),
+    "LOQ per sample mass [unit2]" = LOQ / (sample_mass * fac2),
     check.names = FALSE
   )
 
-  # attach 'sample_mass' columns if different from 1
-  if (!all(mass_fraction2==1)) {
-    out <- cbind(out, data.frame(
-      "Mass fraction" = mass_fraction2,
-      "LOD as analyte [unit]" = LOD / mass_fraction2,
-      "LOQ as analyte [unit]" = LOQ / mass_fraction2,
-      check.names = FALSE
-    ))
-  }
+  if (all(mass_fraction2==1)) out <- out[,!(colnames(out) %in% c("Mass fraction", "LOD as analyte [unit]", "LOQ as analyte [unit]")),drop=FALSE]
 
   # substitute unit in colnames
+  colnames(out) <- gsub("unit2", unit2, colnames(out))
   colnames(out) <- gsub("unit", unit, colnames(out))
-
-  # attach 'Mass fraction' columns if different from 1
-  if (!all(sample_mass==1)) {
-    fac <- switch(unit, "pg" = 10^-3, "ng" = 1, "\u00b5g" = 10^3)
-    out <- cbind(out, data.frame(
-      "Sample mass [mg]" = sample_mass,
-      "LOD per sample mass [ppm]" = LOD * fac / sample_mass,
-      "LOQ per sample mass [ppm]" = LOQ * fac / sample_mass,
-      check.names = FALSE
-    ))
-  }
 
   return(out)
 }
