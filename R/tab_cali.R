@@ -33,7 +33,7 @@
 #'
 #' # check if unit specification works
 #' tab_cali(peak_data = cali_pks, wf = "ExtCal", ExtCal_unit = "ng", std_info = seq(0,50,10))
-#' tab_cali(peak_data = cali_pks, wf = "ExtGasCal", ExtCal_unit = "ng", std_info = seq(0,50,10))
+#' tab_cali(peak_data = cali_pks, wf = "ExtGasCal", ExtGasCal_unit = "\u00b5L/min", std_info = seq(0,50,10))
 #'
 #' # import and process cali data of `oIDMS` workflow
 #' spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
@@ -41,9 +41,7 @@
 #'   get_peakdata(spion_imp[[i]][,c("Time", "197Au")], int_col = "197Au",
 #'     PPmethod = "mean_signal", peak_start = 0.003, peak_end = 60)
 #' })
-#' fac <- 1.661 * 0.01104347 * 12/44
-#' tab_cali(peak_data = cali_pks, wf = "oIDMS", std_info = c(20, 50, 100, 200, 500),
-#'   fac = fac)
+#' tab_cali(peak_data = cali_pks, wf = "oIDMS", std_info = c(20, 50, 100, 200, 500))
 #'
 #' @export
 
@@ -56,7 +54,7 @@ tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
   ExtCal_unit <- match.arg(ExtCal_unit)
   ExtGasCal_unit <- match.arg(ExtGasCal_unit)
 
-  unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit)
+  unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit, oIDMS = "\u00b5g/L")
   unit2 <- switch(ExtGasCal_unit,
                   "nL/min" = "pg/s",
                   "\u00b5L/min" = "ng/s",
@@ -65,7 +63,7 @@ tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
   # Additional parameters
   ml_to_mul <- 1000
   min_to_s <- 60
-
+  #browser()
   # Calibration table
   if (wf == "ExtCal") {
     std_info <- check_std_info(std_info = std_info, n = nrow(peak_data))
@@ -81,7 +79,7 @@ tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
   }
   if (wf == "oIDMS") {
     std_info <- check_std_info(std_info = std_info, n = nrow(peak_data))
-    out <- cbind(peak_data, "Concentration [\u00b5g/L]" =  std_info)
+    out <- cbind(peak_data, "Concentration [unit]" =  std_info)
   }
 
   colnames(out) <- gsub("unit2", unit2, colnames(out))
