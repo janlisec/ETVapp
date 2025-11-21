@@ -41,15 +41,15 @@ tab_result <- function(peak_data, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS")
   ExtGasCal_unit <- match.arg(ExtGasCal_unit)
   c_sp_unit <- match.arg(c_sp_unit)
 
+  ExtGasCal_unit <- switch(ExtGasCal_unit,
+                           "nL/min" = "pg",
+                           "\u00b5L/min" = "ng",
+                           "mL/min" = "\u00b5g")
+  c_sp_unit <- switch(c_sp_unit,
+                      "\u00b5g/L" = "pg",
+                      "mg/L" = "ng",
+                      "g/L" = "\u00b5g")
   unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit, IDMS = c_sp_unit, oIDMS = c_sp_unit)
-  unit <- switch(ExtGasCal_unit,
-                 "nL/min" = "pg",
-                 "\u00b5L/min" = "ng",
-                 "mL/min" = "\u00b5g")
-  unit <- switch(c_sp_unit,
-                 "\u00b5g/L" = "pg",
-                 "mg/L" = "ng",
-                 "g/L" = "\u00b5g")
   unit2 <- switch(unit,
                   "pg" = "ppb",
                   "ng" = "ppm",
