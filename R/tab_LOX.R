@@ -19,29 +19,29 @@
 #' @examples
 #' tab_LOX(x = runif(2))
 #' tab_LOX(x = runif(5), wf = "IDMS")
-#' tab_LOX(x = runif(10), mass_fraction2 = 2, sample_mass = 3, ExtCal_unit = "ng")
+#' tab_LOX(x = runif(10), mass_fraction2 = 0.5, sample_mass = 3, ExtCal_unit = "ng")
 #'
 #' @export
 tab_LOX <- function(x, cali_slope = 1, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"),
                     ExtCal_unit = c("pg", "ng", "\u00b5g"),
                     ExtGasCal_unit = c("nL/min", "\u00b5L/min", "mL/min"),
                     c_sp_unit = c("\u00b5g/L", "mg/L", "g/L"),
-                    mass_fraction2 = 1, sample_mass = 1, unit = c("pg", "ng", "\u00b5g")) {
+                    mass_fraction2 = 1, sample_mass = 1) {
   # Checks
   wf <- match.arg(wf)
   ExtCal_unit <- match.arg(ExtCal_unit)
   ExtGasCal_unit <- match.arg(ExtGasCal_unit)
   c_sp_unit <- match.arg(c_sp_unit)
-
-  unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit, IDMS = c_sp_unit, oIDMS = c_sp_unit)
-  unit <- switch(ExtGasCal_unit,
+  #browser()
+  ExtGasCal_unit <- switch(ExtGasCal_unit,
                  "nL/min" = "pg",
                  "\u00b5L/min" = "ng",
                  "mL/min" = "\u00b5g")
-  unit <- switch(c_sp_unit,
-                 "\u00b5g/L" = "pg",
-                 "mg/L" = "ng",
-                 "g/L" = "\u00b5g")
+  c_sp_unit <- switch(c_sp_unit,
+                "\u00b5g/L" = "pg",
+                "mg/L" = "ng",
+                "g/L" = "\u00b5g")
+  unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit, IDMS = c_sp_unit, oIDMS = c_sp_unit)
   unit2 <- switch(unit,
                   "pg" = "ppb",
                   "ng" = "ppm",
