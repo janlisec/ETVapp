@@ -91,3 +91,14 @@ testthat::test_that(
     testthat::expect_equal(iso4, 2)
   }
 )
+
+testthat::test_that(
+  desc = "Test that app_utils messages work",
+  code = {
+    testthat::expect_message(calc_analyte_mass_as_element(R_m = 0.7, K = 1, Asp_iso1 = 0.99, Asp_iso2 = 0.01, As_iso1 = 0.5, As_iso2 = 0.4, N_sp = 1))
+    testthat::expect_message(correct_ratio(x = 1))
+    testthat::expect_message(calc_massbias(NULL, 1, 2))
+  }
+)
+
+

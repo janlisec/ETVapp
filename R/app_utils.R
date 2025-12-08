@@ -127,9 +127,9 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
   }
   R_As <- As_iso1 / As_iso2
   stopifnot(is.finite(R_As))
-  # $$VS: R_corr >= R_As
-  if (all(R_m >= R_As)) {
-    R_corr <- R_m * K
+  R_corr <- R_m * K
+  if (all(R_corr >= R_As)) {
+    #R_corr <- R_m * K
     return((Asp_iso1 - R_corr * Asp_iso2)/(As_iso2 * R_corr - As_iso1) * N_sp)
   } else {
     message("The isotope ratio is below the limit for IDMS calculation. Increase the spike amount or select a more abundant sample isotope.")
