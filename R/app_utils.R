@@ -127,6 +127,7 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
   }
   R_As <- As_iso1 / As_iso2
   stopifnot(is.finite(R_As))
+  # $$VS: R_corr >= R_As
   if (all(R_m >= R_As)) {
     R_corr <- R_m * K
     return((Asp_iso1 - R_corr * Asp_iso2)/(As_iso2 * R_corr - As_iso1) * N_sp)
@@ -219,6 +220,9 @@ calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36,
 #'     containing at least two entries in rows.
 #' @param df Data.frame with two columns.
 #' @param wf Calibration method/Workflow (used to make assumptions regarding units in df).
+#' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
+#' @param ExtGasCal_unit The measurement unit of the ExtGasCal workflow to correctly format the output.
+#'
 #'
 #' @return A data.frame containing slope and intercept with errors and R square.
 #'
@@ -228,7 +232,9 @@ calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36,
 #' calc_cali_mod(df = df, wf = "ExtGasCal")
 #' calc_cali_mod(df = df, wf = "oIDMS")
 #' @export
-calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS")){
+calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
+                           ExtCal_unit = c("pg", "ng", "\u00b5g"),
+                           ExtGasCal_unit = c("nL/min", "\u00b5L/min", "mL/min")){
   #Check for missing values
   stopifnot(exprs = {
     "At least two finite entries are needed for linear regression." = exists("df") && is.data.frame(df) && sum(stats::complete.cases(df))>=2
@@ -240,6 +246,15 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS")){
   }
 
   wf <- match.arg(wf)
+  ExtCal_unit <- match.arg(ExtCal_unit)
+  ExtGasCal_unit <- match.arg(ExtGasCal_unit)
+  #browser()
+  ExtGasCal_unit <- switch(ExtGasCal_unit,
+                 "nL/min" = "s/pg",
+                 "\u00b5L/min" = "s/ng",
+                 "mL/min" = "s/\u00b5g")
+  unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit, oIDMS = "L/\u00b5g")
+
   df.lm <- stats::lm(df[,2] ~ df[,1])
   df.lm.sum <- summary(df.lm)
 
@@ -252,9 +267,10 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS")){
     check.names = FALSE
   )
 
-  if (wf == "ExtCal") colnames(out) <- paste(colnames(out), c("[cts/ng]", "[cts/ng]", "[cts]", "[cts]", ""))
-  if (wf == "ExtGasCal") colnames(out) <- paste(colnames(out), c("[cts/\u00b5g]", "[cts/\u00b5g]", "[cps]", "[cps]", ""))
-  if (wf == "oIDMS") colnames(out) <- paste(colnames(out), c("[cps L/\u00b5g]", "[cps L/\u00b5g]", "[cps]", "[cps]", ""))
+  if (wf == "ExtCal") colnames(out) <- paste(colnames(out), c("[cts/unit]", "[cts/unit]", "[cts]", "[cts]", ""))
+  if (wf == "ExtGasCal") colnames(out) <- paste(colnames(out), c("[cps unit]", "[cps unit]", "[cps]", "[cps]", ""))
+  if (wf == "oIDMS") colnames(out) <- paste(colnames(out), c("[cps unit]", "[cps unit]", "[cps]", "[cps]", ""))
+  colnames(out) <- gsub("unit", unit, colnames(out))
 
   return(out)
 }
