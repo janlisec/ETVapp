@@ -50,6 +50,7 @@ testthat::test_that(
     testthat::expect_true(is.numeric(mf))
     testthat::expect_equal(mf[5], 13.08, tolerance = 0.01)
 
+    set.seed(0) # $$JL: The tests below failed because you computed them on a random data (runif(5)). I fixed the random number generator using set.seed(0). Now it works.
     df <- data.frame(x=1:5, y=sort(runif(5)))
     out1 <- calc_cali_mod(df = df, wf = "ExtCal")
     out2 <- calc_cali_mod(df = df, wf = "ExtGasCal", ExtGasCal_unit = "mL/min")
@@ -58,12 +59,12 @@ testthat::test_that(
     testthat::expect_true(is.data.frame(out1))
     testthat::expect_equal(ncol(out1), 5)
     testthat::expect_equal(colnames(out1)[3], "Intercept [cts]")
-    #testthat::expect_equal(out1[,c(3)], -0.13, tolerance = 0.01) $$VS: Should work, but test fails.
+    testthat::expect_equal(out1[,c(3)], 0.06, tolerance = 0.01) # VS: Should work, but test fails. $$JL: See explanation above
 
     testthat::expect_true(is.data.frame(out2))
     testthat::expect_equal(ncol(out2), 5)
     testthat::expect_equal(colnames(out2)[1], "Slope [cps s/\u00b5g]")
-    #testthat::expect_equal(out1[,c(1)], 0.17, tolerance = 0.01) $$VS: Should work, but test fails.
+    testthat::expect_equal(out1[,c(1)], 0.18, tolerance = 0.01) # $$VS: Should work, but test fails.
 
     testthat::expect_true(is.data.frame(out3))
     testthat::expect_equal(ncol(out3), 5)
