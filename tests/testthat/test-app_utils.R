@@ -9,16 +9,17 @@ testthat::test_that(
     testthat::expect_equal(ncol(test), 2)
     testthat::expect_null(colnames(test), 2)
 
-    x1 <- paste0("File", c(20, 1, 9, 11, 32, 100))
-    test1 <- str_sort_num(x1)
-    x2 <- c("Z1", x1, "a", "Z10")
-    test2 <- str_sort_num(x2)
-    x3 <- c("b1_3", "b2_1_3", x2)
-    test3 <- str_sort_num(x3)
-
-    testthat::expect_equal(test1, c("File1", "File9", "File11", "File20", "File32", "File100"))
-    #testthat::expect_equal(test2[1], "a") $$VS: Should work, but test fails.
-    #testthat::expect_equal(test3[2], "b1_3") $$VS: Should work, but test fails.
+    x <- paste0("File", c(20, 1, 9, 11, 32, 100))
+    testthat::expect_equal(str_sort_num(x), c("File1", "File9", "File11", "File20", "File32", "File100"))
+    if (nzchar(Sys.getlocale("LC_COLLATE")) && Sys.getlocale("LC_COLLATE")=="German_Germany.utf8") {
+      # $$JL both tests below work only in German locales as expected due to different sorting of letters
+      x <- c("Z1", x, "a", "Z10", "z1", "z2")
+      test2 <- str_sort_num(x)
+      x <- c("b1_3", "b2_1_3", x)
+      test3 <- str_sort_num(x)
+      testthat::expect_equal(test2[1], "a")
+      testthat::expect_equal(test3[2], "b1_3")
+    }
 
     N_sp <- calc_N_sp(1, 2, 3, 4, 5)
 

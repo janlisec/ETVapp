@@ -1,7 +1,7 @@
 testthat::test_that(
   desc = "Test that tab_LOX works",
   code = {
-    tab1 <- tab_LOX(x = runif(5), wf = "IDMS")
+    testthat::expect_message(tab1 <- tab_LOX(x = runif(5), wf = "IDMS"), "ten blank values")
     tab2 <- tab_LOX(x = runif(10), mass_fraction2 = 0.5, sample_mass = 3, ExtCal_unit = "\u00b5g")
 
     testthat::expect_true(is.data.frame(tab1))

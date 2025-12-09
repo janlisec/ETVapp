@@ -19,7 +19,7 @@ testthat::test_that(
     test1 <- scale_col(df = df, nm = "117Sn", std = "80Se")
     test2 <- scale_col(df = df, nm = "117Sn", std = "80Se", amend = "_scaled")
     test3 <- scale_col(df = df, nm = 2, std = 4, amend = "_scaled")
-    test4 <- scale_col(df = df)
+    testthat::expect_message(test4 <- scale_col(df = df), "should indicate")
 
     testthat::expect_true(is.data.frame(test1))
     testthat::expect_equal(ncol(test1), 7)
