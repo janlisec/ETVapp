@@ -64,7 +64,7 @@ testthat::test_that(
     testthat::expect_true(is.data.frame(out2))
     testthat::expect_equal(ncol(out2), 5)
     testthat::expect_equal(colnames(out2)[1], "Slope [cps s/\u00b5g]")
-    testthat::expect_equal(out1[,c(1)], 0.18, tolerance = 0.01) # $$VS: Should work, but test fails.
+    testthat::expect_equal(out1[,c(1)], 0.18, tolerance = 0.01) # VS: Should work, but test fails.
 
     testthat::expect_true(is.data.frame(out3))
     testthat::expect_equal(ncol(out3), 5)

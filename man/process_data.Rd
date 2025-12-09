@@ -40,7 +40,8 @@ pro_data <- process_data(imp, c1 = "13C", c2 = "80Se", fl = 5)
 head(pro_data)
 lines(pro_data, col=3)
 
-head(process_data(imp, c1 = "13C", c2 = "80Se", fl = 5, amend = TRUE))
+head(process_data(imp, c1 = "13C", c2 = "80Se", fl = 9, amend = TRUE))
+head(process_data(imp, c1 = "13C", c2 = "80Se", amend = TRUE))
 
 # test all error messages
 \dontrun{

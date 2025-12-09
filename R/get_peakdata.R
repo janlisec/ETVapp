@@ -1,4 +1,5 @@
-#' $$VS: Peak picking method "Peak (height)" returns peak max as peak start and end.
+#' # VS: Peak picking method "Peak (height)" returns peak max as peak start and end.
+#' # $$JL: Sorry, I do not understand the comment; the 'Peak (height)' result depends on 'minpeakheight' as expected (see Examples)
 #' @title get_peakdata.
 #' @description \code{get_peakdata} will generate a table with peak data (atart
 #'     and end point, peak area) or the data of a signal range (start and end point, mean signal intensity) from a data.frame.
@@ -22,14 +23,19 @@
 #' .
 #' @examples
 #' raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]][[1]]
-#' pro_data <- process_data(raw_data, c1 = "117Sn", c2 = "80Se", fl = 151)
+#' pro_data <- process_data(raw_data, c1 = "117Sn", c2 = "80Se", fl = 9)
 #' peak_data <- get_peakdata(pro_data, int_col = "117Sn")
 #' plot(x = pro_data[,1:2], type = "l")
 #' abline(v = peak_data[1,2:3], col=grey(0.7))
 #'
-#' peak_data2 <- get_peakdata(pro_data, int_col = "117Sn", PPmethod = "Peak (manual)",
+#' # limiting peak detection using the 'minpeakheight' parameter
+#' peak_data <- get_peakdata(pro_data, int_col = "117Sn", minpeakheight = 2*10^6)
+#' abline(v = peak_data[1,2:3], col=5)
+#'
+#' # limiting peak detection setting start and end manually
+#' peak_data <- get_peakdata(pro_data, int_col = "117Sn", PPmethod = "Peak (manual)",
 #'   peak_start = 80, peak_end = 130)
-#' abline(v = peak_data2[1,2:3], col=3)
+#' abline(v = peak_data[1,2:3], col=3)
 #' @export
 get_peakdata <- function (pro_data, int_col, time_col = "Time",
                           peak_start = NULL, peak_end = NULL, minpeakheight = 1000,
