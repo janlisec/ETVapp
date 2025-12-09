@@ -788,9 +788,11 @@ app_server <- function(input, output, session) {
         x = tmp,
         cali_slope = if (is.null(cm)) 1 else cm[1,1],
         wf = input$par_wf,
+        ExtCal_unit = input$ExtCal_unit,
+        ExtGasCal_unit = input$ExtGasCal_unit,
+        c_sp_unit = input$c_sp_unit,
         mass_fraction2 = pars$mass_frac,
-        sample_mass = input$sample_mass,
-        unit = switch(input$par_wf, "ExtCal" = input$ExtCal_unit, "ExtGasCal" = input$ExtGasCal_unit, "ng")
+        sample_mass = input$sample_mass
       )
       req(df)
       if (input$par_wf=="ExtCal") pars$ExtCal_lox <- df
