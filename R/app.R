@@ -475,7 +475,7 @@ app_server <- function(input, output, session) {
       ensure_that(input$K>0, "Please determine 'K' first using 'Massbias' files")
       ensure_that(input$trans_eff>0, "Please determine 'trans_eff' first using 'sp_particle' files")
       out <- lapply(out, function(x) {
-        x[,"R_corr"] <- correct_ratio(x = x[,"R_m"], K = input$K, As_iso1 = input$As_iso1, As_iso2 = input$As_iso2)
+        x[,"R_corr"] <- x[,"R_m"]*input$K
         x[,"mf_s"] <- calc_massflow(x = x[,"R_corr"], n_trans = input$trans_eff, As_iso1 = input$As_iso1, As_iso2 = input$As_iso2, Asp_iso1 = input$Asp_iso1, Asp_iso2 = input$Asp_iso2, V_fl = input$V_fl, c_sp = input$c_sp, DF = input$DF)
         return(x)
       })

@@ -242,9 +242,9 @@ plot_particle_diameter(
 ## Sample evaluation
 
 Import and process the spike containing sample measurement file using the 
-workflow "oIDMS". Computing `correct_ratio()` on the isotope ratio column "R_m" 
-provides mass bias corrected values "R_corr". The implemented IDMS equation for 
-the mass flow calculation is adapted from 
+workflow "oIDMS". Correcting the ratio on the column "R_m" provides mass bias 
+corrected values "R_corr". The implemented IDMS equation for the mass flow 
+calculation is adapted from 
 [Rottmann and Heumann](https://link.springer.com/article/10.1007/BF00322473). A 
 minimum isotope ratio is required determined by the ratio of the natural isotope 
 abundances. A result table is obtained by consequent peak evaluation. 
@@ -254,7 +254,7 @@ samp_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]]
 
 samp_ion <- lapply(1:length(samp_imp), function(i) {
   x <- process_data(data = samp_imp[[i]], wf = "oIDMS", c1 = iso1, c2 = iso2, fl = 5)
-  x[,"R_corr"] <- correct_ratio(x = x[,"R_m"], K = mean(K), As_iso1 = abnd1, As_iso2 = abnd2)
+  x[,"R_corr"] <- x[,"R_m"] * mean(K)
   return(x)
 })
 head(samp_ion[[1]])
@@ -318,7 +318,7 @@ blk_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Blanks"]]
 
 blk_ion <- lapply(1:length(blk_imp), function(i) {
   x <- process_data(data = blk_imp[[i]], wf = "oIDMS", c1 = iso1, c2 = iso2, fl = 5)
-  x[,"R_corr"] <- correct_ratio(x = x[,"R_m"], K = mean(K), As_iso1 = abnd1, As_iso2 = abnd2)
+  x[,"R_corr"] <- x[,"R_m"] * mean(K)
   x[,"mf_s"] <- calc_massflow(x = x[,"R_corr"], n_trans = n_trans[1,4], As_iso1 = abnd1, As_iso2 = abnd2, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = V_fl, c_sp = c_sp, DF = DF)
   return(x)
 })

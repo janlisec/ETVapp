@@ -2,12 +2,12 @@
 #'
 #' # function reimplementations (to avoid dependencies)
 #' - ldply_base
+#' - laply_base
 #' - str_sort_num
 #'
 #' perform simple calculations
 #' - calc_N_sp
 #' - calc_analyte_mass_as_element
-#' - correct_ratio
 #' - calc_massbias
 #' - calc_massflow
 #' - calc_cali_mod
@@ -136,21 +136,22 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
   }
 }
 
-#' $$VS: Check for minimum isotope ratio would be better in function calc_massflow.
-#' @title correct_ratio.
-#' @param x Numeric vector of isotope ratios (R_m).
-#' @param K Massbias correction factor.
-#' @param As_iso1 Natural abundance of the spike isotope.
-#' @param As_iso2 Natural abundance of the sample isotope.
-#'
-#' @export
-correct_ratio <- function(x, K = 1, As_iso1 = 7.68, As_iso2 = 4.63) {
-  out <- K * x
-  if (min(out) < (As_iso1 / As_iso2)) {
-    message("The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.")
-  }
-  return(out)
-}
+# #' VS: Check for minimum isotope ratio would be better in function calc_massflow.
+# #' $$JL: I agree. Lets remove function correct_ratio() than altogether as it is a simple multiplication
+# #' @title correct_ratio.
+# #' @param x Numeric vector of isotope ratios (R_m).
+# #' @param K Massbias correction factor.
+# #' @param As_iso1 Natural abundance of the spike isotope.
+# #' @param As_iso2 Natural abundance of the sample isotope.
+# #'
+# #' @export
+# correct_ratio <- function(x, K = 1, As_iso1 = 7.68, As_iso2 = 4.63) {
+#   out <- K * x
+#   if (min(out) < (As_iso1 / As_iso2)) {
+#     message("The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.")
+#   }
+#   return(out)
+# }
 
 #' @title calc_massbias
 #'
@@ -206,10 +207,13 @@ calc_massbias <- function (R_m, As_iso1, As_iso2) {
 #'
 #' @export
 calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = 0.0075, c_sp = 19581.71, DF = 20) {
-
+  ensure_that(
+    min(x) < (As_iso1 / As_iso2),
+    "The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.",
+    "message"
+  )
   mf_sp <- V_fl * n_trans * (1 / 60) * (c_sp / DF)
   return(mf_sp * ((Asp_iso1 - (x * Asp_iso2)) / ((As_iso2 * x) - As_iso1)))
-
 }
 
 #' @title calc_cali_mod.

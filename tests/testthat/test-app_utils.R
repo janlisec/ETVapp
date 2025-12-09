@@ -31,10 +31,6 @@ testthat::test_that(
     testthat::expect_true(is.numeric(amae))
     testthat::expect_equal(amae, 0.70, tolerance = 0.01)
 
-    out <- correct_ratio(x = 5, K = 1)
-    testthat::expect_true(is.numeric(out))
-    testthat::expect_equal(out, 5, tolerance = 0.01)
-
     mb_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Massbias"]]
     mb_peaks <- ldply_base(1:length(mb_imp), function(i) {
     get_isoratio(mb_imp[[i]], iso1_col = "117Sn", iso2_col = "122Sn",
@@ -98,7 +94,6 @@ testthat::test_that(
   desc = "Test that app_utils messages work",
   code = {
     testthat::expect_message(calc_analyte_mass_as_element(R_m = 0.7, K = 1, Asp_iso1 = 0.99, Asp_iso2 = 0.01, As_iso1 = 0.5, As_iso2 = 0.4, N_sp = 1))
-    testthat::expect_message(correct_ratio(x = 1))
     testthat::expect_message(calc_massbias(NULL, 1, 2))
   }
 )

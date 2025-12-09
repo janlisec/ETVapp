@@ -17,12 +17,12 @@ exported functions that solve minor problems
 \details{
 # function reimplementations (to avoid dependencies)
 - ldply_base
+- laply_base
 - str_sort_num
 
 perform simple calculations
 - calc_N_sp
 - calc_analyte_mass_as_element
-- correct_ratio
 - calc_massbias
 - calc_massflow
 - calc_cali_mod
