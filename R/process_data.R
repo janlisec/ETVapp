@@ -6,7 +6,7 @@
 #' @param c1 Column name of the intensity column to be used (ExtCal/ExtGasCal) or of the spike isotope (IDMS/oIDMS).
 #' @param c2 Column name of the intensity column to be used as internal standard (ExtCal/ExtGasCal) or of the sample isotope (IDMS/oIDMS).
 #' @param fl Filter length, has to be odd and >= 3.
-#' 
+#'
 #' @param amend Set TRUE to amend transformed columns instead of replacing them. The input of "0" as filter length will omnit the smoothing step.
 #'
 #'
@@ -19,7 +19,8 @@
 #' head(pro_data)
 #' lines(pro_data, col=3)
 #'
-#' head(process_data(imp, c1 = "13C", c2 = "80Se", fl = 5, amend = TRUE))
+#' head(process_data(imp, c1 = "13C", c2 = "80Se", fl = 9, amend = TRUE))
+#' head(process_data(imp, c1 = "13C", c2 = "80Se", amend = TRUE))
 #'
 #' # test all error messages
 #' \dontrun{
@@ -45,8 +46,9 @@ process_data <- function(data, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"), c
         # perform smoothing
         out <- smooth_col(df = out, nm = c1, fl = fl, amend = if (amend) "_smooth" else NULL)
         out <- smooth_col(df = out, nm = c2, fl = fl, amend = if (amend) "_smooth" else NULL)
-        # perform scaling (of smoothed columns)
-        out <- scale_col(df = out, nm = ifelse(amend, paste0(c1, "_smooth"), c1), std = ifelse(amend, paste0(c2, "_smooth"), c2), amend = if (amend) "_scale" else NULL)
+        # perform scaling (of smoothed columns if smoothing was performed)
+        test <- amend & !is.null(fl)
+        out <- scale_col(df = out, nm = ifelse(test, paste0(c1, "_smooth"), c1), std = ifelse(test, paste0(c2, "_smooth"), c2), amend = if (amend) "_scale" else NULL)
       } else {
         message("Column c2 '", c2, "' not found. Correction step omitted.")
         out <- smooth_col(df = out, nm = c1, fl = fl, amend = if (amend) "_smooth" else NULL)

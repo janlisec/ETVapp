@@ -94,19 +94,15 @@ blcorr_col <- function(df, nm = NULL, BLmethod = c("modpolyfit", "none"), deg = 
 #' @keywords internal
 #' @noRd
 scale_col <- function(df, nm = NULL, std = NULL, amend = NULL) {
+  ensure_that(!is.null(nm) & !is.null(std), "[scale_col] Parameters 'nm' and 'std' should indicate two columns from df.", "message")
   if (!is.null(nm) & !is.null(std)) {
     if (is.character(nm) && nm %in% colnames(df)) idx1 <- which(colnames(df)==nm)
     if (is.numeric(nm) && nm %in% 1:ncol(df)) idx1 <- nm
     if (is.character(std) && std %in% colnames(df)) idx2 <- which(colnames(df)==std)
     if (is.numeric(std) && std %in% 1:ncol(df)) idx2 <- std
     nv <- try(df[,idx1]*mean(df[,idx2], na.rm=TRUE)/df[,idx2], silent = TRUE)
-    if (is.null(amend)) {
-      df[,idx1] <- nv
-    } else {
-      df[,paste0(colnames(df)[idx1], amend)] <- nv
-    }
-  } else {
-    message("Parameters 'nm' and 'std' should indicate two columns from df.")
+    if (!is.character(amend)) amend <- ""
+    df[,paste0(colnames(df)[idx1], amend)] <- nv
   }
   return(df)
 }
