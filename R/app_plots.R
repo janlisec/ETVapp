@@ -115,7 +115,6 @@ ic_specplot <- function(
   }
 }
 
-# $$VS: Title plot_particle_diameter would fit better
 #' @title plot_particle_diameter
 #' @description Plots a histogram of the particle size distribution of a single particle-ICP-MS measurement.
 #' @details Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet.
@@ -160,7 +159,6 @@ plot_particle_diameter <- function(
   invisible(x)
 }
 
-# $$VS: Title plot_signal_distribution would fit better. Output plot should have same layout as plot in vignette (no histogram).
 #' @title plot_signal_distribution
 #' @description Plots the signal distribution of a single particle-ICP-MS measurement.
 #' @details Determination of the intensity limit for the differentiation between particle and background signals.

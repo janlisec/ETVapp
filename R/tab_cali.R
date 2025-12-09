@@ -32,8 +32,9 @@
 #' tab_cali(peak_data = cali_pks, wf = "ExtCal", std_info = seq(0,50,10))
 #'
 #' # check if unit specification works
-#' tab_cali(peak_data = cali_pks, wf = "ExtCal", ExtCal_unit = "ng", std_info = seq(0,50,10))
-#' tab_cali(peak_data = cali_pks, wf = "ExtGasCal", ExtGasCal_unit = "\u00b5L/min", std_info = seq(0,50,10))
+#' si <- seq(0,50,10)
+#' tab_cali(peak_data = cali_pks, wf = "ExtCal", ExtCal_unit = "ng", std_info = si)
+#' tab_cali(peak_data = cali_pks, wf = "ExtGasCal", ExtGasCal_unit = "\u00b5L/min", std_info = si)
 #'
 #' # import and process cali data of `oIDMS` workflow
 #' spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]

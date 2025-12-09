@@ -7,6 +7,8 @@
 tab_cali(
   peak_data,
   wf = c("ExtCal", "ExtGasCal", "oIDMS"),
+  ExtCal_unit = c("pg", "ng", "µg"),
+  ExtGasCal_unit = c("nL/min", "µL/min", "mL/min"),
   std_info = 0,
   fac = 0
 )
@@ -15,6 +17,10 @@ tab_cali(
 \item{peak_data}{Data.frame containing peak information.}
 
 \item{wf}{Calibration method/Workflow.}
+
+\item{ExtCal_unit}{The measurement unit of the ExtCal workflow to correctly format the output.}
+
+\item{ExtGasCal_unit}{The measurement unit of the ExtGasCal workflow to correctly format the output.}
 
 \item{std_info}{A numeric value giving the analyte mass (ExtCal), the concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).}
 
@@ -50,14 +56,17 @@ cali_pks <- ldply_base(1:length(cali_pro), function(i) {
 })
 tab_cali(peak_data = cali_pks, wf = "ExtCal", std_info = seq(0,50,10))
 
+# check if unit specification works
+si <- seq(0,50,10)
+tab_cali(peak_data = cali_pks, wf = "ExtCal", ExtCal_unit = "ng", std_info = si)
+tab_cali(peak_data = cali_pks, wf = "ExtGasCal", ExtGasCal_unit = "\u00b5L/min", std_info = si)
+
 # import and process cali data of `oIDMS` workflow
 spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
 cali_pks <- ldply_base(1:length(spion_imp), function(i) {
   get_peakdata(spion_imp[[i]][,c("Time", "197Au")], int_col = "197Au",
     PPmethod = "mean_signal", peak_start = 0.003, peak_end = 60)
 })
-fac <- 1.661 * 0.01104347 * 12/44
-tab_cali(peak_data = cali_pks, wf = "oIDMS", std_info = c(20, 50, 100, 200, 500),
-  fac = fac)
+tab_cali(peak_data = cali_pks, wf = "oIDMS", std_info = c(20, 50, 100, 200, 500))
 
 }

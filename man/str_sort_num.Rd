@@ -15,7 +15,7 @@ str_sort_num
 \examples{
 x <- paste0("File", c(20, 1, 9, 11, 32, 100))
 str_sort_num(x)
-x <- c("Z1", x, "a", "Z10")
+x <- c("Z1", x, "a", "Z10", "z1", "z2")
 str_sort_num(x)
 x <- c("b1_3", "b2_1_3", x)
 str_sort_num(x)

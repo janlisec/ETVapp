@@ -4,12 +4,21 @@
 \alias{calc_cali_mod}
 \title{calc_cali_mod.}
 \usage{
-calc_cali_mod(df, wf = c("ExtCal", "ExtGasCal", "oIDMS"))
+calc_cali_mod(
+  df,
+  wf = c("ExtCal", "ExtGasCal", "oIDMS"),
+  ExtCal_unit = c("pg", "ng", "µg"),
+  ExtGasCal_unit = c("nL/min", "µL/min", "mL/min")
+)
 }
 \arguments{
 \item{df}{Data.frame with two columns.}
 
 \item{wf}{Calibration method/Workflow (used to make assumptions regarding units in df).}
+
+\item{ExtCal_unit}{The measurement unit of the ExtCal workflow to correctly format the output.}
+
+\item{ExtGasCal_unit}{The measurement unit of the ExtGasCal workflow to correctly format the output.}
 }
 \value{
 A data.frame containing slope and intercept with errors and R square.

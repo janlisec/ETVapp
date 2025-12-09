@@ -7,6 +7,9 @@
 tab_result(
   peak_data,
   wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"),
+  ExtCal_unit = c("pg", "ng", "µg"),
+  ExtGasCal_unit = c("nL/min", "µL/min", "mL/min"),
+  c_sp_unit = c("µg/L", "mg/L", "g/L"),
   a = 0,
   b = 1,
   K = 1,
@@ -19,6 +22,12 @@ tab_result(
 \item{peak_data}{Data.frame containing peak information.}
 
 \item{wf}{Calibration method/Workflow.}
+
+\item{ExtCal_unit}{The measurement unit of the ExtCal workflow to correctly format the output.}
+
+\item{ExtGasCal_unit}{The measurement unit of the ExtGasCal_unit workflow to correctly format the output.}
+
+\item{c_sp_unit}{The measurement unit of the "IDMS", "oIDMS" workflow to correctly format the output.}
 
 \item{a}{Intercept from a calibration model (for ExtCal/ExtGasCal).}
 
@@ -44,4 +53,14 @@ calculated from the peak area and calibration data which are provided in data.fr
 intensity column from a data.frame containing at least two columns are transferred into mass flow data using calibration data from a
 data.frame. The analyte mass will be determined via peak integration using the function \code{get_peakdata}. Result data will be provided
 for the analyte component itself and as element, as well as content value related to the sample mass.
+}
+\examples{
+# wf "ExtCal", "ExtGasCal" use col = 4
+pd <- data.frame("A"=1:3,"B"=1:3,"R_m"=1:3,"col4"=1:3)
+tab_result(peak_data=pd, wf="ExtCal")
+# wf "IDMS", "oIDMS" use col = "R_m"
+tab_result(peak_data=pd, wf="IDMS", c_sp_unit="g/L")
+tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L")
+tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^3)
+tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^4)
 }
