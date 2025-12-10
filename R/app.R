@@ -463,11 +463,12 @@ app_server <- function(input, output, session) {
     req(ic_mi_spectra_raw(), pars$smoothing_fl, input$par_wf)
     message("ic_mi_spectra")
     # wrap processing in try to account for extreme parameter selections
+    if (pars$smoothing_fl==1) fl <- NULL else fl <- pars$smoothing_fl
     if (input$par_filetype %in% c("sp_particle", "sp_ionic")) {
       # skip pre-processing and apply smoothing only to c1
-      out <- lapply(ic_mi_spectra_raw(), function(x) { smooth_col(df = x, nm = input$ic_par_mi_col, fl = pars$smoothing_fl, amend = "_smooth") })
+      out <- lapply(ic_mi_spectra_raw(), function(x) { smooth_col(df = x, nm = input$ic_par_mi_col, fl = fl, amend = "_smooth") })
     } else {
-      out <- try(spec_pre_process(data = ic_mi_spectra_raw(), c1 = input$ic_par_mi_col, c2 = input$ic_par_si_col, fl = pars$smoothing_fl, wf = input$par_wf))
+      out <- try(spec_pre_process(data = ic_mi_spectra_raw(), c1 = input$ic_par_mi_col, c2 = input$ic_par_si_col, fl = fl, wf = input$par_wf))
     }
     validate(need(!inherits(out, "try-error"), "Could not preprocess ic_mi_spectra_raw()"))
     # attach m_fs for oIDMS workflow
@@ -511,7 +512,6 @@ app_server <- function(input, output, session) {
   ic_table_peaks_pre <- reactive({
     req(ic_mi_peaks())
     message("ic_table_peaks_pre")
-    #browser()
     n <- length(ic_mi_peaks())
     pn <- unname(sapply(ic_mi_peaks(), nrow))
     out <- data.frame("Sample" = rep(1:n, times=pn), "Peak ID" = sapply(pn, function(x) {1:x}), ldply_base(ic_mi_peaks()), check.names = FALSE)
@@ -675,6 +675,13 @@ app_server <- function(input, output, session) {
   # peak table output and associated action buttons ----
   output$ic_table_peaks <- DT::renderDT({
     req(ic_table_peaks_edit())
+    pks <- ic_table_peaks_edit()
+    # remove '_smooth' amendment in column 'Isotope' if user omitted smoothing step
+    if (pars$smoothing_fl==1) {
+      if ("Isotope" %in% colnames(pks)) {
+        pks[,"Isotope"] <- gsub("_smooth", "", pks[,"Isotope"])
+      }
+    }
     message("output$ic_table_peaks")
     cm <- switch (
       input$par_wf,
@@ -686,7 +693,7 @@ app_server <- function(input, output, session) {
     # compute and store cali table
     if (input$par_filetype %in% c("Cali")) {
       df <- tab_cali(
-        peak_data = ic_table_peaks_edit()[,-c(1:2)],
+        peak_data = pks[,-c(1:2)],
         wf = input$par_wf,
         std_info = pars$std_info,
         fac = input$cali_fac
@@ -743,7 +750,7 @@ app_server <- function(input, output, session) {
         amae <- IDMS_pks[,4]
       }
       df <- tab_result(
-        peak_data = if (input$par_wf %in% c("ExtCal", "ExtGasCal")) ic_table_peaks_edit()[,-c(1:2)] else IDMS_pks,
+        peak_data = if (input$par_wf %in% c("ExtCal", "ExtGasCal")) pks[,-c(1:2)] else IDMS_pks,
         wf = input$par_wf,
         a = if (is.null(cm)) 0 else cm[1,3],
         b = if (is.null(cm)) 1 else cm[1,1],
@@ -782,7 +789,7 @@ app_server <- function(input, output, session) {
         })
         tmp <- tab_result(pk, wf = "oIDMS", K = input$K, amae = pk[,4], mass_fraction2 = pars$mass_frac, sample_mass = input$sample_mass)[,4]
       } else {
-        tmp <- ic_table_peaks_edit()[,-c(1:2)][,4]
+        tmp <- pks[,-c(1:2)][,4]
       }
       df <- tab_LOX(
         x = tmp,
@@ -800,7 +807,7 @@ app_server <- function(input, output, session) {
       if (input$par_wf=="IDMS") pars$IDMS_lox <- df
       if (input$par_wf=="oIDMS") pars$oIDMS_lox <- df
     }
-    out <- ic_table_peaks_edit()
+    out <- pks
     # remove column 'Peak ID' if all IDs are unique
     if ("Peak ID" %in% colnames(out) && length(unique(out[,"Peak ID"]))==1) out <- out[,!colnames(out) %in% "Peak ID",drop=FALSE]
     # remove smooth annotation from ion name
@@ -923,7 +930,6 @@ app_server <- function(input, output, session) {
       colnames(cali_peaks)[1] <- paste0("Analyte mass [", input$ExtGasCal_unit, "]")
     }
     if (input$par_wf == "oIDMS") {
-      #browser()
       pars$oIDMS_cm <- cm
     }
     par(cex = 1.4)

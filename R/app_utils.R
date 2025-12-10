@@ -538,7 +538,8 @@ limit_digits <- function(df, n=6, cols=NULL) {
   return(df)
 }
 
-#' $$VS: Could be another peak picking method "Peak (globmax)"?
+#' # VS: Could be another peak picking method "Peak (globmax)"?
+#' # $$JL: Yes, we can include this one as you suggest. We would need to include more parameters than in the app (p, k, min_scans, noise) right?
 #' @title find_peak_boundaries
 #' @description \code{find_peak_boundaries} will find the start and end point
 #'     of a peak based on curve derivative.

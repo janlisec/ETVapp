@@ -22,11 +22,13 @@
 #' tab_LOX(x = runif(10), mass_fraction2 = 0.5, sample_mass = 3, ExtCal_unit = "ng")
 #'
 #' @export
-tab_LOX <- function(x, cali_slope = 1, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"),
-                    ExtCal_unit = c("pg", "ng", "\u00b5g"),
-                    ExtGasCal_unit = c("nL/min", "\u00b5L/min", "mL/min"),
-                    c_sp_unit = c("\u00b5g/L", "mg/L", "g/L"),
-                    mass_fraction2 = 1, sample_mass = 1) {
+tab_LOX <- function(
+    x, cali_slope = 1, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"),
+    ExtCal_unit = c("pg", "ng", "\u00b5g"),
+    ExtGasCal_unit = c("nL/min", "\u00b5L/min", "mL/min"),
+    c_sp_unit = c("\u00b5g/L", "mg/L", "g/L"),
+    mass_fraction2 = 1, sample_mass = 1
+) {
   # Checks
   wf <- match.arg(wf)
   ExtCal_unit <- match.arg(ExtCal_unit)
