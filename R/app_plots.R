@@ -36,6 +36,7 @@
 ic_specplot <- function(
   opt = "",
   xrng = NULL,
+  yrng = NULL,
   mi_spec = NULL,
   c1 = "13C",
   xlab = paste0("Time [", "s", "]"),
@@ -53,18 +54,19 @@ ic_specplot <- function(
     cols <- 2:(length(idx_all)+1)
     if (is.null(xrng)) xrng <- range(sapply(mi_spec, function(x) { range(x[,"Time"], na.rm=TRUE) }))
     # get y range
-    yrng <- c(0, max(sapply(mi_spec, function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) })))
+    if (is.null(yrng)) yrng <- range(sapply(mi_spec, function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) }))
   } else {
     idx_all <- as.numeric(gsub("[^[:digit:]]", "", s_focus))
-    cols <- rep(1, idx_all)
+    #cols <- rep(1, idx_all)
+    if(length(idx_all) == 1){cols <- rep(1, idx_all)} else{cols <- 2:(max(idx_all)+1)}
     if (is.null(xrng)) xrng <- range(sapply(mi_spec[idx_all], function(x) { range(x[,"Time"], na.rm=TRUE) }))
-    yrng <- c(0, max(sapply(mi_spec[idx_all], function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) })))
+    if (is.null(yrng)) yrng <- range(sapply(mi_spec[idx_all], function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) }))
   }
   # modify plot margins
   par(mar = c(4.5, 4.5, 0.5, ifelse(is.null(T_prog), 0.5, 4.5)))
   par(cex = 1.4)
   # render base plot
-  plot(x = xrng, y = yrng, type = "n", xaxs = "i", xlab = xlab, ylab = ylab)
+  plot(x = xrng, y = yrng, type = "n", xaxs = "i", yaxs = "i", xlab = xlab, ylab = ylab)
   if (!is.null(dim(T_prog)) & "overlay_Temp" %in% opt) {
     Temp_ticks <- pretty(range(T_prog[,"Temp"]))
     Temp_ori <- seq(yrng[1], yrng[2], length.out=length(Temp_ticks))
@@ -73,6 +75,17 @@ ic_specplot <- function(
     axis(side = 4, at = Temp_ori, labels = Temp_ticks)
     mtext(text = "Temperature [\u00b0C]", side = 4, line = 3, cex=par("cex.lab")*par("cex"))
   }
+  #if (length(c1) > 1) {
+
+    #idx_all <- 1:(length(c1))
+    #cols <- 2:(length(c1)+1)
+
+    #for (idx in idx_all){
+      #sm <- mi_spec[[1]][,"Time"]
+      #si <- mi_spec[[1]][,c(idx+1)]
+      #plot(x = sm, y = si, type = "l", col=cols[idx])
+    #}
+  #}
   for (idx in idx_all) {
     if ("overlay_legend" %in% opt) {
       f_in <- names(mi_spec)
