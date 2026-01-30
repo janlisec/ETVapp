@@ -227,7 +227,10 @@ app_ui <- function() {
         bslib::layout_sidebar(
           sidebar = bslib::sidebar(
             position = "right", open = "open", width = "280px", gap = "10px",
-            selectInput(inputId = "ic_par_focus_sample", label = "", choices = list("Sample 1"=1)),
+            bslib::input_switch("ic_par_isotope", "Show isotopes"),
+            selectInput(inputId = "ic_par_focus_sample", label = "", choices = list("Sample 1"=1), multiple = TRUE, selectize = FALSE),
+            selectInput(inputId = "ic_par_focus_sample2", label = "", choices = list("Sample 1"=1), multiple = FALSE, selectize = FALSE),
+            selectInput(inputId = "ic_par_focus_iso", label = "", choices = c(""), multiple = TRUE, selectize = FALSE),
             checkboxGroupInput(
               inputId = "ic_par_specplot",
               label = shiny::actionLink(inputId = "ic_help05", label = "Plot options"),
@@ -246,7 +249,7 @@ app_ui <- function() {
           plotOutput(
             outputId = "ic_specplot",
             dblclick = dblclickOpts(id = "ic_specplot_dblclick"),
-            brush = brushOpts(id = "ic_specplot_brush", direction = "x", resetOnNew = TRUE)
+            brush = brushOpts(id = "ic_specplot_brush", direction = "xy", resetOnNew = TRUE)
           ) |> bslib::tooltip("You may select a time range [Click and Drag] with the cursor to zoom. Use [Double Click] to unzoom.", placement = "bottom")
         )
       )
@@ -347,6 +350,8 @@ app_server <- function(input, output, session) {
   # setup initial plot range (min, max)
   spec_plots_xmin <- reactiveVal(0)
   spec_plots_xmax <- reactiveVal(320)
+  spec_plots_ymin <- reactiveVal(0)
+  spec_plots_ymax <- reactiveVal(300000)
   # the time range if cutting is applied
   #cut_range <- reactiveValues("min"=NULL, "max"=NULL)
   # the rt shift applied to samples for alignment
@@ -463,9 +468,30 @@ app_server <- function(input, output, session) {
         pars$std_info <- NULL
       }
       #rt_shift(rep(0, length(out)))
-      updateSelectInput(inputId = "ic_par_focus_sample", choices = paste("Sample", 1:length(out)))
+      updateSelectInput(inputId = "ic_par_focus_sample", choices = paste("Sample", 1:length(out)), select = c("Sample 1"))
+      updateSelectInput(inputId = "ic_par_focus_sample2", choices = paste("Sample", 1:length(out)), select = c("Sample 1"))
+      #browser()
+
       if (length(out)>1) {
         shinyjs::enable(selector = "#ic_par_specplot input[value='overlay_mi']")
+        #browser()
+        output <- input$ic_par_isotope
+        if(output == TRUE){
+          updateSelectInput(inputId = "ic_par_specplot", selected = c("overlay_pb", "overlay_legend", "overlay_Temp"))
+          shinyjs::disable("ic_par_focus_sample")
+          shinyjs::hide("ic_par_focus_sample")
+          shinyjs::disable(selector = "#ic_par_specplot input[value='overlay_mi']")
+          shinyjs::enable("ic_par_focus_sample2")
+          shinyjs::show("ic_par_focus_sample2")
+          shinyjs::enable("ic_par_focus_iso")
+          shinyjs::show("ic_par_focus_iso")
+        } else {
+          shinyjs::enable("ic_par_focus_sample")
+          shinyjs::disable("ic_par_focus_sample2")
+          shinyjs::hide("ic_par_focus_sample2")
+          shinyjs::disable("ic_par_focus_iso")
+          shinyjs::hide("ic_par_focus_iso")
+        }
       } else {
         updateCheckboxGroupInput(inputId = "ic_par_specplot", selected = c("overlay_pb"))
         shinyjs::disable(selector = "#ic_par_specplot input[value='overlay_mi']")
@@ -519,6 +545,7 @@ app_server <- function(input, output, session) {
     if (pars$smoothing_fl==1) fl <- NULL else fl <- pars$smoothing_fl
     if (input$par_filetype %in% c("sp: Particles", "sp: Ionic")) {
       # skip pre-processing and apply smoothing only to c1
+      ## $$VS: No smoothing for sp data.
       out <- lapply(ic_mi_spectra_raw(), function(x) { smooth_col(df = x, nm = input$ic_par_mi_col, fl = fl, amend = "_smooth") })
     } else {
       out <- try(spec_pre_process(data = ic_mi_spectra_raw(), c1 = input$ic_par_mi_col, c2 = input$ic_par_si_col, fl = fl, wf = input$par_wf))
@@ -589,21 +616,21 @@ app_server <- function(input, output, session) {
   observeEvent(input$ic_specplot_brush, {
     spec_plots_xmin(input$ic_specplot_brush$xmin)
     spec_plots_xmax(input$ic_specplot_brush$xmax)
+    spec_plots_ymin(input$ic_specplot_brush$ymin)
+    spec_plots_ymax(input$ic_specplot_brush$ymax)
   })
 
   # change plot range upon user mouse interaction (double click) ----
   observeEvent(input$ic_specplot_dblclick, {
     req(ic_mi_spectra())
-    rng <- range(sapply(ic_mi_spectra(), function(x) { range(x[,"Time"], na.rm=TRUE) }))
-    spec_plots_xmin(rng[1])
-    spec_plots_xmax(rng[2])
-  })
-
-  observeEvent(input$ic_specplot_dblclick, {
-    req(ic_mi_spectra())
-    rng <- range(sapply(ic_mi_spectra(), function(x) { range(x[,"Time"], na.rm=TRUE) }))
-    spec_plots_ymin(rng[1])
-    spec_plots_ymax(rng[2])
+    c1 <- input$ic_par_mi_col
+    c2 <- input$ic_par_si_col
+    xrng <- range(sapply(ic_mi_spectra(), function(x) { range(x[,"Time"], na.rm=TRUE) }))
+    yrng <- range(sapply(ic_mi_spectra(), function(x) { range(x[,c(c1, c2)], na.rm=TRUE) }))
+    spec_plots_xmin(xrng[1])
+    spec_plots_xmax(xrng[2])
+    spec_plots_ymin(yrng[1])
+    spec_plots_ymax(yrng[2])
   })
 
   # show fileUpload only when data source is set to 'upload files' ----
@@ -631,16 +658,21 @@ app_server <- function(input, output, session) {
 
   # update column selectors when input columns change
   observeEvent(file_in_cols(), {
+    #browser()
     fic <- file_in_cols()
     n <- length(fic)
     mi_old <- shiny::isolate(input$ic_par_mi_col)
     si_old <- shiny::isolate(input$ic_par_si_col)
+    iso_old <- shiny::isolate(input$ic_par_focus_iso)
     #rt_selected <- ifelse("Time" %in% fic, "Time", fic[1])
     mi_sel <- ifelse(mi_old %in% fic, mi_old, fic[2])
     si_sel <- ifelse(si_old %in% fic, si_old, ifelse(length(fic)>=3, fic[3], fic[2]))
+    iso_sel <- ifelse(iso_old %in% fic, iso_old, fic[2])
     #updateSelectInput(inputId = "ic_par_rt_col", choices = I(fic), selected = rt_selected)
     updateSelectInput(inputId = "ic_par_mi_col", choices = I(fic[-1]), selected = mi_sel)
     updateSelectInput(inputId = "ic_par_si_col", choices = I(fic[-1]), selected = si_sel)
+    updateSelectInput(inputId = "ic_par_focus_iso", choices = I(fic[-1]), selected = iso_sel)
+    test <- shiny::isolate(input$ic_par_focus_iso)
     reset_times()
   })
 
@@ -948,7 +980,9 @@ app_server <- function(input, output, session) {
   output$ic_specplot <- shiny::renderPlot({
     req(ic_mi_spectra(), input$ic_par_mi_col_name)
     message("output$ic_specplot")
-    c1 <- input$ic_par_mi_col
+    output <- input$ic_par_isotope
+    #browser()
+    c1 <- ifelse(output == FALSE, input$ic_par_mi_col, input$ic_par_focus_iso)
     bl <- FALSE
     ylab <- "Intensity [cps]" #input$ic_par_mi_col_name
     if (pars$smoothing_fl >= 3) {
@@ -959,15 +993,20 @@ app_server <- function(input, output, session) {
       ylab <- "mf_s"
     }
     opt <- input$ic_par_specplot
-    ic_specplot(
+    #browser()
+    output <- input$ic_par_isotope
+    #s_focus <- if (output == TRUE) {input$ic_par_focus_sample2} else {input$ic_par_focus_sample}
+      ic_specplot(
       opt = opt,
       xrng = c(spec_plots_xmin(), spec_plots_xmax()),
+      yrng = c(spec_plots_ymin(), spec_plots_ymax()),
       mi_spec = ic_mi_spectra(),
       c1 = c1,
       xlab = paste0("Time [s]"),
       ylab = ylab,
       T_prog = pars$T_prog,
-      s_focus = input$ic_par_focus_sample,
+      ## $$VS: Selection of multiple samples not possible.
+      s_focus = ifelse(output == TRUE, input$ic_par_focus_sample2, input$ic_par_focus_sample),
       pks = ic_table_peaks_edit(),
       BLmethod = input$baseline_method,
       sel_pk = input$ic_table_peaks_rows_selected
