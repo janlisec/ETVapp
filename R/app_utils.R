@@ -227,7 +227,6 @@ calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36,
 #' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
 #' @param ExtGasCal_unit The measurement unit of the ExtGasCal workflow to correctly format the output.
 #'
-#'
 #' @return A data.frame containing slope and intercept with errors and R square.
 #'
 #' @examples
@@ -300,7 +299,7 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
 #' head(spion_imp[[1]])
 #' names(spion_imp)
 #' sp_cali <- ldply_base(1:length(spion_imp), function(i) {
-#'   get_peakdata(spion_imp[[i]], "197Au", PPmethod = "mean_signal", peak_start = 0.003, peak_end = 60)
+#'   get_peakdata(spion_imp[[i]], "197Au", PPmethod = "mean signal", peak_start = 0.003, peak_end = 60)
 #' })
 #' conc_ion <- c(20, 50, 100, 200, 500)
 #' fac <- 1.661 * 0.01104347 * 12/44

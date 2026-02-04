@@ -39,7 +39,7 @@
 #' @export
 get_peakdata <- function (pro_data, int_col, time_col = "Time",
                           peak_start = NULL, peak_end = NULL, minpeakheight = 1000,
-                          PPmethod = c("Peak (height)", "Peak (manual)", "mean_signal"),
+                          PPmethod = c("Peak (height)", "Peak (manual)", "mean signal"),
                           BLmethod = c("modpolyfit", "none"), deg = 1, cf = 50) {
 
   BLmethod <- match.arg(BLmethod)
@@ -50,7 +50,7 @@ get_peakdata <- function (pro_data, int_col, time_col = "Time",
   # get peak data
   peak_data <- get_peak(df = pro_data[,c(time_col, int_col)], PPmethod = PPmethod, peak_start = peak_start, peak_end = peak_end, minpeakheight = minpeakheight, cf =cf)
 
-  if (PPmethod == "mean_signal") { return(peak_data) }
+  if (PPmethod == "mean signal") { return(peak_data) }
 
   # Baseline correction
   corr_data <- blcorr_col(df = pro_data[peak_data$Start_corr:peak_data$End_corr,c(time_col, int_col)], nm = int_col, BLmethod = BLmethod, deg = deg)

@@ -17,6 +17,6 @@ testthat::test_that(
     pro_data <- process_data(raw_data, c1 = "117Sn", c2 = "80Se", fl = 151)
     peak_data <- get_peakdata(pro_data, int_col = "117Sn")
 
-    testthat::expect_error(get_peakdata(pro_data, int_col = "117Sn", PPmethod = "mean_signal"))
+    testthat::expect_error(get_peakdata(pro_data, int_col = "117Sn", PPmethod = "mean signal"))
   }
 )

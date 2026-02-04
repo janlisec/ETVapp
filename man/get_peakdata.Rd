@@ -11,7 +11,7 @@ get_peakdata(
   peak_start = NULL,
   peak_end = NULL,
   minpeakheight = 1000,
-  PPmethod = c("Peak (height)", "Peak (manual)", "mean_signal"),
+  PPmethod = c("Peak (height)", "Peak (manual)", "mean signal"),
   BLmethod = c("modpolyfit", "none"),
   deg = 1,
   cf = 50

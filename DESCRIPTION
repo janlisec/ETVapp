@@ -23,7 +23,8 @@ Imports:
     markdown (>= 1.5.0),
     pracma,
     shiny,
-    shinyjs
+    shinyjs,
+    shinyWidgets
 Suggests: 
     knitr,
     rmarkdown,

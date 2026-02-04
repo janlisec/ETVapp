@@ -65,7 +65,7 @@ tab_cali(peak_data = cali_pks, wf = "ExtGasCal", ExtGasCal_unit = "\u00b5L/min",
 spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
 cali_pks <- ldply_base(1:length(spion_imp), function(i) {
   get_peakdata(spion_imp[[i]][,c("Time", "197Au")], int_col = "197Au",
-    PPmethod = "mean_signal", peak_start = 0.003, peak_end = 60)
+    PPmethod = "mean signal", peak_start = 0.003, peak_end = 60)
 })
 tab_cali(peak_data = cali_pks, wf = "oIDMS", std_info = c(20, 50, 100, 200, 500))
 

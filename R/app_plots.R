@@ -48,20 +48,12 @@ ic_specplot <- function(
   sel_pk = NULL
 ) {
   # determine data ranges to display
-  c2 <- "hglmpfh"
-  if ("overlay_mi" %in% opt) {
-    idx_all <- 1:length(mi_spec)
-    cols <- 2:(length(idx_all)+1)
-    if (is.null(xrng)) xrng <- range(sapply(mi_spec, function(x) { range(x[,"Time"], na.rm=TRUE) }))
-    # get y range
-    if (is.null(yrng)) yrng <- range(sapply(mi_spec, function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) }))
-  } else {
-    idx_all <- as.numeric(gsub("[^[:digit:]]", "", s_focus))
-    #cols <- rep(1, idx_all)
-    if(length(idx_all) == 1){cols <- rep(1, idx_all)} else{cols <- 2:(max(idx_all)+1)}
-    if (is.null(xrng)) xrng <- range(sapply(mi_spec[idx_all], function(x) { range(x[,"Time"], na.rm=TRUE) }))
-    if (is.null(yrng)) yrng <- range(sapply(mi_spec[idx_all], function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) }))
-  }
+  idx_all <- as.numeric(gsub("[^[:digit:]]", "", s_focus))
+  if (!all(idx_all %in% 1:length(mi_spec))) browser()
+  if (length(idx_all) == 1) { cols <- rep(1, idx_all) } else { cols <- 2:(max(idx_all)+1) }
+  if (is.null(xrng)) xrng <- range(sapply(mi_spec[idx_all], function(x) { range(x[,"Time"], na.rm=TRUE) }))
+  if (is.null(yrng)) yrng <- range(sapply(mi_spec[idx_all], function(x) { max(x[,c(c1, if (c2 %in% colnames(x)) c2 else NULL)], na.rm=TRUE) }))
+
   # modify plot margins
   par(mar = c(4.5, 4.5, 0.5, ifelse(is.null(T_prog), 0.5, 4.5)))
   par(cex = 1.4)
@@ -105,7 +97,6 @@ ic_specplot <- function(
         pks_sam <- pks[pks[,"Sample"]==idx,]
         for (j in 1:nrow(pks_sam)) {
           abline(v=pks_sam[j,c("Start [s]", "End [s]")], col=cols[idx])
-          #browser()
           if (BLmethod != "none") {
             # plot baseline of peak
             check_peak_boundaries(peak_start = pks_sam[j,"Start [s]"], peak_end = pks_sam[j,"End [s]"], time = sm)

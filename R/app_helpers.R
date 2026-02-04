@@ -247,7 +247,7 @@ check_peak_boundaries <- function(peak_start, peak_end, time) {
 #'
 #' @keywords internal
 #' @noRd
-get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean_signal"), peak_start = NULL, peak_end = NULL, minpeakheight = 1000, cf = 50) {
+get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean signal"), peak_start = NULL, peak_end = NULL, minpeakheight = 1000, cf = 50) {
   PPmethod <- match.arg(PPmethod)
   if (PPmethod == "Peak (height)") {
     #browser()
@@ -291,7 +291,7 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean_si
       check.names = FALSE
     )
   }
-  if (PPmethod == "mean_signal") {
+  if (PPmethod == "mean signal") {
     check_peak_boundaries(peak_start=peak_start, peak_end=peak_end, time=df[,1])
     start_index<- as.numeric(min(which(df[,1] >= peak_start))) #as index
     end_index <- as.numeric(max(which(df[,1] <= peak_end)))  #as index

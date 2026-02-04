@@ -46,7 +46,7 @@ spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
 head(spion_imp[[1]])
 names(spion_imp)
 sp_cali <- ldply_base(1:length(spion_imp), function(i) {
-  get_peakdata(spion_imp[[i]], "197Au", PPmethod = "mean_signal", peak_start = 0.003, peak_end = 60)
+  get_peakdata(spion_imp[[i]], "197Au", PPmethod = "mean signal", peak_start = 0.003, peak_end = 60)
 })
 conc_ion <- c(20, 50, 100, 200, 500)
 fac <- 1.661 * 0.01104347 * 12/44
