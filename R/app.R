@@ -32,17 +32,42 @@ app_ui <- function() {
   card_data_source <- shiny::tagList(
     bslib::card(
       bslib::card_header(
-        shiny::actionLink(inputId = "ic_help02", label = "Data"),
+        style = "width: 100%; margin: 0px;",
+        class = "d-flex align-items-center",
+        shiny::actionLink(inputId = "ic_help02", label = "Data source"),
+        div(
+          class = "ms-auto d-flex align-items-center",
+          shiny::radioButtons(
+            inputId = "ic_par_libsource", label = NULL, inline=TRUE,
+            choices = c("Upload files", "Testdata"), selected = "Upload files")
+        )
       ),
-      bslib::layout_column_wrap(
-        width = 120,
-        shinyjs::disabled(radioButtons(inputId = "ic_par_libsource", label = "Data source", choices = c("Upload files", "Testdata"), selected = "Testdata")),
-        radioButtons(inputId = "par_wf", label = "Workflow", choices = c("ExtCal","ExtGasCal","IDMS","oIDMS"), selected = c("ExtCal","ExtGasCal","IDMS","oIDMS")[1]),
-        radioButtons(
-          inputId = "par_filetype", label = "File Type",
-          choices = list("Cali" = "Cali", "Mass bias" = "Massbias", "Samples" = "Samples", "Blanks" = "Blanks", "sp: Ionic" = "sp_ionic", "sp: Particles" = "sp_particle"), selected = "Cali")
-      ),
-      uiOutput(outputId = "ic_par_path_expfiles")
+      bslib::navset_tab(
+        id = "navset_flow",
+        bslib::nav_panel(
+          title = "Workflow",
+          value = "workflow",
+          bslib::card_body(
+            radioButtons(inputId = "par_wf", label = NULL, choices = c("ExtCal","ExtGasCal","IDMS","oIDMS"), selected = c("ExtCal","ExtGasCal","IDMS","oIDMS")[1]),
+          )
+        ),
+        bslib::nav_panel(
+          title = "Testdata Files",
+          value = "testdata",
+          bslib::card_body(
+            radioButtons(
+              inputId = "par_filetype", label = NULL,
+              choices = list("Cali" = "Cali", "Mass bias" = "Massbias", "Samples" = "Samples", "Blanks" = "Blanks", "sp: Ionic" = "sp_ionic", "sp: Particles" = "sp_particle"), selected = "Cali"
+            )
+          )
+        ),
+        bslib::nav_panel(
+          title = "Upload Files",
+          value = "upload",
+          uiOutput(outputId = "ic_par_path_expfiles"),
+          shiny::actionButton(inputId = "par_confirm_processing_step", label = "Confirm processing to continue with next step", width="100%")
+        )
+      )
     )
   )
   # import parameters
@@ -225,6 +250,7 @@ app_ui <- function() {
     bslib::card(
       id = "ic_plot_card",
       min_height = "450px",
+      bslib::card_header(shiny::uiOutput(outputId = "workflow_type_info")),
       bslib::card_body(padding = 0, style = "resize: vertical;",
         bslib::layout_sidebar(
           sidebar = bslib::sidebar(
@@ -355,9 +381,12 @@ app_server <- function(input, output, session) {
   isotopes <- ETVapp::isotopes
 
   output$ic_par_path_expfiles <- renderUI({
+    req(input$par_filetype)
     # file input as renderUI to allow a reset in case that the upload method is changed
     message("output$ic_par_path_expfiles")
-    fileInput(inputId = "ic_par_path_expfiles_inner", label = "Select Files", multiple = TRUE)
+    mult <- !(input$par_filetype %in% c("Sample", "sp_ionic"))
+    lab <- paste("Select", input$par_wf, input$par_filetype, paste0("File", ifelse(mult,"s","")))
+    fileInput(inputId = "ic_par_path_expfiles_inner", label = lab, multiple = mult)
   })
 
   ### setup reactive Values ##############################################----
@@ -381,6 +410,7 @@ app_server <- function(input, output, session) {
     "std_info" = NULL,
     "amae" = NULL,
     "K" = NULL,
+    "current_files" = NULL,
     "ExtCal_cali" = NULL,
     "ExtCal_cm" = NULL,
     "ExtCal_sam" = NULL,
@@ -419,6 +449,22 @@ app_server <- function(input, output, session) {
     }
   })
 
+  filetype_definition <- list(
+    "Cali" = "Cali",
+    "Mass bias" = "Massbias",
+    "Samples" = "Samples",
+    "Sample" = "Sample",
+    "Blanks" = "Blanks",
+    "sp: Ionic" = "sp_ionic",
+    "sp: Particles" = "sp_particle"
+  )
+  wf_definition <- list(
+    "ExtCal"=filetype_definition[c(1,4,5)],
+    "ExtGasCal"=filetype_definition[c(1,3,5)],
+    "IDMS"=filetype_definition[c(2,3,5)],
+    "oIDMS"=filetype_definition[c(2,6,7,3,5)]
+  )
+
   ### show/hide section ##################################################----
   # modify UI depending on workflow (IR-Delta or IDMS)
   observeEvent(input$par_wf, {
@@ -430,14 +476,7 @@ app_server <- function(input, output, session) {
     shinyjs::toggleElement(id = "IDMS_pars", condition = input$par_wf=="IDMS")
     shinyjs::toggleElement(id = "oIDMS_pars", condition = input$par_wf=="oIDMS")
     shinyjs::toggleElement(id = "IDMS_pars_common", condition = input$par_wf %in% c("IDMS","oIDMS"))
-    tmp_listames <- list("Cali" = "Cali", "Mass bias" = "Massbias", "Samples" = "Samples", "Sample" = "Sample", "Blanks" = "Blanks", "sp: Ionic" = "sp_ionic", "sp: Particles" = "sp_particle")
-    tmp <- list(
-      "ExtCal"=tmp_listames[c(1,4,5)],
-      "ExtGasCal"=tmp_listames[c(1,3,5)],
-      "IDMS"=tmp_listames[c(2,3,5)],
-      "oIDMS"=tmp_listames[c(2,6,7,3,5)]
-    )
-    shiny::updateRadioButtons(inputId = "par_filetype", choices = tmp[[input$par_wf]])
+    shiny::updateRadioButtons(inputId = "par_filetype", choices = wf_definition[[input$par_wf]])
     if (input$par_wf %in% c("ExtCal", "ExtGasCal")) {
       updateSelectInput(inputId = "ic_par_mi_col", label = "Analyte")
       updateSelectInput(inputId = "ic_par_si_col", label = "Standard")
@@ -469,11 +508,20 @@ app_server <- function(input, output, session) {
     out <- NULL
     if (input$ic_par_libsource=="Upload files") {
       if (!is.null(input$ic_par_path_expfiles_inner)) {
-        out <- try(import_data(file_path = input$ic_par_path_expfiles_inner$datapath, simplify = FALSE))
-        if (inherits(x = out, what = "try-error")) {
+        # check if this the current file data is consistent with the current peak data and return NULL if this is the case
+        # because this means that the file_upload needs rerendering
+        if (!is.null(shiny::isolate(pars$current_files)) && all(basename(input$ic_par_path_expfiles_inner$name)==shiny::isolate(pars$current_files))) {
           out <- NULL
         } else {
-          names(out) <- input$ic_par_path_expfiles_inner$name
+          out <- try(import_data(file_path = input$ic_par_path_expfiles_inner$datapath, simplify = FALSE))
+          if (inherits(x = out, what = "try-error")) {
+            out <- NULL
+          } else {
+            names(out) <- input$ic_par_path_expfiles_inner$name
+            # upon fist sucessfull upload of data, hide the workflow selection and disable the libsource radiobutton
+            bslib::nav_hide("navset_flow", "workflow")
+            shinyjs::disable(id = "ic_par_libsource")
+          }
         }
       } else {
         out <- NULL
@@ -490,6 +538,8 @@ app_server <- function(input, output, session) {
       } else {
         pars$std_info <- NULL
       }
+      # set current file names
+      pars$current_files <- names(out)
       nval <- paste("Sample", 1:length(out))
       message("Update Sample Picker Input to ", paste(nval, collapse = ","))
       shinyWidgets::updatePickerInput(inputId = "ic_par_focus_sample", choices = nval, selected = nval)
@@ -497,7 +547,7 @@ app_server <- function(input, output, session) {
     } else {
       ic_table_peaks_edit(NULL)
     }
-    validate(need(out, message = "No valid data"))
+    validate(need(out, message = "Please upload valid data"))
     return(out)
   })
 
@@ -515,6 +565,17 @@ app_server <- function(input, output, session) {
   shiny::exportTestValues(
     file_in = file_in
   )
+
+  output$workflow_type_info <- renderText({
+    paste(input$ic_par_libsource, input$par_wf, input$par_filetype, sep = " - ")
+  })
+
+  shiny::observeEvent(input$par_confirm_processing_step, {
+    sel <- unlist(wf_definition[[input$par_wf]])
+    n <- which(sel==input$par_filetype)+1
+    if (n == length(sel)) { shinyjs::hide(id = "par_confirm_processing_step") }
+    shiny::updateRadioButtons(inputId = "par_filetype", selected = sel[n])
+  }, ignoreInit = TRUE)
 
   # check table headers for consistency and to get colnames to allow user column selection
   file_in_cols <- reactive({
@@ -636,7 +697,18 @@ app_server <- function(input, output, session) {
 
   # show fileUpload only when data source is set to 'upload files' ----
   observeEvent(input$ic_par_libsource, {
-    shinyjs::toggle(id = "ic_par_path_expfiles", condition = input$ic_par_libsource=="Upload files")
+    #shinyjs::toggle(id = "ic_par_path_expfiles", condition = input$ic_par_libsource=="Upload files")
+    if (input$ic_par_libsource=="Testdata") {
+      bslib::nav_show("navset_flow", "testdata")
+      bslib::nav_hide("navset_flow", "upload")
+      bslib::nav_select("navset_flow", "workflow")
+      updateRadioButtons(inputId = "par_wf", selected = "ExtCal")
+    } else {
+      bslib::nav_hide("navset_flow", "testdata")
+      bslib::nav_show("navset_flow", "upload")
+      bslib::nav_select("navset_flow", "workflow")
+      updateRadioButtons(inputId = "par_wf", selected = "ExtCal")
+    }
   })
 
   # reset time windows (upon new data or new RT column)

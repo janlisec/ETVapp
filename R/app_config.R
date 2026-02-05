@@ -76,6 +76,6 @@ app_status_line <- function() {
     "ver.", get_app_config("app_version"),
     " | ", get_app_config("app_date"),
     " | <a href='mailto:jan.lisec@bam.de'>jan.lisec@bam.de</a>",
-    ifelse(get_app_config("bam_server"), '| <a href="https://www.bam.de/Navigation/EN/Services/Privacy-Policy/privacy-policy.html" target="_blank" rel="noopener noreferrer">BAM Privacy policy</a>', '')
+    ifelse(get_app_config("bam_server"), '| <a href="https://www.bam.de/Navigation/EN/Services/Privacy-Policy/privacy-policy.html" target="_blank" rel="noopener noreferrer">BAM PP</a>', '')
   )
 }
