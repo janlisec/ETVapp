@@ -48,17 +48,16 @@ app_ui <- function() {
           title = "Workflow",
           value = "workflow",
           bslib::card_body(
-            radioButtons(inputId = "par_wf", label = NULL, choices = c("ExtCal","ExtGasCal","IDMS","oIDMS"), selected = c("ExtCal","ExtGasCal","IDMS","oIDMS")[1]),
+            # will be filled in server function
+            radioButtons(inputId = "par_wf", label = NULL, choices = "", inline = TRUE),
           )
         ),
         bslib::nav_panel(
           title = "Testdata Files",
           value = "testdata",
           bslib::card_body(
-            radioButtons(
-              inputId = "par_filetype", label = NULL,
-              choices = list("Cali" = "Cali", "Mass bias" = "Massbias", "Samples" = "Samples", "Blanks" = "Blanks", "sp: Ionic" = "sp_ionic", "sp: Particles" = "sp_particle"), selected = "Cali"
-            )
+            # will be filled in server function
+            radioButtons(inputId = "par_filetype", label = NULL, choices = "", inline = TRUE)
           )
         ),
         bslib::nav_panel(
@@ -74,7 +73,7 @@ app_ui <- function() {
   ExtIDMS_import <- shiny::div(
     id = "ExtIDMS_import",
     bslib::layout_column_wrap(
-      width = 120, gap = "5px",
+      width = 120, gap = "5px", heights_equal = "row",
       shiny::HTML("Isotopes:"),
       selectInput(inputId = "ic_par_mi_col", label = "1", choices = c("")), #|> bslib::tooltip("Select Spike Isotope column."),
       selectInput(inputId = "ic_par_si_col", label = "2", choices = c("")), #|> bslib::tooltip("Select Sample Isotope column."),
@@ -82,7 +81,7 @@ app_ui <- function() {
       #shinyjs::hidden(selectInput(inputId = "ic_par_rt_col", label = "", choices = "Time")), #|> bslib::tooltip("Select RT column."),
       shiny::HTML("Labels:"),
       textInput(inputId = "ic_par_mi_col_name", label = ""),
-      textInput(inputId = "ic_par_si_col_name", label = ""),
+      textInput(inputId = "ic_par_si_col_name", label = "")
     )
   )
 
@@ -91,17 +90,19 @@ app_ui <- function() {
     bslib::layout_column_wrap(
       width = 120, gap = "5px",
       shiny::HTML("Natural abundances:"),
-      numericInput(inputId = "ic_par_mi_amu", label = "", value = 0, max = 1, step = 0.0001),
-      numericInput(inputId = "ic_par_si_amu", label = "", value = 0, max = 1, step = 0.0001)
+      numericInput(inputId = "ic_par_mi_amu", label = NULL, value = 0, max = 1, step = 0.0001),
+      numericInput(inputId = "ic_par_si_amu", label = NULL, value = 0, max = 1, step = 0.0001)
     )
   )
 
   card_import <- shiny::tagList(
     bslib::card(
-      id = "Import_par_section",
+      id = "Import_par_section", fill = FALSE,
       bslib::card_header(shiny::actionLink(inputId = "ic_help03", label = "Import")),
-      ExtIDMS_import,
-      IDMS_import
+      shiny::div(
+        ExtIDMS_import,
+        IDMS_import
+      )
     )
   )
 
@@ -219,14 +220,16 @@ app_ui <- function() {
   )
   card_workflow_pars <- shiny::tagList(
     bslib::card(
-      id = "wf_pars",
+      id = "wf_pars", fill = FALSE,
       bslib::card_header(shiny::actionLink(inputId = "ic_help10", label = "Workflow Parameters")),
-      IDMS_pars_common,
-      IDMS_pars,
-      oIDMS_pars,
-      ExtCal_pars,
-      ExtGasCal_pars,
-      ExtIDMS_pars_common
+      shiny::div(
+        IDMS_pars_common,
+        IDMS_pars,
+        oIDMS_pars,
+        ExtCal_pars,
+        ExtGasCal_pars,
+        ExtIDMS_pars_common
+      )
     )
   )
 
@@ -256,8 +259,8 @@ app_ui <- function() {
           sidebar = bslib::sidebar(
             position = "right", open = "open", width = "280px", gap = "10px",
             bslib::input_switch("ic_par_isotope", "Show isotopes"),
-            shinyWidgets::pickerInput(inputId = "ic_par_focus_sample", label = "", choices = "", multiple = TRUE, options = list(`actions-box` = TRUE)),
-            shinyWidgets::pickerInput(inputId = "ic_par_focus_iso", label = "", choices = "", multiple = TRUE, options = list(`actions-box` = TRUE)),
+            shinyWidgets::pickerInput(inputId = "ic_par_focus_sample", label = NULL, choices = "", multiple = TRUE, options = list(`actions-box` = TRUE)),
+            shinyWidgets::pickerInput(inputId = "ic_par_focus_iso", label = NULL, choices = "", multiple = TRUE, options = list(`actions-box` = TRUE)),
             checkboxGroupInput(
               inputId = "ic_par_specplot",
               label = shiny::actionLink(inputId = "ic_help05", label = "Plot options"),
@@ -392,18 +395,14 @@ app_server <- function(input, output, session) {
   ### setup reactive Values ##############################################----
   # the editable peak table
   ic_table_peaks_edit <- shiny::reactiveVal()
+
   # setup initial plot range (min, max)
   spec_plots_xmin <- reactiveVal(0)
   spec_plots_xmax <- reactiveVal(320)
   spec_plots_ymin <- reactiveVal(0)
   spec_plots_ymax <- reactiveVal(300000)
-  # the time range if cutting is applied
-  #cut_range <- reactiveValues("min"=NULL, "max"=NULL)
-  # the rt shift applied to samples for alignment
-  #rt_shift <- reactiveVal(0)
-  # indicator if range cut is currently applied
-  #status_range_cut <- reactiveVal("off")
 
+  # various reactive parameters
   pars <- shiny::reactiveValues(
     "smoothing_fl" = 7,
     "mass_frac" = 1,
@@ -411,6 +410,8 @@ app_server <- function(input, output, session) {
     "amae" = NULL,
     "K" = NULL,
     "current_files" = NULL,
+    "current_isos" = NULL,
+    "color_isos" = c("black","red","blue","green","orange","purple","brown","pink","gray","cyan","magenta","yellow"),
     "ExtCal_cali" = NULL,
     "ExtCal_cm" = NULL,
     "ExtCal_sam" = NULL,
@@ -464,6 +465,8 @@ app_server <- function(input, output, session) {
     "IDMS"=filetype_definition[c(2,3,5)],
     "oIDMS"=filetype_definition[c(2,6,7,3,5)]
   )
+
+  shiny::updateRadioButtons(inputId = "par_wf", choices = names(wf_definition))
 
   ### show/hide section ##################################################----
   # modify UI depending on workflow (IR-Delta or IDMS)
@@ -732,9 +735,15 @@ app_server <- function(input, output, session) {
     mi_sel <- ifelse(mi_old %in% fic, mi_old, fic[2])
     si_sel <- ifelse(si_old %in% fic, si_old, ifelse(length(fic)>=3, fic[3], fic[2]))
     iso_sel <- ifelse(iso_old %in% fic, iso_old, fic[2])
+    pars$current_isos <- I(fic[-1])
     updateSelectInput(inputId = "ic_par_mi_col", choices = I(fic[-1]), selected = mi_sel)
     updateSelectInput(inputId = "ic_par_si_col", choices = I(fic[-1]), selected = si_sel)
-    shinyWidgets::updatePickerInput(inputId = "ic_par_focus_iso", choices = I(fic[-1]), selected = I(fic[-1]))
+    shinyWidgets::updatePickerInput(
+      inputId = "ic_par_focus_iso", choices = I(fic[-1]), selected = I(fic[-1]),
+      choicesOpt = list(
+        style = paste0("color: ", pars$color_isos[1:length(fic[-1])], ";")
+      )
+    )
     reset_times()
   })
 
@@ -1027,7 +1036,7 @@ app_server <- function(input, output, session) {
       plot(x = x_rng, y = y_rng, type="n", "xaxs"="i", xlab="Time [s]", ylab="Intensity [cts]")
       for (i in idx_all) {
         for (j in input$ic_par_focus_iso) {
-          lines(x = file_in()[[i]][,1], y = file_in()[[i]][,j], lty = i, col = which(input$ic_par_focus_iso %in% j))
+          lines(x = file_in()[[i]][,1], y = file_in()[[i]][,j], lty = i, col = pars$color_isos[which(pars$current_isos %in% j)])
         }
       }
     } else {
