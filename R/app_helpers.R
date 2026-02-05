@@ -1,6 +1,7 @@
 #' internal function that are used within exported functions
 #'
 #' functions to manipulate data.frame columns
+#' - reset_or_init_pars
 #' - blcorr_col
 #' - scale_col
 #' - smooth_col
@@ -14,6 +15,75 @@
 #' specific helper functions
 #' - get_peak
 #' - extract_unique_number
+
+
+#' @title reset_or_init_pars.
+#' @description Initialize or reset a parameter list of reactive values.
+#' @param pars If NULL, a new list is returned, otherwise an existing list is modified.
+#' @param keep_extra Column name of the column to be baseline corrected or numeric index.
+#' @param isolated Reset using shiny::isolated().
+#' @return A new or modified reactiveValues list.
+#' @keywords internal
+#' @noRd
+reset_or_init_pars <- function(pars = NULL, keep_extra = TRUE, isolated = FALSE) {
+
+  # list of default named values
+  defs <- list(
+    "smoothing_fl" = 7,
+    "mass_frac" = 1,
+    "std_info" = NULL,
+    "amae" = NULL,
+    "K" = NULL,
+    "current_files" = NULL,
+    "current_isos" = NULL,
+    "color_isos" = c("black","red","blue","green","orange","purple","brown","pink","gray","cyan","magenta","yellow"),
+    "ExtCal_cali" = NULL,
+    "ExtCal_cm" = NULL,
+    "ExtCal_sam" = NULL,
+    "ExtCal_lox" = NULL,
+    "ExtGasCal_cali" = NULL,
+    "ExtGasCal_cm" = NULL,
+    "ExtGasCal_sam" = NULL,
+    "ExtGasCal_lox" = NULL,
+    "oIDMS_cali" = NULL,
+    "oIDMS_cm" = NULL,
+    "oIDMS_sam" = NULL,
+    "oIDMS_lox" = NULL,
+    "IDMS_cali" = NULL,
+    "IDMS_sam" = NULL,
+    "IDMS_lox" = NULL,
+    "T_prog" = "",
+    "Iso_labels" = stats::setNames("Time","Time")
+  )
+
+  # initialize
+  if (is.null(pars)) {
+    return(do.call(shiny::reactiveValues, defs))
+  }
+
+  # check if "reactivevalues" was provided
+  stopifnot(inherits(pars, "reactivevalues"))
+  current <- shiny::reactiveValuesToList(pars, all.names = TRUE)
+
+  # reset to defaults
+  for (nm in names(defs)) {
+    if (isolated) {
+      shiny::isolated(pars[[nm]] <- defs[[nm]])
+    } else {
+      pars[[nm]] <- defs[[nm]]
+    }
+  }
+
+  # remove (or keep) additional items
+  if (!keep_extra) {
+    extra <- setdiff(names(current), names(defs))
+    for (nm in extra) {
+      pars[[nm]] <- NULL  # delete from reactiveValues
+    }
+  }
+
+  invisible(pars)
+}
 
 #' @title blcorr_col.
 #' @description Applies baseline correction to a specific column of a data.frame.

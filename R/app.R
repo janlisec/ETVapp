@@ -402,35 +402,8 @@ app_server <- function(input, output, session) {
   spec_plots_ymin <- reactiveVal(0)
   spec_plots_ymax <- reactiveVal(300000)
 
-  # various reactive parameters
-  pars <- shiny::reactiveValues(
-    "smoothing_fl" = 7,
-    "mass_frac" = 1,
-    "std_info" = NULL,
-    "amae" = NULL,
-    "K" = NULL,
-    "current_files" = NULL,
-    "current_isos" = NULL,
-    "color_isos" = c("black","red","blue","green","orange","purple","brown","pink","gray","cyan","magenta","yellow"),
-    "ExtCal_cali" = NULL,
-    "ExtCal_cm" = NULL,
-    "ExtCal_sam" = NULL,
-    "ExtCal_lox" = NULL,
-    "ExtGasCal_cali" = NULL,
-    "ExtGasCal_cm" = NULL,
-    "ExtGasCal_sam" = NULL,
-    "ExtGasCal_lox" = NULL,
-    "oIDMS_cali" = NULL,
-    "oIDMS_cm" = NULL,
-    "oIDMS_sam" = NULL,
-    "oIDMS_lox" = NULL,
-    "IDMS_cali" = NULL,
-    #"IDMS_cm" = NULL,
-    "IDMS_sam" = NULL,
-    "IDMS_lox" = NULL,
-    "T_prog" = "",
-    "Iso_labels" = stats::setNames("Time","Time")
-  )
+  # initialize various reactive parameters
+  pars <- reset_or_init_pars(pars = NULL)
 
   T_prog <- read_clipboard_Server(id = "T_prog", btn_txt="Set Temp program", value=shiny::reactive(pars$T_prog))
 
@@ -700,17 +673,20 @@ app_server <- function(input, output, session) {
 
   # show fileUpload only when data source is set to 'upload files' ----
   observeEvent(input$ic_par_libsource, {
-    #shinyjs::toggle(id = "ic_par_path_expfiles", condition = input$ic_par_libsource=="Upload files")
+    # $$JL:ToDo empty all calculated values in pars$...
+    reset_or_init_pars(pars = pars)
     if (input$ic_par_libsource=="Testdata") {
       bslib::nav_show("navset_flow", "testdata")
       bslib::nav_hide("navset_flow", "upload")
       bslib::nav_select("navset_flow", "workflow")
-      updateRadioButtons(inputId = "par_wf", selected = "ExtCal")
+      updateRadioButtons(inputId = "par_wf", selected = input$par_wf)
+      updateRadioButtons(inputId = "par_filetype", selected = wf_definition[[input$par_wf]][1])
     } else {
       bslib::nav_hide("navset_flow", "testdata")
       bslib::nav_show("navset_flow", "upload")
       bslib::nav_select("navset_flow", "workflow")
-      updateRadioButtons(inputId = "par_wf", selected = "ExtCal")
+      updateRadioButtons(inputId = "par_wf", selected = input$par_wf)
+      updateRadioButtons(inputId = "par_filetype", selected = wf_definition[[input$par_wf]][1])
     }
   })
 
