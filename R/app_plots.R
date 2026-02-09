@@ -49,7 +49,7 @@ ic_specplot <- function(
 ) {
   # determine data ranges to display
   idx_all <- as.numeric(gsub("[^[:digit:]]", "", s_focus))
-  if (!all(idx_all %in% 1:length(mi_spec))) browser()
+  if (!all(idx_all %in% 1:length(mi_spec))) message("Error in ic_specplot -- check")
   if (length(idx_all) == 1) { cols <- rep(1, idx_all) } else { cols <- 2:(max(idx_all)+1) }
   if (is.null(xrng)) xrng <- range(sapply(mi_spec[idx_all], function(x) { range(x[,"Time"], na.rm=TRUE) }))
   if (is.null(yrng)) yrng <- range(sapply(mi_spec[idx_all], function(x) { c(0, max(x[,c1], na.rm=TRUE)) }))

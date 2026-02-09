@@ -56,6 +56,8 @@ reset_or_init_pars <- function(pars = NULL, keep_extra = TRUE, isolated = FALSE)
     "Iso_labels" = stats::setNames("Time","Time")
   )
 
+  message(ifelse(is.null(pars), "Initializing", "Resetting"), " pars reactiveList object")
+
   # initialize
   if (is.null(pars)) {
     return(do.call(shiny::reactiveValues, defs))

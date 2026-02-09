@@ -235,7 +235,8 @@ app_ui <- function() {
 
   main_menu_ui <- function() {
     shiny::tagList(
-      shiny::div(style = "display: flex; flex-direction: column; height: calc(100vh - 114px);",
+      shiny::div(
+        style = "display: flex; flex-direction: column; height: calc(100vh - 114px);",
         shiny::div(
           style = "flex-grow: 0;",
           card_data_source,
@@ -265,7 +266,7 @@ app_ui <- function() {
               inputId = "ic_par_specplot",
               label = shiny::actionLink(inputId = "ic_help05", label = "Plot options"),
               choices = list(
-                "show peak boundaries"="overlay_pb",
+                "show peak boundaries" = "overlay_pb",
                 "show sample IDs" = "overlay_legend",
                 "show Temp program" = "overlay_Temp"
               ),
@@ -404,6 +405,7 @@ app_server <- function(input, output, session) {
 
   # initialize various reactive parameters
   pars <- reset_or_init_pars(pars = NULL)
+  app_state <- reactiveVal("startup")
 
   T_prog <- read_clipboard_Server(id = "T_prog", btn_txt="Set Temp program", value=shiny::reactive(pars$T_prog))
 
@@ -480,6 +482,7 @@ app_server <- function(input, output, session) {
   # get input data as list of tables
   file_in <- reactive({
     req(input$ic_par_libsource)
+    req(app_state()=="idle")
     message("file_in() is updated")
     out <- NULL
     if (input$ic_par_libsource=="Upload files") {
@@ -507,22 +510,6 @@ app_server <- function(input, output, session) {
         out <- ETVapp::ETVapp_testdata[[input$par_wf]][[input$par_filetype]]
       }
     }
-    if (!is.null(out)) {
-      # try to guess concentrations from filenames for Cali and spionic
-      if (input$par_filetype %in% c("Cali", "sp_ionic")) {
-        pars$std_info <- extract_unique_number(names(out))
-      } else {
-        pars$std_info <- NULL
-      }
-      # set current file names
-      pars$current_files <- names(out)
-      nval <- paste("Sample", 1:length(out))
-      message("Update Sample Picker Input to ", paste(nval, collapse = ","))
-      shinyWidgets::updatePickerInput(inputId = "ic_par_focus_sample", choices = nval, selected = nval)
-
-    } else {
-      ic_table_peaks_edit(NULL)
-    }
     validate(need(out, message = "Please upload valid data"))
     return(out)
   })
@@ -535,6 +522,22 @@ app_server <- function(input, output, session) {
       shinyjs::show("ic_par_specplot")
       shinyjs::hide("ic_par_focus_iso")
     }
+  })
+
+  shiny::observeEvent(file_in(), {
+    # try to guess concentrations from filenames for Cali and spionic
+    #browser()
+    if (input$par_filetype %in% c("Cali", "sp_ionic")) {
+      message("Extracting concentration from file names")
+      pars$std_info <- extract_unique_number(names(file_in()))
+    } else {
+      pars$std_info <- NULL
+    }
+    # set current file names
+    pars$current_files <- names(file_in())
+    nval <- paste("Sample", 1:length(file_in()))
+    message("Update Sample Picker Input to ", paste(nval, collapse = ","))
+    shinyWidgets::updatePickerInput(inputId = "ic_par_focus_sample", choices = nval, selected = nval)
   })
 
   # register the file_in reactive for app testing
@@ -639,14 +642,6 @@ app_server <- function(input, output, session) {
   # table of peaks of 'new sample' ----
   shiny::observeEvent(ic_table_peaks_pre(), {
     tmp <- ic_table_peaks_pre()
-    # if (nrow(tmp)>=1 && all(table(tmp[,"Peak ID"])==max(tmp[,"Sample"]))) {
-    #   np <- max(tmp[,"Peak ID"])
-    #   if (length(np)==1 && np>=2) {
-    #     type <- c("standard", rep("sample", np-2), "standard")
-    #     if (length(type)==2) type[2] <- "sample"
-    #     tmp[,"Type"] <- sapply(tmp[,"Peak ID"], function(i) {type[i]})
-    #   }
-    # }
     ic_table_peaks_edit(tmp)
   })
 
@@ -673,8 +668,9 @@ app_server <- function(input, output, session) {
 
   # show fileUpload only when data source is set to 'upload files' ----
   observeEvent(input$ic_par_libsource, {
-    # $$JL:ToDo empty all calculated values in pars$...
+    app_state("resetting")
     reset_or_init_pars(pars = pars)
+    app_state("idle")
     if (input$ic_par_libsource=="Testdata") {
       bslib::nav_show("navset_flow", "testdata")
       bslib::nav_hide("navset_flow", "upload")
@@ -793,6 +789,7 @@ app_server <- function(input, output, session) {
       }
     }
     message("output$ic_table_peaks")
+    #browser()
     cm <- switch (
       input$par_wf,
       "ExtCal" = pars$ExtCal_cm,
@@ -938,6 +935,7 @@ app_server <- function(input, output, session) {
 
   # cali peaks table ----
   output$table_cali <- DT::renderDT({
+    req(any(!is.null(pars$ExtCal_cali), !is.null(pars$ExtGasCal_cali), !is.null(pars$oIDMS_cali), !is.null(pars$IDMS_cali)))
     message("output$table_cali")
     df <- switch (
       input$par_wf,
@@ -953,6 +951,7 @@ app_server <- function(input, output, session) {
 
   # cali model table ----
   output$table_cm <- DT::renderDT({
+    req(any(!is.null(pars$ExtCal_cm), !is.null(pars$ExtGasCal_cm), !is.null(pars$oIDMS_cm)))
     message("output$table_cm")
     df <- switch (
       input$par_wf,
@@ -968,6 +967,7 @@ app_server <- function(input, output, session) {
 
   # sample table ----
   output$table_sam <- DT::renderDT({
+    req(any(!is.null(pars$ExtCal_sam), !is.null(pars$ExtGasCal_sam), !is.null(pars$oIDMS_sam), !is.null(pars$IDMS_sam)))
     message("output$table_sam")
     df <- switch (
       input$par_wf,
@@ -983,6 +983,7 @@ app_server <- function(input, output, session) {
 
   # LOx table ----
   output$table_lox <- DT::renderDT({
+    req(any(!is.null(pars$ExtCal_lox), !is.null(pars$ExtGasCal_lox), !is.null(pars$oIDMS_lox), !is.null(pars$IDMS_lox)))
     message("output$table_lox")
     df <- switch (
       input$par_wf,
@@ -1044,23 +1045,31 @@ app_server <- function(input, output, session) {
     }
   })
 
+  shiny::observeEvent(pars$std_info, {
+    message("pars$std_info changed to: ", paste(pars$std_info, sep=" ", collapse=", "))
+    #traceback()
+  }, ignoreNULL = TRUE)
+
+
+
   # cali plot ----
   output$cali_plot <- shiny::renderPlot({
+    #browser()
     shiny::req(pars$std_info, ic_table_peaks_edit())
     shiny::req(length(pars$std_info)==nrow(ic_table_peaks_edit()))
     message("output$caliplot")
     cali_peaks <- cbind("std_info" = pars$std_info, ic_table_peaks_edit()[,6,drop=FALSE])
     cm <- calc_cali_mod(df = cali_peaks, wf = input$par_wf)
     if (input$par_wf == "ExtCal") {
-      pars$ExtCal_cm <- cm
+      shiny::isolate(pars$ExtCal_cm <- cm)
       colnames(cali_peaks)[1] <- paste0("Analyte mass [", input$ExtCal_unit, "]")
     }
     if (input$par_wf == "ExtGasCal") {
-      pars$ExtGasCal_cm <- cm
+      shiny::isolate(pars$ExtGasCal_cm <- cm)
       colnames(cali_peaks)[1] <- paste0("Analyte mass [", input$ExtGasCal_unit, "]")
     }
     if (input$par_wf == "oIDMS") {
-      pars$oIDMS_cm <- cm
+      shiny::isolate(pars$oIDMS_cm <- cm)
     }
     par(cex = 1.4)
     plot(cali_peaks)
@@ -1068,7 +1077,6 @@ app_server <- function(input, output, session) {
   })
 
   # signal distribution plot ----
-
   oIMDS_particle_flt <- shiny::reactive({
     shiny::req(input$par_wf == "oIDMS", input$par_filetype == "sp_particle", input$t_fltr, ic_mi_spectra())
     shiny::req(input$ic_par_mi_col %in% colnames(ic_mi_spectra()[[1]]))
