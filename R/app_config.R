@@ -46,16 +46,11 @@ add_external_resources <- function() {
   shiny::tags$head(
     shiny::tags$title(get_app_config("app_name")),
     shiny::tags$link(rel = "shortcut icon", href = "www/BAMLogo.ico"),
-    # shiny::tags$style(
-    #   shiny::HTML("
-    #     .card-body {
-    #       overflow: visible !important;
-    #     }
-    #     .form-group {
-    #       overflow: visible !important;
-    #     }
-    #   ")
-    # ),
+    tags$style(shiny::HTML("
+      .bslib-mb-spacing {
+        margin-bottom: 8px !important;
+      }
+    ")),
     if (get_app_config("bam_server")) {
       list(
         shiny::HTML('<noscript><p><img src="https://agw1.bam.de/piwik/matomo.php?idsite=24&amp;rec=1" style="border:0;" alt="" /></p></noscript>'),

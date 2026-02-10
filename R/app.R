@@ -28,57 +28,51 @@ app <- function() {
 app_ui <- function() {
 
   # card components
-  # data source
-  card_data_source <- shiny::tagList(
-    bslib::card(
-      bslib::card_header(
-        style = "width: 100%; margin: 0px;",
-        class = "d-flex align-items-center",
-        shiny::actionLink(inputId = "ic_help02", label = "Data source"),
-        div(
-          class = "ms-auto d-flex align-items-center",
-          shiny::radioButtons(
-            inputId = "ic_par_libsource", label = NULL, inline=TRUE,
-            choices = c("Upload files", "Testdata"), selected = "Upload files")
-        )
+  # card data source ----
+  card_data_source <- bslib::card(
+    bslib::card_header(
+      style = "width: 100%; margin: 0px;",
+      class = "d-flex align-items-center",
+      shiny::actionLink(inputId = "ic_help02", label = "Data source"),
+      div(
+        class = "ms-auto d-flex align-items-center",
+        shiny::radioButtons(
+          inputId = "ic_par_libsource", label = NULL, inline=TRUE,
+          choices = c("Upload files", "Testdata"), selected = "Upload files")
+      )
+    ),
+    bslib::navset_tab(
+      id = "navset_flow",
+      bslib::nav_panel(
+        title = "Workflow", value = "workflow",
+        bslib::card_body(radioButtons(inputId = "par_wf", label = NULL, choices = "", inline = TRUE))
       ),
-      bslib::navset_tab(
-        id = "navset_flow",
-        bslib::nav_panel(
-          title = "Workflow",
-          value = "workflow",
-          bslib::card_body(
-            # will be filled in server function
-            radioButtons(inputId = "par_wf", label = NULL, choices = "", inline = TRUE),
-          )
-        ),
-        bslib::nav_panel(
-          title = "Testdata Files",
-          value = "testdata",
-          bslib::card_body(
-            # will be filled in server function
-            radioButtons(inputId = "par_filetype", label = NULL, choices = "", inline = TRUE)
-          )
-        ),
-        bslib::nav_panel(
-          title = "Upload Files",
-          value = "upload",
-          uiOutput(outputId = "ic_par_path_expfiles"),
-          shiny::actionButton(inputId = "par_confirm_processing_step", label = "Confirm processing to continue with next step", width="100%")
-        )
+      bslib::nav_panel(
+        title = "Testdata Files", value = "testdata",
+        bslib::card_body(radioButtons(inputId = "par_filetype", label = NULL, choices = "", inline = TRUE))
+      ),
+      bslib::nav_panel(
+        title = "Upload Files", value = "upload",
+        uiOutput(outputId = "ic_par_path_expfiles"),
+        shiny::actionButton(inputId = "par_confirm_processing_step", label = "Confirm processing to continue with next step", width="100%")
       )
     )
   )
-  # import parameters
+
+  input_elem_grid <- function(...) {
+    bslib::layout_column_wrap(
+      width = "120px", gap = "8px", heights_equal = "row",
+      ...
+    )
+  }
+
+  # card import parameters ----
   ExtIDMS_import <- shiny::div(
     id = "ExtIDMS_import",
-    bslib::layout_column_wrap(
-      width = 120, gap = "5px", heights_equal = "row",
+    input_elem_grid(
       shiny::HTML("Isotopes:"),
-      selectInput(inputId = "ic_par_mi_col", label = "1", choices = c("")), #|> bslib::tooltip("Select Spike Isotope column."),
-      selectInput(inputId = "ic_par_si_col", label = "2", choices = c("")), #|> bslib::tooltip("Select Sample Isotope column."),
-      #shinyjs::hidden(textInput(inputId = "ic_par_mi_rt_unit", label = "RT unit", value = "s")),
-      #shinyjs::hidden(selectInput(inputId = "ic_par_rt_col", label = "", choices = "Time")), #|> bslib::tooltip("Select RT column."),
+      selectInput(inputId = "ic_par_mi_col", label = "1", choices = c("")),
+      selectInput(inputId = "ic_par_si_col", label = "2", choices = c("")),
       shiny::HTML("Labels:"),
       textInput(inputId = "ic_par_mi_col_name", label = ""),
       textInput(inputId = "ic_par_si_col_name", label = "")
@@ -87,71 +81,58 @@ app_ui <- function() {
 
   IDMS_import <- shiny::div(
     id = "IDMS_import",
-    bslib::layout_column_wrap(
-      width = 120, gap = "5px",
+    input_elem_grid(
       shiny::HTML("Natural abundances:"),
       numericInput(inputId = "ic_par_mi_amu", label = NULL, value = 0, max = 1, step = 0.0001),
       numericInput(inputId = "ic_par_si_amu", label = NULL, value = 0, max = 1, step = 0.0001)
     )
   )
 
-  card_import <- shiny::tagList(
-    bslib::card(
-      id = "Import_par_section", fill = FALSE,
-      bslib::card_header(shiny::actionLink(inputId = "ic_help03", label = "Import")),
-      shiny::div(
-        ExtIDMS_import,
-        IDMS_import
-      )
+  card_import <- bslib::card(
+    id = "Import_par_section", fill = FALSE,
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::actionLink(inputId = "ic_help03", label = "Import"),
+      shiny::actionButton(inputId = "btn_card_import", label = NULL, icon = shiny::icon("compress-arrows-alt"), style = "border: none; padding-left: 5px; padding-right: 5px; padding-top: 0px; padding-bottom: 0px;")
+    ),
+    shiny::div(
+      id = "body_card_import",
+      ExtIDMS_import,
+      IDMS_import
     )
   )
 
-  #card_import <- shiny::tagList(
-    #bslib::card(
-      #id = "Import_par_section",
-      #bslib::card_header(shiny::actionLink(inputId = "ic_help03", label = "Import")),
-      #bslib::layout_column_wrap(
-        #width = 120, gap = "5px",
-        #shinyjs::hidden(selectInput(inputId = "ic_par_rt_col", label = "RT column", choices = "Time")) |> bslib::tooltip("Select RT column."),
-        #shiny::HTML("Isotopes:"),
-        #selectInput(inputId = "ic_par_mi_col", label = "1", choices = c("")), #|> bslib::tooltip("Select Spike Isotope column."),
-        #selectInput(inputId = "ic_par_si_col", label = "2", choices = c("")), #|> bslib::tooltip("Select Sample Isotope column."),
-        #shinyjs::hidden(textInput(inputId = "ic_par_mi_rt_unit", label = "RT unit", value = "s")),
-        #shiny::HTML("Labels:"),
-        #textInput(inputId = "ic_par_mi_col_name", label = ""),
-        #textInput(inputId = "ic_par_si_col_name", label = ""),
-
-      #)
-    #)
-  #)
-  card_processing <- shiny::tagList(
-    bslib::card(
-      id = "Processing_par_section",
-      bslib::card_header(shiny::actionLink(inputId = "ic_help04", label = "Processing")),
-      bslib::layout_column_wrap(
-        width = 120, gap = "5px",
-        numericInput(inputId = "smoothing_fl", label = "Smoothing", value = 9, min=1, max=151, step=2) |> bslib::tooltip("Smoothing parameter 'filter length'. Set to '1' to omit this processing step. Set to '151' to use smooth.spline()."),
+  # card processing parameters ----
+  card_processing <- bslib::card(
+    id = "Processing_par_section", fill = FALSE,
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::actionLink(inputId = "ic_help04", label = "Processing"),
+      shiny::actionButton(inputId = "btn_card_processing", label = NULL, icon = shiny::icon("compress-arrows-alt"), style = "border: none; padding-left: 5px; padding-right: 5px; padding-top: 0px; padding-bottom: 0px;")
+    ),
+    shiny::div(
+      id = "body_card_processing",
+      input_elem_grid(
+        numericInput(inputId = "smoothing_fl", label = "Smoothing", value = 9, min=1, max=151, step=2),# |> bslib::tooltip("Smoothing parameter 'filter length'. Set to '1' to omit this processing step. Set to '151' to use smooth.spline()."),
         selectInput(inputId = "peak_method", label = "Peak Method", choices = c("Peak (height)", "Peak (manual)", "mean signal"), selected = "Peak (manual)"), #|> bslib::tooltip("Select method for Peak picking."),
         shiny::HTML(""),
         shiny::HTML("Peak (height):"),
-        numericInput(inputId = "peak_height", label = "Threshold", value = 1000, min=0, step=1) |> bslib::tooltip("Peak picking parameter: peak_height."),
+        numericInput(inputId = "peak_height", label = "Threshold", value = 1000, min=0, step=1),
         shiny::HTML(""),
         shiny::HTML("Peak(manual)/ mean signal:"),
-        numericInput(inputId = "peak_start", label = "Start", value = 70, min=0, step=1) |> bslib::tooltip("Peak picking parameter: peak_start."),
-        numericInput(inputId = "peak_end", label = "End", value = 105, min=1, max=1000, step=1) |> bslib::tooltip("Peak picking parameter: peak_end."),
+        numericInput(inputId = "peak_start", label = "Start", value = 70, min=0, step=1),
+        numericInput(inputId = "peak_end", label = "End", value = 105, min=1, max=1000, step=1),
         shiny::HTML("Baseline correction:"),
         selectInput(inputId = "baseline_method", label = "Method", choices = c("none", "modpolyfit"), selected = "modpolyfit"), #|> bslib::tooltip("Select method for baseline estimation or 'none' to omit this processing step."),
         numericInput(inputId = "cf", label = "Correction factor", value = 50, min=0, max=1000, step=1) #|> bslib::tooltip("Peak picking parameter: peak_end."),
       )
     )
   )
+
+  # card workflow parameters ----
   IDMS_pars_common <- shiny::div(
     id = "IDMS_pars_common",
-    bslib::layout_column_wrap(
-      width = 120, gap = "5px",
-      #shinyjs::hidden(numericInput(inputId = "As_iso1", label = "As_iso1", value = 12.22)),
-      #shinyjs::hidden(numericInput(inputId = "As_iso2", label = "As_iso2", value = 12.8)),
-      #shinyjs::hidden(numericInput(inputId = "K", label = "K", value = 1)),
+    input_elem_grid(
       shiny::HTML("Abundances:"),
       numericInput(inputId = "Asp_iso1", label = "Isotope 1", value = 92.61),
       numericInput(inputId = "Asp_iso2", label = "Isotope 2", value = 0.22),
@@ -162,8 +143,7 @@ app_ui <- function() {
   )
   IDMS_pars <- shiny::div(
     id = "IDMS_pars",
-    bslib::layout_column_wrap(
-      width = 120, gap = "5px",
+    input_elem_grid(
       shiny::HTML("Added spike solution:"),
       numericInput(inputId = "VF1", label = "Dilution factor", value = 1000),
       numericInput(inputId = "V_sp", label = "Volume", value = 6),
@@ -176,8 +156,7 @@ app_ui <- function() {
   )
   oIDMS_pars <- shiny::div(
     id = "oIDMS_pars",
-    bslib::layout_column_wrap(
-      width = 120, gap = "5px",
+    input_elem_grid(
       shiny::HTML("On-line spike:"),
       numericInput(inputId = "DF", label = "Dilution factor", value = 20),
       numericInput(inputId = "V_fl", label = "Volume flow", value = 0.0075),
@@ -193,8 +172,7 @@ app_ui <- function() {
   )
   ExtIDMS_pars_common <- shiny::div(
     id = "ExtIDMS_pars_common",
-    bslib::layout_column_wrap(
-      width = 120, gap = "5px",
+    input_elem_grid(
       shinyjs::hidden(numericInput(inputId = "mass_fraction2", label = "Mass fraction", value = 1, min = 10^-6, max = 1, step = 10^-6)),
       shinyjs::hidden(numericInput(inputId = "sample_mass", label = "Sample mass [mg]", value = 1, min = 1)),
       shiny::HTML("")
@@ -202,8 +180,7 @@ app_ui <- function() {
   )
   ExtCal_pars <- shiny::div(
     id = "ExtCal_pars",
-    bslib::layout_column_wrap(
-      width = 120, gap = "5px",
+    input_elem_grid(
       shiny::HTML("Standard:"),
       selectInput(inputId = "ExtCal_unit", label = "Unit", choices = c("pg","ng","\u00b5g")),
       shiny::HTML("")
@@ -211,42 +188,37 @@ app_ui <- function() {
   )
   ExtGasCal_pars <- shiny::div(
     id = "ExtGasCal_pars",
-    bslib::layout_column_wrap(
-      width = 120, gap = "5px",
+    input_elem_grid(
       shiny::HTML("Calibration gas:"),
       numericInput(inputId = "cali_fac", label = "Conversion factor", value = 0.005002692),
       selectInput(inputId = "ExtGasCal_unit", label = "Unit", choices = c("nL/min", "\u00b5L/min", "mL/min"))
     )
   )
-  card_workflow_pars <- shiny::tagList(
-    bslib::card(
-      id = "wf_pars", fill = FALSE,
-      bslib::card_header(shiny::actionLink(inputId = "ic_help10", label = "Workflow Parameters")),
-      shiny::div(
-        IDMS_pars_common,
-        IDMS_pars,
-        oIDMS_pars,
-        ExtCal_pars,
-        ExtGasCal_pars,
-        ExtIDMS_pars_common
-      )
+  card_workflow <- bslib::card(
+    id = "wf_pars", fill = FALSE,
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::actionLink(inputId = "ic_help10", label = "Workflow Parameters"),
+      shiny::actionButton(inputId = "btn_card_workflow", label = NULL, icon = shiny::icon("compress-arrows-alt"), style = "border: none; padding-left: 5px; padding-right: 5px; padding-top: 0px; padding-bottom: 0px;")
+    ),
+    shiny::div(
+      id = "body_card_workflow",
+      IDMS_pars_common,
+      IDMS_pars,
+      oIDMS_pars,
+      ExtCal_pars,
+      ExtGasCal_pars,
+      ExtIDMS_pars_common
     )
   )
 
   main_menu_ui <- function() {
     shiny::tagList(
-      shiny::div(
-        style = "display: flex; flex-direction: column; height: calc(100vh - 114px);",
-        shiny::div(
-          style = "flex-grow: 0;",
-          card_data_source,
-          card_import,
-          card_workflow_pars,
-          card_processing
-        ),
-        div(style = "flex-grow: 1;"),
-        bslib::card_footer(class = "d-flex justify-content-bottom", app_status_line())
-      )
+      card_data_source,
+      card_import,
+      card_workflow,
+      card_processing,
+      bslib::card_footer(class = "d-flex justify-content-bottom", app_status_line())
     )
   }
 
@@ -392,6 +364,24 @@ app_server <- function(input, output, session) {
     lab <- paste("Select", input$par_wf, input$par_filetype, paste0("File", ifelse(mult,"s","")))
     fileInput(inputId = "ic_par_path_expfiles_inner", label = lab, multiple = mult)
   })
+
+  shiny::observeEvent(input$btn_card_processing, {
+    x <- input$btn_card_processing %% 2 == 0
+    shinyjs::toggleElement(id = "body_card_processing", condition = x)
+    shiny::updateActionButton(inputId = "btn_card_processing", icon = shiny::icon(ifelse(x, "compress-arrows-alt", "expand-arrows-alt")))
+  }, ignoreInit = TRUE)
+
+  shiny::observeEvent(input$btn_card_import, {
+    x <- input$btn_card_import %% 2 == 0
+    shinyjs::toggleElement(id = "body_card_import", condition = x)
+    shiny::updateActionButton(inputId = "btn_card_import", icon = shiny::icon(ifelse(x, "compress-arrows-alt", "expand-arrows-alt")))
+  }, ignoreInit = TRUE)
+
+  shiny::observeEvent(input$btn_card_workflow, {
+    x <- input$btn_card_workflow %% 2 == 0
+    shinyjs::toggleElement(id = "body_card_workflow", condition = x)
+    shiny::updateActionButton(inputId = "btn_card_workflow", icon = shiny::icon(ifelse(x, "compress-arrows-alt", "expand-arrows-alt")))
+  }, ignoreInit = TRUE)
 
   ### setup reactive Values ##############################################----
   # the editable peak table
@@ -1004,7 +994,7 @@ app_server <- function(input, output, session) {
     validate(need(length(ic_mi_spectra())>=max(as.numeric(gsub("[^[:digit:]]", "", input$ic_par_focus_sample))), "Sample selection and current spectra number do not match"))
     message("output$ic_specplot")
     if (input$ic_par_isotope) {
-      # this is a small iosotope overview plot function
+      # this is a small isotope overview plot function
       idx_all <- as.numeric(gsub("[^[:digit:]]", "", input$ic_par_focus_sample))
       # !!! $$JL:$$ strong assumption that Time column is always column 1 (not guaranteed for user imported data)
       x_rng <- range(sapply(file_in()[idx_all], function(x) { range(x[,1], na.rm=TRUE) }), na.rm=TRUE)
