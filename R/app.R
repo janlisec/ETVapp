@@ -508,6 +508,7 @@ app_server <- function(input, output, session) {
     if (input$ic_par_isotope) {
       shinyjs::hide("ic_par_specplot")
       shinyjs::show("ic_par_focus_iso")
+      shinyWidgets::updatePickerInput(inputId = "ic_par_focus_sample", selected = "Sample 1", options = pickersOptions(maxOptions = 1)) #clearOptions = TRUE)
     } else {
       shinyjs::show("ic_par_specplot")
       shinyjs::hide("ic_par_focus_iso")
@@ -994,13 +995,14 @@ app_server <- function(input, output, session) {
     validate(need(length(ic_mi_spectra())>=max(as.numeric(gsub("[^[:digit:]]", "", input$ic_par_focus_sample))), "Sample selection and current spectra number do not match"))
     message("output$ic_specplot")
     if (input$ic_par_isotope) {
+      #browser()
       # this is a small isotope overview plot function
       idx_all <- as.numeric(gsub("[^[:digit:]]", "", input$ic_par_focus_sample))
       # !!! $$JL:$$ strong assumption that Time column is always column 1 (not guaranteed for user imported data)
       x_rng <- range(sapply(file_in()[idx_all], function(x) { range(x[,1], na.rm=TRUE) }), na.rm=TRUE)
       y_rng <- c(0, max(sapply(file_in()[idx_all], function(x) { range(x[,input$ic_par_focus_iso], na.rm=TRUE) }), na.rm=TRUE))
       par("mar"=c(4,4,0,0)+0.1, "cex"=1.4)
-      plot(x = x_rng, y = y_rng, type="n", "xaxs"="i", xlab="Time [s]", ylab="Intensity [cts]")
+      plot(x = x_rng, y = y_rng, type="n", "xaxs"="i", yaxs = "i", xlab="Time [s]", ylab="Intensity [cts]")
       for (i in idx_all) {
         for (j in input$ic_par_focus_iso) {
           lines(x = file_in()[[i]][,1], y = file_in()[[i]][,j], lty = i, col = pars$color_isos[which(pars$current_isos %in% j)])
