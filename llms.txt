@@ -1,0 +1,104 @@
+# ETVapp
+
+The goal of ETVapp is to provide functions to evaluate ICP-MS and
+ICP-OES experiments. To this end, currently 4 different workflows are
+implemented. The package is based on functions developed by [Vera
+Scharek](https://www.linkedin.com/in/vera-scharek-63932b205/), publicly
+available on her [GitHub profile](https://github.com/VSc811). You can
+find scientific details in her publications on Online Isotope Dilution
+ICP-MS used for [sulfor
+quantification](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553)
+and [tin
+fractionation](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553).
+
+## Installation
+
+You can install the development version of `ETVapp` from this [GitHub
+page](https://github.com/janlisec/ETVapp).
+
+``` r
+
+install.packages("janlisec/ETVapp")
+```
+
+## Use the Shiny-App for testing
+
+For users unfamiliar with the R console, the package provides a browser
+based app together with appropriate test data which allows to test the
+package functions. The app also allows to process user data for
+exploratory data analyses. However, it currently does not allow to store
+parameter settings. Therefore, for use in publications, it is
+recommended to script the analysis steps to ensure reproducibility.
+
+``` r
+
+library(ETVapp)
+app()
+```
+
+![ETVapp
+screenshot](reference/figures/ETVapp_screenshot.png?raw=true "ETVapp screenshot")
+
+ETVapp screenshot
+
+# Package index
+
+## All functions
+
+- [`ETVapp_testdata`](https://janlisec.github.io/ETVapp/reference/ETVapp_testdata.md)
+  : Test data for 4 workflows implemented in ETVapp
+- [`app()`](https://janlisec.github.io/ETVapp/reference/app.md) : Start
+  a Shiny-App as GUI for all workflows
+- [`calc_N_sp()`](https://janlisec.github.io/ETVapp/reference/calc_N_sp.md)
+  : Calculate the N_sp parameter
+- [`calc_analyte_mass_as_element()`](https://janlisec.github.io/ETVapp/reference/calc_analyte_mass_as_element.md)
+  : Calculate the analyte mass as element
+- [`calc_cali_mod()`](https://janlisec.github.io/ETVapp/reference/calc_cali_mod.md)
+  : Calculates the calibration model
+- [`calc_massbias()`](https://janlisec.github.io/ETVapp/reference/calc_massbias.md)
+  : Calculates the mass bias correction factor K
+- [`calc_massflow()`](https://janlisec.github.io/ETVapp/reference/calc_massflow.md)
+  : Calculates the mass flow mf_sp
+- [`calc_transeff()`](https://janlisec.github.io/ETVapp/reference/calc_transeff.md)
+  : Calculates the transport efficiency
+- [`extract_unique_number()`](https://janlisec.github.io/ETVapp/reference/extract_unique_number.md)
+  : Extract a number from a string.
+- [`get_isoratio()`](https://janlisec.github.io/ETVapp/reference/get_isoratio.md)
+  : Calculate an isotope ratio based on peak areas.
+- [`get_peakdata()`](https://janlisec.github.io/ETVapp/reference/get_peakdata.md)
+  : Generate a table with peak data.
+- [`import_data()`](https://janlisec.github.io/ETVapp/reference/import_data.md)
+  : Read vendor specific text files
+- [`isotopes`](https://janlisec.github.io/ETVapp/reference/isotopes.md)
+  : Chemical isotope information.
+- [`laply_base()`](https://janlisec.github.io/ETVapp/reference/laply_base.md)
+  : Base-R laply implementation
+- [`ldply_base()`](https://janlisec.github.io/ETVapp/reference/ldply_base.md)
+  : Base-R ldply implementation
+- [`plot_particle_diameter()`](https://janlisec.github.io/ETVapp/reference/plot_particle_diameter.md)
+  : Histogram plot of particle size distribution.
+- [`plot_signal_distribution()`](https://janlisec.github.io/ETVapp/reference/plot_signal_distribution.md)
+  : Plots the signal distribution.
+- [`process_data()`](https://janlisec.github.io/ETVapp/reference/process_data.md)
+  : Column data transformation
+- [`str_sort_num()`](https://janlisec.github.io/ETVapp/reference/str_sort_num.md)
+  : str_sort_num
+- [`tab_LOX()`](https://janlisec.github.io/ETVapp/reference/tab_LOX.md)
+  : Tabulate LOD/LOQ data
+- [`tab_cali()`](https://janlisec.github.io/ETVapp/reference/tab_cali.md)
+  : Tabulate calibration data.
+- [`tab_result()`](https://janlisec.github.io/ETVapp/reference/tab_result.md)
+  : Tabulate sample data
+
+# Articles
+
+### All vignettes
+
+- [External calibration (ExtCal)
+  workflow](https://janlisec.github.io/ETVapp/articles/workflow_ExtCal2.md):
+- [External gas calibration (ExtGasCal)
+  workflow](https://janlisec.github.io/ETVapp/articles/workflow_ExtGasCal2.md):
+- [Isotope dilution mass spectrometry (IDMS)
+  workflow](https://janlisec.github.io/ETVapp/articles/workflow_IDMS2.md):
+- [On-line isotope dilution mass spectrometry (oIDMS)
+  workflow](https://janlisec.github.io/ETVapp/articles/workflow_oIDMS2.md):
