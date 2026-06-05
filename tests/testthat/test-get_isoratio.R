@@ -2,12 +2,10 @@ testthat::test_that(
   desc = "Test that get_isoratio works",
   code = {
     iso_peaks <- lapply(ETVapp::ETVapp_testdata[["IDMS"]], function(x) {
-      ldply_base(1:length(x), function(i) {
         get_isoratio(
-          x[[i]], iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
+          x, iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
           peak_start = 70, peak_end = 132
         )
-      })
     })
 
     testthat::expect_true(is.list(iso_peaks))

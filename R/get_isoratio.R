@@ -32,7 +32,7 @@
 #' @export
 get_isoratio <- function (
     data, iso1_col, iso2_col, PPmethod = c("Peak (height)", "Peak (manual)"),
-    peak_start, peak_end, minpeakheight = 1000, BLmethod = c("modpolyfit", "none"),
+    peak_start = NULL, peak_end = NULL, minpeakheight = 1000, BLmethod = c("modpolyfit", "none"),
     deg = 1, cf = 50, fl = 5, simplify = TRUE
 ) {
 
@@ -47,8 +47,8 @@ get_isoratio <- function (
 
     ##Checks
     ensure_that(
-      diff(range(iso_peak[,2])) > 5 | diff(range(iso_peak[,3])) > 5,
-      "Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.",
+      !(diff(range(iso_peak[,2])) > 5 | diff(range(iso_peak[,3])) > 5),
+      "Divergating peak boundaries for the isotopes found. Please check the integration. Isotope ratio calculation may be affected.",
       opt = "warn"
     )
 

@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
+## Introduction to oIDMS
 
 On-line IDMS is a variation of IDMS. The isotope-enriched spike is not mixed 
 with sample prior to a separation technique but continuously added before the 
@@ -75,14 +75,11 @@ mb_peaks <- get_isoratio(
 
 gt::gt(mb_peaks)
 
-K <- calc_massbias(
+(K <- calc_massbias(
   mb_peaks[,"R_m"], 
   As_iso1 = abnd1, 
   As_iso2 = abnd2
-)
-
-print(K)
-
+))
 ```
 
 View time scans of the spike and sample isotope with peak integration parameter 
@@ -118,14 +115,12 @@ par(mfrow=c(2,3))
 for (i in 1:3) {
   plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,"117Sn"], type="l", 
        ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("117Sn", mb_no[i]))
-  #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,"117Sn_BL"], col = "blue")
   abline(v=c(ps,pe), col=grey(0.8))
 }
 for (i in 1:3) {
   plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("122Sn")], type="l", 
        ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("122Sn", mb_no[i]))
-  #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,"122Sn_BL"], col = "blue")
   abline(v=c(ps,pe), col=grey(0.8))
 }
