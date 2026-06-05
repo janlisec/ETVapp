@@ -73,15 +73,6 @@ mb_peaks <- get_isoratio(
     peak_start = ps, 
     peak_end = pe
 )
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
 
 gt::gt(mb_peaks)
 ```
@@ -172,15 +163,6 @@ samp_peaks <- get_isoratio(
   peak_start = ps, 
   peak_end = pe
 )
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
 
 gt::gt(samp_peaks)
 ```
@@ -282,15 +264,6 @@ blk_peaks <- get_isoratio(
   peak_start = ps, 
   peak_end = pe
 )
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
 
 gt::gt(blk_peaks)
 ```

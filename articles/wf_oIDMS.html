@@ -70,7 +70,7 @@ and Jan Lisec</h4>
     
     
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="introduction-to-oidms">Introduction to oIDMS<a class="anchor" aria-label="anchor" href="#introduction-to-oidms"></a>
 </h2>
 <p>On-line IDMS is a variation of IDMS. The isotope-enriched spike is
 not mixed with sample prior to a separation technique but continuously
@@ -137,15 +137,6 @@ data.</p>
 <span>  peak_start <span class="op">=</span> <span class="va">ps</span>, </span>
 <span>  peak_end <span class="op">=</span> <span class="va">pe</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
-<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
-<span><span class="co">#&gt; ratio determination.</span></span>
-<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
-<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
-<span><span class="co">#&gt; ratio determination.</span></span>
-<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
-<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
-<span><span class="co">#&gt; ratio determination.</span></span>
 <span></span>
 <span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">mb_peaks</span><span class="op">)</span></span></code></pre></div>
 <div id="mwlefoodfi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -624,13 +615,11 @@ data.</p>
 </div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">K</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_massbias.html">calc_massbias</a></span><span class="op">(</span></span>
+<span><span class="op">(</span><span class="va">K</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_massbias.html">calc_massbias</a></span><span class="op">(</span></span>
 <span>  <span class="va">mb_peaks</span><span class="op">[</span>,<span class="st">"R_m"</span><span class="op">]</span>, </span>
 <span>  As_iso1 <span class="op">=</span> <span class="va">abnd1</span>, </span>
 <span>  As_iso2 <span class="op">=</span> <span class="va">abnd2</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">K</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1.127378 1.143564 1.132254</span></span></code></pre></div>
 <p>View time scans of the spike and sample isotope with peak integration
 parameter by computing the following code.</p>
@@ -664,14 +653,12 @@ parameter by computing the following code.</p>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mb_pro</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, <span class="va">mb_pro</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"117Sn"</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, </span>
 <span>       ylab <span class="op">=</span> <span class="st">"Intensity [cps]"</span>, xlab <span class="op">=</span> <span class="st">"Time [s]"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"117Sn"</span>, <span class="va">mb_no</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="co">#lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mb_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">mb_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"117Sn_BL"</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ps</span>,<span class="va">pe</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mb_pro</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, <span class="va">mb_pro</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"122Sn"</span><span class="op">)</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, </span>
 <span>       ylab <span class="op">=</span> <span class="st">"Intensity [cps]"</span>, xlab <span class="op">=</span> <span class="st">"Time [s]"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"122Sn"</span>, <span class="va">mb_no</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="co">#lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mb_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">mb_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"122Sn_BL"</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ps</span>,<span class="va">pe</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>

@@ -10,8 +10,8 @@ get_isoratio(
   iso1_col,
   iso2_col,
   PPmethod = c("Peak (height)", "Peak (manual)"),
-  peak_start,
-  peak_end,
+  peak_start = NULL,
+  peak_end = NULL,
   minpeakheight = 1000,
   BLmethod = c("modpolyfit", "none"),
   deg = 1,
@@ -96,9 +96,6 @@ get_isoratio(
   td, iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
   peak_start = 72, peak_end = 132
 )
-#> Warning: Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.
-#> Warning: Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.
-#> Warning: Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.
 #>   Spike isotope Sample isotope      R_m
 #> 1         113Cd          111Cd 1.349456
 #> 2         113Cd          111Cd 1.660122

@@ -1,6 +1,6 @@
 # On-line isotope dilution mass spectrometry (oIDMS) workflow
 
-## Introduction
+## Introduction to oIDMS
 
 On-line IDMS is a variation of IDMS. The isotope-enriched spike is not
 mixed with sample prior to a separation technique but continuously added
@@ -71,15 +71,6 @@ mb_peaks <- get_isoratio(
   peak_start = ps, 
   peak_end = pe
 )
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
-#> Warning: Different peak boundaries for the isotopes found. Please check the
-#> integration. Complete peak integration is necessary for an accurate isotope
-#> ratio determination.
 
 gt::gt(mb_peaks)
 ```
@@ -93,13 +84,11 @@ gt::gt(mb_peaks)
 ``` r
 
 
-K <- calc_massbias(
+(K <- calc_massbias(
   mb_peaks[,"R_m"], 
   As_iso1 = abnd1, 
   As_iso2 = abnd2
-)
-
-print(K)
+))
 #> [1] 1.127378 1.143564 1.132254
 ```
 
@@ -137,14 +126,12 @@ par(mfrow=c(2,3))
 for (i in 1:3) {
   plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,"117Sn"], type="l", 
        ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("117Sn", mb_no[i]))
-  #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,"117Sn_BL"], col = "blue")
   abline(v=c(ps,pe), col=grey(0.8))
 }
 for (i in 1:3) {
   plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("122Sn")], type="l", 
        ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("122Sn", mb_no[i]))
-  #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,"122Sn_BL"], col = "blue")
   abline(v=c(ps,pe), col=grey(0.8))
 }

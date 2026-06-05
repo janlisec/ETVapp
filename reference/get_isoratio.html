@@ -50,8 +50,8 @@
 <span>  <span class="va">iso1_col</span>,</span>
 <span>  <span class="va">iso2_col</span>,</span>
 <span>  PPmethod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Peak (height)"</span>, <span class="st">"Peak (manual)"</span><span class="op">)</span>,</span>
-<span>  <span class="va">peak_start</span>,</span>
-<span>  <span class="va">peak_end</span>,</span>
+<span>  peak_start <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  peak_end <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minpeakheight <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  BLmethod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"modpolyfit"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
 <span>  deg <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -133,9 +133,6 @@ data.frames in which case the result will be a list of data frames as well.</p><
 <span class="r-in"><span>  <span class="va">td</span>, iso1_col <span class="op">=</span> <span class="st">"113Cd"</span>, iso2_col <span class="op">=</span> <span class="st">"111Cd"</span>, PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>,</span></span>
 <span class="r-in"><span>  peak_start <span class="op">=</span> <span class="fl">72</span>, peak_end <span class="op">=</span> <span class="fl">132</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Spike isotope Sample isotope      R_m</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1         113Cd          111Cd 1.349456</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2         113Cd          111Cd 1.660122</span>
