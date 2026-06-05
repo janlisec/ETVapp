@@ -17,9 +17,6 @@ jobs:
           extra-packages: pkgdown
           needs: website
 
-      - name: Install dependencies
-        run: Rscript -e 'install.packages("pkgdown")'
-
       - name: Build site
         run: Rscript -e 'pkgdown::build_site()'
 
