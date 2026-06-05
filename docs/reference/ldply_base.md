@@ -1,6 +1,6 @@
-# Base-R ldply
+# Base-R ldply implementation
 
-A base R only implementation of ldply.
+A base R only implementation of plyr::ldply.
 
 ## Usage
 

@@ -1,9 +1,8 @@
-#' @title isotopes.
+#' @title Chemical isotope information.
 #' @docType data
 #' @format A data.frame of chemical isotopes providing mass and natural abundance.
 #' @usage data(isotopes)
 #' @source R-package enviPat
-#' @noRd
 "isotopes"
 
 #' @title Test data for 4 workflows implemented in ETVapp

@@ -16,7 +16,8 @@ Badge](https://img.shields.io/github/r-package/v/janlisec/ETVapp)](https://img.s
 The goal of ETVapp is to provide functions to evaluate ICP-MS and
 ICP-OES experiments. To this end, currently 4 different workflows are
 implemented. The package is based on functions developed by [Vera
-Scharek](https://www.linkedin.com/in/vera-scharek-63932b205/). You can
+Scharek](https://www.linkedin.com/in/vera-scharek-63932b205/), publicly
+available on her [GitHub profile](https://github.com/VSc811). You can
 find scientific details in her publications on Online Isotope Dilution
 ICP-MS used for [sulfor
 quantification](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553)
@@ -25,8 +26,8 @@ fractionation](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553).
 
 ## Installation
 
-You can install the development version of `ETVapp` from
-[GitHub](https://github.com/):
+You can install the development version of `ETVapp` from this [GitHub
+page](https://github.com/janlisec/ETVapp).
 
 ``` r
 install.packages("janlisec/ETVapp")

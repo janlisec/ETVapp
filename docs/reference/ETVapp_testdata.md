@@ -1,6 +1,6 @@
-# ETVapp_testdata.
+# Test data for 4 workflows implemented in ETVapp
 
-ETVapp_testdata.
+Test data for 4 workflows implemented in ETVapp
 
 ## Usage
 

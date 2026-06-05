@@ -2,7 +2,8 @@
 
 ## All functions
 
-- [`app()`](https://janlisec.github.io/ETVapp/reference/app.md) : app.
+- [`app()`](https://janlisec.github.io/ETVapp/reference/app.md) : Start
+  a Shiny-App as GUI for all workflows
 - [`calc_analyte_mass_as_element()`](https://janlisec.github.io/ETVapp/reference/calc_analyte_mass_as_element.md)
   : Calculate the analyte mass as element
 - [`calc_cali_mod()`](https://janlisec.github.io/ETVapp/reference/calc_cali_mod.md)
@@ -16,7 +17,7 @@
 - [`calc_transeff()`](https://janlisec.github.io/ETVapp/reference/calc_transeff.md)
   : Calculates the transport efficiency
 - [`ETVapp_testdata`](https://janlisec.github.io/ETVapp/reference/ETVapp_testdata.md)
-  : ETVapp_testdata.
+  : Test data for 4 workflows implemented in ETVapp
 - [`extract_unique_number()`](https://janlisec.github.io/ETVapp/reference/extract_unique_number.md)
   : Extract a number from a string.
 - [`get_isoratio()`](https://janlisec.github.io/ETVapp/reference/get_isoratio.md)
@@ -24,13 +25,13 @@
 - [`get_peakdata()`](https://janlisec.github.io/ETVapp/reference/get_peakdata.md)
   : Generate a table with peak data.
 - [`import_data()`](https://janlisec.github.io/ETVapp/reference/import_data.md)
-  : import_data
+  : Read vendor specific text files
 - [`isotopes`](https://janlisec.github.io/ETVapp/reference/isotopes.md)
-  : isotopes.
+  : Chemical isotope information.
 - [`laply_base()`](https://janlisec.github.io/ETVapp/reference/laply_base.md)
-  : Base-R laply
+  : Base-R laply implementation
 - [`ldply_base()`](https://janlisec.github.io/ETVapp/reference/ldply_base.md)
-  : Base-R ldply
+  : Base-R ldply implementation
 - [`plot_particle_diameter()`](https://janlisec.github.io/ETVapp/reference/plot_particle_diameter.md)
   : Histogram plot of particle size distribution.
 - [`plot_signal_distribution()`](https://janlisec.github.io/ETVapp/reference/plot_signal_distribution.md)
@@ -42,6 +43,6 @@
 - [`tab_cali()`](https://janlisec.github.io/ETVapp/reference/tab_cali.md)
   : Tabulate calibration data.
 - [`tab_LOX()`](https://janlisec.github.io/ETVapp/reference/tab_LOX.md)
-  : tab_LOX
+  : Tabulate LOD/LOQ data
 - [`tab_result()`](https://janlisec.github.io/ETVapp/reference/tab_result.md)
-  : tab_result
+  : Tabulate sample data

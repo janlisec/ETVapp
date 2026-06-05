@@ -3,7 +3,8 @@
 The goal of ETVapp is to provide functions to evaluate ICP-MS and
 ICP-OES experiments. To this end, currently 4 different workflows are
 implemented. The package is based on functions developed by [Vera
-Scharek](https://www.linkedin.com/in/vera-scharek-63932b205/). You can
+Scharek](https://www.linkedin.com/in/vera-scharek-63932b205/), publicly
+available on her [GitHub profile](https://github.com/VSc811). You can
 find scientific details in her publications on Online Isotope Dilution
 ICP-MS used for [sulfor
 quantification](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553)
@@ -12,29 +13,38 @@ fractionation](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553).
 
 ## Installation
 
-You can install the development version of `ETVapp` from
-[GitHub](https://github.com/):
+You can install the development version of `ETVapp` from this [GitHub
+page](https://github.com/janlisec/ETVapp).
 
 ``` r
 install.packages("janlisec/ETVapp")
 ```
 
-## Use the App for testing
+## Use the Shiny-App for testing
 
 For users unfamiliar with the R console, the package provides a browser
-based app which allows to test the package functions by means of
-included test data.
+based app together with appropriate test data which allows to test the
+package functions. The app also allows to process user data for
+exploratory data analyses. However, it currently does not allow to store
+parameter settings. Therefore, for use in publications, it is
+recommended to script the analysis steps to ensure reproducibility.
 
 ``` r
 library(ETVapp)
 app()
 ```
 
+![ETVapp
+screenshot](dev/ETVapp_screenshot.png?raw=true "ETVapp screenshot")
+
+ETVapp screenshot
+
 # Package index
 
 ## All functions
 
-- [`app()`](https://janlisec.github.io/ETVapp/reference/app.md) : app.
+- [`app()`](https://janlisec.github.io/ETVapp/reference/app.md) : Start
+  a Shiny-App as GUI for all workflows
 - [`calc_analyte_mass_as_element()`](https://janlisec.github.io/ETVapp/reference/calc_analyte_mass_as_element.md)
   : Calculate the analyte mass as element
 - [`calc_cali_mod()`](https://janlisec.github.io/ETVapp/reference/calc_cali_mod.md)
@@ -48,7 +58,7 @@ app()
 - [`calc_transeff()`](https://janlisec.github.io/ETVapp/reference/calc_transeff.md)
   : Calculates the transport efficiency
 - [`ETVapp_testdata`](https://janlisec.github.io/ETVapp/reference/ETVapp_testdata.md)
-  : ETVapp_testdata.
+  : Test data for 4 workflows implemented in ETVapp
 - [`extract_unique_number()`](https://janlisec.github.io/ETVapp/reference/extract_unique_number.md)
   : Extract a number from a string.
 - [`get_isoratio()`](https://janlisec.github.io/ETVapp/reference/get_isoratio.md)
@@ -56,13 +66,13 @@ app()
 - [`get_peakdata()`](https://janlisec.github.io/ETVapp/reference/get_peakdata.md)
   : Generate a table with peak data.
 - [`import_data()`](https://janlisec.github.io/ETVapp/reference/import_data.md)
-  : import_data
+  : Read vendor specific text files
 - [`isotopes`](https://janlisec.github.io/ETVapp/reference/isotopes.md)
-  : isotopes.
+  : Chemical isotope information.
 - [`laply_base()`](https://janlisec.github.io/ETVapp/reference/laply_base.md)
-  : Base-R laply
+  : Base-R laply implementation
 - [`ldply_base()`](https://janlisec.github.io/ETVapp/reference/ldply_base.md)
-  : Base-R ldply
+  : Base-R ldply implementation
 - [`plot_particle_diameter()`](https://janlisec.github.io/ETVapp/reference/plot_particle_diameter.md)
   : Histogram plot of particle size distribution.
 - [`plot_signal_distribution()`](https://janlisec.github.io/ETVapp/reference/plot_signal_distribution.md)
@@ -74,9 +84,9 @@ app()
 - [`tab_cali()`](https://janlisec.github.io/ETVapp/reference/tab_cali.md)
   : Tabulate calibration data.
 - [`tab_LOX()`](https://janlisec.github.io/ETVapp/reference/tab_LOX.md)
-  : tab_LOX
+  : Tabulate LOD/LOQ data
 - [`tab_result()`](https://janlisec.github.io/ETVapp/reference/tab_result.md)
-  : tab_result
+  : Tabulate sample data
 
 # Articles
 

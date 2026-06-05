@@ -1,7 +1,7 @@
-# tab_LOX
+# Tabulate LOD/LOQ data
 
-`tab_LOX` estimates the limit of detection (LOD) and quantification
-(LOQ) and returns a data.frame.
+Estimates the limit of detection (LOD) and quantification (LOQ) and
+returns a data.frame.
 
 ## Usage
 

@@ -1,6 +1,6 @@
 # str_sort_num
 
-Sort strings by numeric
+Sort strings by first contained numeric
 
 ## Usage
 

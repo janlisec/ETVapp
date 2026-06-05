@@ -1,4 +1,6 @@
 ^renv$
+^dev$
+^_pkgdown.yml$
 ^docs$
 ^renv\.lock$
 ^app\.R$

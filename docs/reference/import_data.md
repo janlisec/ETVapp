@@ -1,7 +1,7 @@
-# import_data
+# Read vendor specific text files
 
-`import_data` will import time resolved ICP-MS data in various file
-formats from different instrument types.
+Import time resolved ICP-MS data in various file formats from different
+instrument types.
 
 ## Usage
 

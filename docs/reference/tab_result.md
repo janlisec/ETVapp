@@ -1,7 +1,7 @@
-# tab_result
+# Tabulate sample data
 
-`tab_result` computes result data from peak data or a data.frame
-containing at least two numeric columns.
+Computes result data from peak data or a data.frame containing at least
+two numeric columns.
 
 ## Usage
 

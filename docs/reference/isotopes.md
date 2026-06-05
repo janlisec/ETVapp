@@ -1,6 +1,6 @@
-# isotopes.
+# Chemical isotope information.
 
-isotopes.
+Chemical isotope information.
 
 ## Usage
 

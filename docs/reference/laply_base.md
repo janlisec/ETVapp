@@ -1,6 +1,6 @@
-# Base-R laply
+# Base-R laply implementation
 
-A base R only implementation of laply.
+A base R only implementation of plyr::laply.
 
 ## Usage
 

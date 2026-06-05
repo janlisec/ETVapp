@@ -16,6 +16,8 @@ Description: Processing functions including a Shiny-App to evaluate data from (o
     tabulated results. A Shiny-App allows low level access to potential workflows
     while several vignettes show examples for the more versatile approach of
     combining package functions in reproducible processing scipts.
+URL: https://janlisec.github.io/ETVapp
+BugReports: https://github.com/janlisec/ETVapp/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
