@@ -27,12 +27,10 @@
 #' for (i in 1:length(cali_pro)) plot(cali_pro[[i]][,1:2], type="l")
 #'
 #' # get cali peaks and combine
-#' peak_start <- rep(145, length(cali_pro))
-#' peak_end <- seq(180, 230, length.out=length(cali_pro))
-#' cali_pks <- ldply_base(1:length(cali_pro), function(i) {
-#'   pk <- get_peakdata(cali_pro[[i]], PPmethod = "Peak (manual)", int_col = "157",
-#'     peak_start = peak_start[i], peak_end = peak_end[i])
-#' })
+#' ps <- rep(145, length(cali_pro))
+#' pe <- seq(180, 230, length.out=length(cali_pro))
+#' cali_pks <- get_peakdata(cali_pro, PPmethod = "Peak (manual)", int_col = "157",
+#'     peak_start = ps, peak_end = pe)
 #' tab_cali(peak_data = cali_pks, wf = "ExtCal", std_info = seq(0,50,10))
 #'
 #' # check if unit specification works
@@ -56,16 +54,23 @@ tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
   ExtCal_unit <- match.arg(ExtCal_unit)
   ExtGasCal_unit <- match.arg(ExtGasCal_unit)
 
-  unit <- switch(wf, ExtCal = ExtCal_unit, ExtGasCal = ExtGasCal_unit, oIDMS = "\u00b5g/L")
-  unit2 <- switch(ExtGasCal_unit,
-                  "nL/min" = "pg/s",
-                  "\u00b5L/min" = "ng/s",
-                  "mL/min" = "\u00b5g/s")
+  unit <- switch(
+    wf,
+    ExtCal = ExtCal_unit,
+    ExtGasCal = ExtGasCal_unit,
+    oIDMS = "\u00b5g/L"
+  )
+  unit2 <- switch(
+    ExtGasCal_unit,
+    "nL/min" = "pg/s",
+    "\u00b5L/min" = "ng/s",
+    "mL/min" = "\u00b5g/s"
+  )
 
   # Additional parameters
   ml_to_mul <- 1000
   min_to_s <- 60
-  #browser()
+
   # Calibration table
   if (wf == "ExtCal") {
     std_info <- check_std_info(std_info = std_info, n = nrow(peak_data))
@@ -86,7 +91,6 @@ tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
 
   colnames(out) <- gsub("unit2", unit2, colnames(out))
   colnames(out) <- gsub("unit", unit, colnames(out))
-
 
   return(out)
 }

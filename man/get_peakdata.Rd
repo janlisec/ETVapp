@@ -14,19 +14,22 @@ get_peakdata(
   PPmethod = c("Peak (height)", "Peak (manual)", "mean signal"),
   BLmethod = c("modpolyfit", "none"),
   deg = 1,
-  cf = 50
+  cf = 50,
+  simplify = TRUE
 )
 }
 \arguments{
-\item{pro_data}{Data.frame with at least two numeric columns.}
+\item{pro_data}{Data.frame with at least two numeric columns or a list of such data.frames.}
 
 \item{int_col}{Column name of the intensity column to be used.}
 
 \item{time_col}{Column name of the time column to be used.}
 
-\item{peak_start}{Value which is taken as peak start point, when manual peak picking is chosen.}
+\item{peak_start}{Value which is taken as peak start point, when manual peak
+picking is chosen. Can be a vector of length(pro_data) when this is a list
+of files.}
 
-\item{peak_end}{Value which is taken as peak end point, when manual peak picking is chosen.}
+\item{peak_end}{Peak end point(s), cf. peak_start.}
 
 \item{minpeakheight}{A threshold value for peak picking via peak height.}
 
@@ -37,6 +40,8 @@ get_peakdata(
 \item{deg}{Degree of polynomial for baseline correction.}
 
 \item{cf}{A correction value for cutting the area around the detected peak.}
+
+\item{simplify}{In case that pro_data is a list: shall result table be combined to a data.frame?}
 }
 \value{
 A data.frame with the peak boundaries in seconds and the peak area in cps.
@@ -52,18 +57,19 @@ This function provides a simple detection algorithm for peak boundaries
     area using the trapezoidal rule.
 }
 \examples{
-raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]][[1]]
+raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]]
 pro_data <- process_data(raw_data, c1 = "117Sn", c2 = "80Se", fl = 9)
 peak_data <- get_peakdata(pro_data, int_col = "117Sn")
-plot(x = pro_data[,1:2], type = "l")
-abline(v = peak_data[1,2:3], col=grey(0.7))
+plot(x = pro_data[[1]][,1:2], type = "l")
+abline(v = peak_data[1,2:3], col=grey(0.7), lwd=2)
 
 # limiting peak detection using the 'minpeakheight' parameter
 peak_data <- get_peakdata(pro_data, int_col = "117Sn", minpeakheight = 2*10^6)
-abline(v = peak_data[1,2:3], col=5)
+abline(v = peak_data[1,2:3], col=5, lwd=2)
 
 # limiting peak detection setting start and end manually
 peak_data <- get_peakdata(pro_data, int_col = "117Sn", PPmethod = "Peak (manual)",
-  peak_start = 80, peak_end = 130)
-abline(v = peak_data[1,2:3], col=3)
+  peak_start = 100:102, peak_end = 110:112)
+peak_data
+abline(v = peak_data[1,2:3], col=3, lwd=2)
 }
