@@ -17,49 +17,64 @@
 #' @param deg Degree of polynomial for baseline correction.
 #' @param cf A correction value for cutting the area around the detected peak.
 #' @param fl Filter length of smoothing function, has to be odd integer >=3.
+#' @param simplify In case that data is a list: shall result table be combined to a data.frame?
+#'
 #' @return A data.frame or a list of data.frames when data is a list itself.
+#'
 #' @examples
 #' # for sample measurements
-#' td <- ETVapp::ETVapp_testdata[["IDMS"]]
-#' lapply(td, function(x) {
-#'   print(ldply_base(1:length(x), function(i) {
-#'     get_isoratio(
-#'      x[[i]], iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
-#'      peak_start = 72, peak_end = 132
-#'     )
-#'   }))
-#' })
 #' td <- ETVapp::ETVapp_testdata[["IDMS"]][["Samples"]]
+#' get_isoratio(
+#'   td, iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
+#'   peak_start = 72, peak_end = 132
+#' )
+#'
 #' @export
+get_isoratio <- function (
+    data, iso1_col, iso2_col, PPmethod = c("Peak (height)", "Peak (manual)"),
+    peak_start, peak_end, minpeakheight = 1000, BLmethod = c("modpolyfit", "none"),
+    deg = 1, cf = 50, fl = 5, simplify = TRUE
+) {
 
-get_isoratio <- function (data, iso1_col, iso2_col, PPmethod = c("Peak (height)", "Peak (manual)"),
-                          peak_start, peak_end, minpeakheight = 1000,
-                          BLmethod = c("modpolyfit", "none"), deg = 1, cf = 50, fl = 5) {
+  get_isoratio_internal <- function(x, ps, pe) {
+    # process x with IDMS workflow
+    pro_data <- process_data(data = x, wf = "IDMS", c1 = iso1_col, c2 = iso2_col, fl = fl)
 
-  # process data with IDMS workflow
-  pro_data <- process_data(data = data, wf = "IDMS", c1 = iso1_col, c2 = iso2_col, fl = fl)
+    iso_peak <- ldply_base(c(iso1_col, iso2_col), function(i) {
+      get_peakdata(pro_data, PPmethod = PPmethod, int_col = i, peak_start = ps, peak_end = pe,
+                   minpeakheight = minpeakheight, BLmethod = BLmethod, deg = deg, cf = cf)
+    })
 
-  iso_peak <- ldply_base(c(iso1_col, iso2_col), function(i) {
-    get_peakdata(pro_data, PPmethod = PPmethod, int_col = i, peak_start = peak_start, peak_end = peak_end,
-                 minpeakheight = minpeakheight, BLmethod = BLmethod, deg = deg, cf = cf)
-  })
+    ##Checks
+    ensure_that(
+      diff(range(iso_peak[,2])) > 5 | diff(range(iso_peak[,3])) > 5,
+      "Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.",
+      opt = "warn"
+    )
 
-  ##Checks
-  ## @Vera:
-  ## I modified the condition using OR instead of AND and ensuring that also negative deviations can be >5
-  ## compare against previous and change against ensure_that() version if you want the App user to see the warning
-  if (diff(range(iso_peak[,2])) > 5 | diff(range(iso_peak[,3])) > 5) {
-    warning("Different peak boundaries for the isotopes found. Please check the integration.
-            Complete peak integration is necessary for an accurate isotope ratio determination.")
+    #Isotope table
+    iso_table <- data.frame(
+      "Spike isotope" = iso1_col,
+      "Sample isotope" = iso2_col,
+      "R_m" = iso_peak[1,4] / iso_peak[2,4],
+      check.names = FALSE
+    )
+
+    return(iso_table)
   }
 
-  #Isotope table
-  iso_table <- data.frame(
-    "Spike isotope" = iso1_col,
-    "Sample isotope" = iso2_col,
-    "R_m" = iso_peak[1,4] / iso_peak[2,4],
-    check.names = FALSE
-  )
+  # run function on elements of list or on a single data.frame
+  if (!is.data.frame(data) && is.list(data)) {
+    n <- length(data)
+    if (is.null(peak_start)) ps <- NULL else ps <- rep(peak_start, length.out = n)
+    if (is.null(peak_end)) pe <- NULL else pe <- rep(peak_end, length.out = n)
+    if (simplify) {
+      ldply_base(1:n, function(i) { get_isoratio_internal(x = data[[i]], ps = ps[i], pe = pe[i]) })
+    } else {
+      stats::setNames(lapply(1:n, function(i) { get_isoratio_internal(x = data[[i]], ps = ps[i], pe = pe[i]) }), names(data))
+    }
+  } else {
+    get_isoratio_internal(x = data, ps = peak_start, pe = peak_end)
+  }
 
-  return(iso_table)
 }

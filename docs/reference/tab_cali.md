@@ -72,12 +72,10 @@ for (i in 1:length(cali_pro)) plot(cali_pro[[i]][,1:2], type="l")
 
 
 # get cali peaks and combine
-peak_start <- rep(145, length(cali_pro))
-peak_end <- seq(180, 230, length.out=length(cali_pro))
-cali_pks <- ldply_base(1:length(cali_pro), function(i) {
-  pk <- get_peakdata(cali_pro[[i]], PPmethod = "Peak (manual)", int_col = "157",
-    peak_start = peak_start[i], peak_end = peak_end[i])
-})
+ps <- rep(145, length(cali_pro))
+pe <- seq(180, 230, length.out=length(cali_pro))
+cali_pks <- get_peakdata(cali_pro, PPmethod = "Peak (manual)", int_col = "157",
+    peak_start = ps, peak_end = pe)
 tab_cali(peak_data = cali_pks, wf = "ExtCal", std_info = seq(0,50,10))
 #>   Isotope Start [s] End [s] Area [cts]   BLmethod Analyte mass [pg]
 #> 1     157       145     180   26048.55 modpolyfit                 0
@@ -115,10 +113,8 @@ tab_cali(peak_data = cali_pks, wf = "ExtGasCal", ExtGasCal_unit = "\u00b5L/min",
 
 # import and process cali data of `oIDMS` workflow
 spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
-cali_pks <- ldply_base(1:length(spion_imp), function(i) {
-  get_peakdata(spion_imp[[i]][,c("Time", "197Au")], int_col = "197Au",
+cali_pks <- get_peakdata(spion_imp, int_col = "197Au",
     PPmethod = "mean signal", peak_start = 0.003, peak_end = 60)
-})
 tab_cali(peak_data = cali_pks, wf = "oIDMS", std_info = c(20, 50, 100, 200, 500))
 #>   Isotope Start [s] End [s] Mean Signal [cps] Concentration [µg/L]
 #> 1   197Au     0.003      60         156366.77                   20

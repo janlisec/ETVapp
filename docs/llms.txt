@@ -93,10 +93,10 @@ ETVapp screenshot
 ### All vignettes
 
 - [External calibration (ExtCal)
-  workflow](https://janlisec.github.io/ETVapp/articles/workflow_ExtCal2.md):
+  workflow](https://janlisec.github.io/ETVapp/articles/wf_ExtCal.md):
 - [External gas calibration (ExtGasCal)
-  workflow](https://janlisec.github.io/ETVapp/articles/workflow_ExtGasCal2.md):
+  workflow](https://janlisec.github.io/ETVapp/articles/wf_ExtGasCal.md):
 - [Isotope dilution mass spectrometry (IDMS)
-  workflow](https://janlisec.github.io/ETVapp/articles/workflow_IDMS2.md):
+  workflow](https://janlisec.github.io/ETVapp/articles/wf_IDMS.md):
 - [On-line isotope dilution mass spectrometry (oIDMS)
-  workflow](https://janlisec.github.io/ETVapp/articles/workflow_oIDMS2.md):
+  workflow](https://janlisec.github.io/ETVapp/articles/wf_oIDMS.md):

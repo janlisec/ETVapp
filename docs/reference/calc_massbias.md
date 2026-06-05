@@ -43,6 +43,9 @@ mb_peaks <- ldply_base(1:length(mb_imp), function(i) {
   get_isoratio(mb_imp[[i]], iso1_col = "117Sn", iso2_col = "122Sn",
     PPmethod = "Peak (manual)", peak_start = 70, peak_end = 105)
 })
+#> Warning: Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.
 head(mb_peaks)
 #>   Spike isotope Sample isotope      R_m
 #> 1         117Sn          122Sn 1.471331

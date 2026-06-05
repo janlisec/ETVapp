@@ -15,7 +15,8 @@ get_isoratio(
   BLmethod = c("modpolyfit", "none"),
   deg = 1,
   cf = 50,
-  fl = 5
+  fl = 5,
+  simplify = TRUE
 )
 }
 \arguments{
@@ -41,6 +42,8 @@ data.frames in which case the result will be a list of data frames as well.}
 \item{cf}{A correction value for cutting the area around the detected peak.}
 
 \item{fl}{Filter length of smoothing function, has to be odd integer >=3.}
+
+\item{simplify}{In case that data is a list: shall result table be combined to a data.frame?}
 }
 \value{
 A data.frame or a list of data.frames when data is a list itself.
@@ -55,14 +58,10 @@ Time-resolved ICP-MS data will be integrated and optionally baseline
 }
 \examples{
 # for sample measurements
-td <- ETVapp::ETVapp_testdata[["IDMS"]]
-lapply(td, function(x) {
-  print(ldply_base(1:length(x), function(i) {
-    get_isoratio(
-     x[[i]], iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
-     peak_start = 72, peak_end = 132
-    )
-  }))
-})
 td <- ETVapp::ETVapp_testdata[["IDMS"]][["Samples"]]
+get_isoratio(
+  td, iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
+  peak_start = 72, peak_end = 132
+)
+
 }

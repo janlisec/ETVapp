@@ -1,6 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://janlisec.github.io/ETVapp/404.html</loc></url>
 <url><loc>https://janlisec.github.io/ETVapp/articles/index.html</loc></url>
+<url><loc>https://janlisec.github.io/ETVapp/articles/wf_ExtCal.html</loc></url>
+<url><loc>https://janlisec.github.io/ETVapp/articles/wf_ExtGasCal.html</loc></url>
+<url><loc>https://janlisec.github.io/ETVapp/articles/wf_IDMS.html</loc></url>
+<url><loc>https://janlisec.github.io/ETVapp/articles/wf_oIDMS.html</loc></url>
 <url><loc>https://janlisec.github.io/ETVapp/articles/workflow_ExtCal2.html</loc></url>
 <url><loc>https://janlisec.github.io/ETVapp/articles/workflow_ExtGasCal2.html</loc></url>
 <url><loc>https://janlisec.github.io/ETVapp/articles/workflow_IDMS2.html</loc></url>

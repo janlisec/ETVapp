@@ -19,10 +19,10 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/workflow_ExtCal2.html">External calibration (ExtCal) workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/workflow_ExtGasCal2.html">External gas calibration (ExtGasCal) workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/workflow_IDMS2.html">Isotope dilution mass spectrometry (IDMS) workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/workflow_oIDMS2.html">On-line isotope dilution mass spectrometry (oIDMS) workflow</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/wf_ExtCal.html">External calibration (ExtCal) workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/wf_ExtGasCal.html">External gas calibration (ExtGasCal) workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/wf_IDMS.html">Isotope dilution mass spectrometry (IDMS) workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/wf_oIDMS.html">On-line isotope dilution mass spectrometry (oIDMS) workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -85,6 +85,9 @@
 <span class="r-in"><span>  <span class="fu"><a href="get_isoratio.html">get_isoratio</a></span><span class="op">(</span><span class="va">mb_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, iso1_col <span class="op">=</span> <span class="st">"117Sn"</span>, iso2_col <span class="op">=</span> <span class="st">"122Sn"</span>,</span></span>
 <span class="r-in"><span>    PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, peak_start <span class="op">=</span> <span class="fl">70</span>, peak_end <span class="op">=</span> <span class="fl">105</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mb_peaks</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Spike isotope Sample isotope      R_m</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1         117Sn          122Sn 1.471331</span>
