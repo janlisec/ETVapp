@@ -125,15 +125,23 @@ areas.</p>
 <span><span class="va">pe</span> <span class="op">&lt;-</span> <span class="fl">132</span></span>
 <span><span class="va">PPmethod</span> <span class="op">&lt;-</span> <span class="st">"Peak (manual)"</span></span>
 <span></span>
-<span><span class="va">mb_peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldply_base.html">ldply_base</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">mb_imp</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/get_isoratio.html">get_isoratio</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">mb_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, </span>
+<span><span class="va">mb_peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_isoratio.html">get_isoratio</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">mb_imp</span>, </span>
 <span>    iso1_col <span class="op">=</span> <span class="va">iso1</span>, </span>
 <span>    iso2_col <span class="op">=</span> <span class="va">iso2</span>, </span>
 <span>    PPmethod <span class="op">=</span> <span class="va">PPmethod</span>, </span>
 <span>    peak_start <span class="op">=</span> <span class="va">ps</span>, </span>
-<span>    peak_end <span class="op">=</span> <span class="va">pe</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span>    peak_end <span class="op">=</span> <span class="va">pe</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
 <span></span>
 <span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">mb_peaks</span><span class="op">)</span></span></code></pre></div>
 <div id="mwlefoodfi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -673,16 +681,23 @@ spike solution.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">samp_imp</span> <span class="op">&lt;-</span> <span class="va">td</span><span class="op">[[</span><span class="st">'Samples'</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
-<span><span class="va">samp_peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldply_base.html">ldply_base</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">samp_imp</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/get_isoratio.html">get_isoratio</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">samp_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, </span>
-<span>    iso1_col <span class="op">=</span> <span class="va">iso1</span>, </span>
-<span>    iso2_col <span class="op">=</span> <span class="va">iso2</span>, </span>
-<span>    PPmethod <span class="op">=</span> <span class="va">PPmethod</span>, </span>
-<span>    peak_start <span class="op">=</span> <span class="va">ps</span>, </span>
-<span>    peak_end <span class="op">=</span> <span class="va">pe</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">samp_peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_isoratio.html">get_isoratio</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">samp_imp</span>, </span>
+<span>  iso1_col <span class="op">=</span> <span class="va">iso1</span>, </span>
+<span>  iso2_col <span class="op">=</span> <span class="va">iso2</span>, </span>
+<span>  PPmethod <span class="op">=</span> <span class="va">PPmethod</span>, </span>
+<span>  peak_start <span class="op">=</span> <span class="va">ps</span>, </span>
+<span>  peak_end <span class="op">=</span> <span class="va">pe</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
 <span></span>
 <span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">samp_peaks</span><span class="op">)</span></span></code></pre></div>
 <div id="eexombwkke" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -1717,16 +1732,23 @@ included for demonstration purposes.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">blk_imp</span> <span class="op">&lt;-</span> <span class="va">td</span><span class="op">[[</span><span class="st">'Blanks'</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
-<span><span class="va">blk_peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldply_base.html">ldply_base</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_imp</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/get_isoratio.html">get_isoratio</a></span><span class="op">(</span></span>
-<span>    <span class="va">blk_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, </span>
-<span>    iso1_col <span class="op">=</span> <span class="va">iso1</span>, </span>
-<span>    iso2_col <span class="op">=</span> <span class="va">iso2</span>, </span>
-<span>    PPmethod <span class="op">=</span> <span class="va">PPmethod</span>, </span>
-<span>    peak_start <span class="op">=</span> <span class="va">ps</span>, </span>
-<span>    peak_end <span class="op">=</span> <span class="va">pe</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">blk_peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_isoratio.html">get_isoratio</a></span><span class="op">(</span></span>
+<span>  <span class="va">blk_imp</span>, </span>
+<span>  iso1_col <span class="op">=</span> <span class="va">iso1</span>, </span>
+<span>  iso2_col <span class="op">=</span> <span class="va">iso2</span>, </span>
+<span>  PPmethod <span class="op">=</span> <span class="va">PPmethod</span>, </span>
+<span>  peak_start <span class="op">=</span> <span class="va">ps</span>, </span>
+<span>  peak_end <span class="op">=</span> <span class="va">pe</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
 <span></span>
 <span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">blk_peaks</span><span class="op">)</span></span></code></pre></div>
 <div id="kgufivjubq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">

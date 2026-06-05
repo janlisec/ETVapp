@@ -72,12 +72,10 @@ for (i in 1:length(cali_pro)) plot(cali_pro[[i]][,1:2], type="l")
 
 
 # get cali peaks and combine
-peak_start <- rep(145, length(cali_pro))
-peak_end <- seq(180, 230, length.out=length(cali_pro))
-cali_pks <- ldply_base(1:length(cali_pro), function(i) {
-  pk <- get_peakdata(cali_pro[[i]], PPmethod = "Peak (manual)", int_col = "157",
-    peak_start = peak_start[i], peak_end = peak_end[i])
-})
+ps <- rep(145, length(cali_pro))
+pe <- seq(180, 230, length.out=length(cali_pro))
+cali_pks <- get_peakdata(cali_pro, PPmethod = "Peak (manual)", int_col = "157",
+    peak_start = ps, peak_end = pe)
 tab_cali(peak_data = cali_pks, wf = "ExtCal", std_info = seq(0,50,10))
 #>   Isotope Start [s] End [s] Area [cts]   BLmethod Analyte mass [pg]
 #> 1     157       145     180   26048.55 modpolyfit                 0

@@ -126,17 +126,26 @@ data.</p>
 <span><span class="va">iso2</span> <span class="op">&lt;-</span> <span class="st">"122Sn"</span></span>
 <span><span class="va">abnd1</span> <span class="op">&lt;-</span> <span class="fl">7.68</span></span>
 <span><span class="va">abnd2</span> <span class="op">&lt;-</span> <span class="fl">4.63</span></span>
+<span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fl">70</span></span>
+<span><span class="va">pe</span> <span class="op">&lt;-</span> <span class="fl">105</span></span>
 <span></span>
-<span><span class="va">mb_peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldply_base.html">ldply_base</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">mb_imp</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/get_isoratio.html">get_isoratio</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">mb_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, </span>
-<span>    iso1_col <span class="op">=</span> <span class="va">iso1</span>, </span>
-<span>    iso2_col <span class="op">=</span> <span class="va">iso2</span>,</span>
-<span>    PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, </span>
-<span>    peak_start <span class="op">=</span> <span class="fl">70</span>, </span>
-<span>    peak_end <span class="op">=</span> <span class="fl">105</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">mb_peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_isoratio.html">get_isoratio</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">mb_imp</span>, </span>
+<span>  iso1_col <span class="op">=</span> <span class="va">iso1</span>, </span>
+<span>  iso2_col <span class="op">=</span> <span class="va">iso2</span>,</span>
+<span>  PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, </span>
+<span>  peak_start <span class="op">=</span> <span class="va">ps</span>, </span>
+<span>  peak_end <span class="op">=</span> <span class="va">pe</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
+<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
+<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
+<span><span class="co">#&gt; ratio determination.</span></span>
 <span></span>
 <span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">mb_peaks</span><span class="op">)</span></span></code></pre></div>
 <div id="mwlefoodfi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -626,9 +635,7 @@ data.</p>
 <p>View time scans of the spike and sample isotope with peak integration
 parameter by computing the following code.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fl">70</span></span>
-<span><span class="va">pe</span> <span class="op">&lt;-</span> <span class="fl">105</span></span>
-<span><span class="va">time_col</span> <span class="op">&lt;-</span> <span class="st">"Time"</span></span>
+<code class="sourceCode R"><span><span class="va">time_col</span> <span class="op">&lt;-</span> <span class="st">"Time"</span></span>
 <span><span class="va">cf</span> <span class="op">&lt;-</span> <span class="fl">50</span></span>
 <span></span>
 <span><span class="va">mb_pro</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_data.html">process_data</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mb_imp</span>, wf <span class="op">=</span> <span class="st">"IDMS"</span>, c1 <span class="op">=</span> <span class="va">iso1</span>, c2 <span class="op">=</span> <span class="va">iso2</span>, fl <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
@@ -2706,7 +2713,7 @@ consequent peak evaluation.</p>
 <span>    Asp_iso1 <span class="op">=</span> <span class="fl">91.06</span>, Asp_iso2 <span class="op">=</span> <span class="fl">0.08</span>, </span>
 <span>    V_fl <span class="op">=</span> <span class="fl">0.0075</span>, c_sp <span class="op">=</span> <span class="fl">19581.71</span>, DF <span class="op">=</span> <span class="fl">20</span></span>
 <span>  <span class="op">)</span></span>
-<span>  <span class="va">pk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span><span class="va">x</span>, int_col <span class="op">=</span> <span class="st">"mf_s"</span>, PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, peak_start <span class="op">=</span> <span class="fl">70</span>, peak_end <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
+<span>  <span class="va">pk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span><span class="va">x</span>, int_col <span class="op">=</span> <span class="st">"mf_s"</span>, PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, peak_start <span class="op">=</span> <span class="va">ps</span>, peak_end <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="../reference/tab_result.html">tab_result</a></span><span class="op">(</span><span class="va">pk</span>, wf <span class="op">=</span> <span class="va">wf</span>, K <span class="op">=</span> <span class="va">K</span>, amae <span class="op">=</span> <span class="va">pk</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, mass_fraction2 <span class="op">=</span> <span class="fl">1</span>, sample_mass <span class="op">=</span> <span class="va">sample_mass</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>

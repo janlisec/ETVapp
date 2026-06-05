@@ -60,17 +60,26 @@ iso1 <- "117Sn"
 iso2 <- "122Sn"
 abnd1 <- 7.68
 abnd2 <- 4.63
+ps <- 70
+pe <- 105
 
-mb_peaks <- ldply_base(1:length(mb_imp), function(i) {
-  get_isoratio(
-    data = mb_imp[[i]], 
-    iso1_col = iso1, 
-    iso2_col = iso2,
-    PPmethod = "Peak (manual)", 
-    peak_start = 70, 
-    peak_end = 105
-  )
-})
+mb_peaks <- get_isoratio(
+  data = mb_imp, 
+  iso1_col = iso1, 
+  iso2_col = iso2,
+  PPmethod = "Peak (manual)", 
+  peak_start = ps, 
+  peak_end = pe
+)
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
 
 gt::gt(mb_peaks)
 ```
@@ -99,8 +108,6 @@ parameter by computing the following code.
 
 ``` r
 
-ps <- 70
-pe <- 105
 time_col <- "Time"
 cf <- 50
 
@@ -343,7 +350,7 @@ result_df <- ldply_base(1:length(samp_ion), function(i) {
     Asp_iso1 = 91.06, Asp_iso2 = 0.08, 
     V_fl = 0.0075, c_sp = 19581.71, DF = 20
   )
-  pk <- get_peakdata(x, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = 70, peak_end = 100)
+  pk <- get_peakdata(x, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = 100)
   tab_result(pk, wf = wf, K = K, amae = pk[,4], mass_fraction2 = 1, sample_mass = sample_mass[i])
 })
 #> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.

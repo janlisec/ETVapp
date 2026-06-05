@@ -16,7 +16,8 @@ get_isoratio(
   BLmethod = c("modpolyfit", "none"),
   deg = 1,
   cf = 50,
-  fl = 5
+  fl = 5,
+  simplify = TRUE
 )
 ```
 
@@ -71,6 +72,11 @@ get_isoratio(
 
   Filter length of smoothing function, has to be odd integer \>=3.
 
+- simplify:
+
+  In case that data is a list: shall result table be combined to a
+  data.frame?
+
 ## Value
 
 A data.frame or a list of data.frames when data is a list itself.
@@ -85,44 +91,16 @@ between the isotopes.
 
 ``` r
 # for sample measurements
-td <- ETVapp::ETVapp_testdata[["IDMS"]]
-lapply(td, function(x) {
-  print(ldply_base(1:length(x), function(i) {
-    get_isoratio(
-     x[[i]], iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
-     peak_start = 72, peak_end = 132
-    )
-  }))
-})
-#>   Spike isotope Sample isotope      R_m
-#> 1         113Cd          111Cd 1.349456
-#> 2         113Cd          111Cd 1.660122
-#> 3         113Cd          111Cd 1.653288
-#>   Spike isotope Sample isotope       R_m
-#> 1         113Cd          111Cd 1.0092857
-#> 2         113Cd          111Cd 0.9942728
-#> 3         113Cd          111Cd 1.0042879
-#>   Spike isotope Sample isotope      R_m
-#> 1         113Cd          111Cd 1.349456
-#> 2         113Cd          111Cd 1.660122
-#> 3         113Cd          111Cd 1.653288
-#> $Blanks
-#>   Spike isotope Sample isotope      R_m
-#> 1         113Cd          111Cd 1.349456
-#> 2         113Cd          111Cd 1.660122
-#> 3         113Cd          111Cd 1.653288
-#> 
-#> $Massbias
-#>   Spike isotope Sample isotope       R_m
-#> 1         113Cd          111Cd 1.0092857
-#> 2         113Cd          111Cd 0.9942728
-#> 3         113Cd          111Cd 1.0042879
-#> 
-#> $Samples
-#>   Spike isotope Sample isotope      R_m
-#> 1         113Cd          111Cd 1.349456
-#> 2         113Cd          111Cd 1.660122
-#> 3         113Cd          111Cd 1.653288
-#> 
 td <- ETVapp::ETVapp_testdata[["IDMS"]][["Samples"]]
+get_isoratio(
+  td, iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
+  peak_start = 72, peak_end = 132
+)
+#> Warning: Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.
+#>   Spike isotope Sample isotope      R_m
+#> 1         113Cd          111Cd 1.349456
+#> 2         113Cd          111Cd 1.660122
+#> 3         113Cd          111Cd 1.653288
 ```

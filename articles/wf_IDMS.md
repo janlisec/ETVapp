@@ -65,15 +65,23 @@ ps <- 70
 pe <- 132
 PPmethod <- "Peak (manual)"
 
-mb_peaks <- ldply_base(1:length(mb_imp), function(i) {
-  get_isoratio(
-    data = mb_imp[[i]], 
+mb_peaks <- get_isoratio(
+    data = mb_imp, 
     iso1_col = iso1, 
     iso2_col = iso2, 
     PPmethod = PPmethod, 
     peak_start = ps, 
-    peak_end = pe)
-})
+    peak_end = pe
+)
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
 
 gt::gt(mb_peaks)
 ```
@@ -156,16 +164,23 @@ spike solution.
 
 samp_imp <- td[['Samples']]
 
-samp_peaks <- ldply_base(1:length(samp_imp), function(i) {
-  get_isoratio(
-    data = samp_imp[[i]], 
-    iso1_col = iso1, 
-    iso2_col = iso2, 
-    PPmethod = PPmethod, 
-    peak_start = ps, 
-    peak_end = pe
-  )
-})
+samp_peaks <- get_isoratio(
+  data = samp_imp, 
+  iso1_col = iso1, 
+  iso2_col = iso2, 
+  PPmethod = PPmethod, 
+  peak_start = ps, 
+  peak_end = pe
+)
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
 
 gt::gt(samp_peaks)
 ```
@@ -259,16 +274,23 @@ purposes.
 
 blk_imp <- td[['Blanks']]
 
-blk_peaks <- ldply_base(1:length(blk_imp), function(i) {
-  get_isoratio(
-    blk_imp[[i]], 
-    iso1_col = iso1, 
-    iso2_col = iso2, 
-    PPmethod = PPmethod, 
-    peak_start = ps, 
-    peak_end = pe
-  )
-})
+blk_peaks <- get_isoratio(
+  blk_imp, 
+  iso1_col = iso1, 
+  iso2_col = iso2, 
+  PPmethod = PPmethod, 
+  peak_start = ps, 
+  peak_end = pe
+)
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
+#> Warning: Different peak boundaries for the isotopes found. Please check the
+#> integration. Complete peak integration is necessary for an accurate isotope
+#> ratio determination.
 
 gt::gt(blk_peaks)
 ```
