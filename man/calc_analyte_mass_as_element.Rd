@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{calc_analyte_mass_as_element}
 \alias{calc_analyte_mass_as_element}
-\title{calc_analyte_mass_as_element.}
+\title{Calculate the analyte mass as element}
 \usage{
 calc_analyte_mass_as_element(
   R_m,
@@ -30,5 +30,5 @@ calc_analyte_mass_as_element(
 \item{N_sp}{Amount of spike.}
 }
 \description{
-calc_analyte_mass_as_element.
+Calculate the analyte mass as element.
 }

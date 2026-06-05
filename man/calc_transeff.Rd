@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{calc_transeff}
 \alias{calc_transeff}
-\title{calc_transeff}
+\title{Calculates the transport efficiency}
 \usage{
 calc_transeff(
   data,
@@ -37,6 +37,8 @@ The transport efficiency will be calculated based on the particle
     size approach from single particle-ICP-MS data.
 }
 \details{
+Calculates the transport efficiency.
+
 Determination of the transport efficiency from measurements with
     gold or silver nano particle standards of known size.
 }

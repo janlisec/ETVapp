@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_isoratio.R
 \name{get_isoratio}
 \alias{get_isoratio}
-\title{get_isoratio}
+\title{Calculate an isotope ratio based on peak areas.}
 \usage{
 get_isoratio(
   data,
@@ -19,7 +19,8 @@ get_isoratio(
 )
 }
 \arguments{
-\item{data}{A data.frame containing at least two columns.}
+\item{data}{A data.frame containing at least two columns or a list of such
+data.frames in which case the result will be a list of data frames as well.}
 
 \item{iso1_col}{Spike isotope.}
 
@@ -31,7 +32,7 @@ get_isoratio(
 
 \item{peak_end}{Value which is taken as peak end point, when manual peak picking is chosen.}
 
-\item{minpeakheight}{A threshold value for peak picking via peakheight.}
+\item{minpeakheight}{A threshold value for peak picking when "Peak (height)" is choosen as an option.}
 
 \item{BLmethod}{Method for baseline correction.}
 
@@ -39,21 +40,23 @@ get_isoratio(
 
 \item{cf}{A correction value for cutting the area around the detected peak.}
 
-\item{fl}{Filter length of smoother, has to be odd and >=3.}
+\item{fl}{Filter length of smoothing function, has to be odd integer >=3.}
 }
 \value{
-A data.frame.
+A data.frame or a list of data.frames when data is a list itself.
 }
 \description{
-\code{get_isoratio} calculate an isotope ratio based on peak areas.
+Calculate an isotope ratio based on peak areas.
 }
 \details{
-Time-resolved ICP-MS data will be integration and optionally baseline corrected.
-Peak boundaries will be checked regarding the similarity beween the isotopes.
+Time-resolved ICP-MS data will be integrated and optionally baseline
+    corrected. Peak boundaries will be checked regarding the similarity
+    between the isotopes.
 }
 \examples{
 # for sample measurements
-lapply(ETVapp::ETVapp_testdata[["IDMS"]], function(x) {
+td <- ETVapp::ETVapp_testdata[["IDMS"]]
+lapply(td, function(x) {
   print(ldply_base(1:length(x), function(i) {
     get_isoratio(
      x[[i]], iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
@@ -61,4 +64,5 @@ lapply(ETVapp::ETVapp_testdata[["IDMS"]], function(x) {
     )
   }))
 })
+td <- ETVapp::ETVapp_testdata[["IDMS"]][["Samples"]]
 }

@@ -1,7 +1,9 @@
-#' @title import_data
-#' @description \code{import_data} will import time resolved ICP-MS data in
-#'     various file formats from different instrument types.
-#' @details The function works for .csv, .TXT, and .exp files. Codes are
+#' Read vendor specific text files
+#'
+#' Import time resolved ICP-MS data in various file formats from different
+#' instrument types.
+#'
+#' @details The function works for .csv, .txt, and .exp files. Codes are
 #'     provided to transform raw data from common ICP-MS instruments to a
 #'     data.frame with a time column and additional columns for the acquired
 #'     intensities. You may check why data import of your files fails in the app

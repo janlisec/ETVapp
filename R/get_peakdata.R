@@ -1,12 +1,12 @@
-#' # VS: Peak picking method "Peak (height)" returns peak max as peak start and end.
-#' # $$JL: Sorry, I do not understand the comment; the 'Peak (height)' result depends on 'minpeakheight' as expected (see Examples)
-#' @title get_peakdata.
-#' @description \code{get_peakdata} will generate a table with peak data (atart
-#'     and end point, peak area) or the data of a signal range (start and end point, mean signal intensity) from a data.frame.
+#' Generate a table with peak data.
+#'
+#' Generate a table with peak data.
+#'
 #' @details This function provides a simple detection algorithm for peak boundaries
 #'     based on the peak height and alternatively allows for manual setting of the
-#'     peak boundaries or selecting a signal range. It has implemented a method for baseline correction based on
-#'     polynomial fitting and will compute the peak area using the trapezoidal rule.
+#'     peak boundaries or selecting a signal range. It has implemented a method for
+#'     baseline correction based on polynomial fitting and will compute the peak
+#'     area using the trapezoidal rule.
 
 #' @param pro_data Data.frame with at least two numeric columns.
 #' @param int_col Column name of the intensity column to be used.
@@ -19,8 +19,8 @@
 #' @param deg Degree of polynomial for baseline correction.
 #' @param cf A correction value for cutting the area around the detected peak.
 #'
-#' @return A data.frame with the peak boundaries in seconds and the peak area in cps
-#' .
+#' @return A data.frame with the peak boundaries in seconds and the peak area in cps.
+#'
 #' @examples
 #' raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]][[1]]
 #' pro_data <- process_data(raw_data, c1 = "117Sn", c2 = "80Se", fl = 9)

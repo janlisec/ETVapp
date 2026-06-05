@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{laply_base}
 \alias{laply_base}
-\title{laply_base}
+\title{Base-R laply implementation}
 \usage{
 laply_base(.data, .fun, ..., .drop = TRUE)
 }
@@ -16,10 +16,11 @@ laply_base(.data, .fun, ..., .drop = TRUE)
 \item{.drop}{Avoid dropping dimensionality.}
 }
 \description{
-laply_base
+A base R only implementation of plyr::laply.
 }
 \examples{
 lst <- list(a = 1:3, b = 4:6, c = 7:9)
 laply_base(lst, function(x) x[1:2], .drop = FALSE)
 #plyr::laply(lst, function(x) x[1:2], .drop = FALSE)
+
 }

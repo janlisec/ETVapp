@@ -1,20 +1,20 @@
-#' internal function that are used within exported functions
-#'
-#' functions to manipulate data.frame columns
-#' - reset_or_init_pars
-#' - blcorr_col
-#' - scale_col
-#' - smooth_col
-#'
-#' functions to check input parameters
-#' - check_Time_col
-#' - check_iso_cols
-#' - check_std_info
-#' - check_peak_boundaries
-#'
-#' specific helper functions
-#' - get_peak
-#' - extract_unique_number
+# internal function that are used within exported functions
+#
+# functions to manipulate data.frame columns
+# - reset_or_init_pars
+# - blcorr_col
+# - scale_col
+# - smooth_col
+#
+# functions to check input parameters
+# - check_Time_col
+# - check_iso_cols
+# - check_std_info
+# - check_peak_boundaries
+#
+# specific helper functions
+# - get_peak
+# - extract_unique_number
 
 
 #' @title reset_or_init_pars.
@@ -70,7 +70,7 @@ reset_or_init_pars <- function(pars = NULL, keep_extra = TRUE, isolated = FALSE)
   # reset to defaults
   for (nm in names(defs)) {
     if (isolated) {
-      shiny::isolated(pars[[nm]] <- defs[[nm]])
+      shiny::isolate(pars[[nm]] <- defs[[nm]])
     } else {
       pars[[nm]] <- defs[[nm]]
     }
@@ -378,10 +378,12 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean si
   return(peak_data)
 }
 
-#' @title extract_unique_number.
-#' @description Often numeric information is stored in character vectors like
+#' Extract a number from a string.
+#'
+#' Often numeric information is stored in character vectors like
 #'     file names. This function will extract such information, focusing on
 #'     numeric values which are different between files.
+#'
 #' @param x Charcter vector, i.e. of file names.
 #' @examples
 #' x <- paste("File123_conc", c(3, 21, 101), "endtext", sep="_")

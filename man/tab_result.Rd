@@ -2,7 +2,7 @@
 % Please edit documentation in R/tab_result.R
 \name{tab_result}
 \alias{tab_result}
-\title{tab_result}
+\title{Tabulate sample data}
 \usage{
 tab_result(
   peak_data,
@@ -45,14 +45,19 @@ tab_result(
 A data.frame.
 }
 \description{
-\code{tab_result} computes result data from peak data or a data.frame containing at least two numeric columns.
+Computes result data from peak data or a data.frame containing at least two
+numeric columns.
 }
 \details{
-Result data table. Depending on the selected method, the analyte mass will be
-calculated from the peak area and calibration data which are provided in data.frames. For the on-line IDMS workflow, values of the
-intensity column from a data.frame containing at least two columns are transferred into mass flow data using calibration data from a
-data.frame. The analyte mass will be determined via peak integration using the function \code{get_peakdata}. Result data will be provided
-for the analyte component itself and as element, as well as content value related to the sample mass.
+Result data table. Depending on the selected method, the analyte
+    mass will be calculated from the peak area and calibration data which are
+    provided in data.frames. For the on-line IDMS workflow, values of the
+    intensity column from a data.frame containing at least two columns are
+    transferred into mass flow data using calibration data from a data.frame.
+    The analyte mass will be determined via peak integration using the
+    function \code{get_peakdata}. Result data will be provided for the
+    analyte component itself and as element, as well as content value related
+    to the sample mass.
 }
 \examples{
 # wf "ExtCal", "ExtGasCal" use col = 4
@@ -63,4 +68,5 @@ tab_result(peak_data=pd, wf="IDMS", c_sp_unit="g/L")
 tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L")
 tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^3)
 tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^4)
+
 }

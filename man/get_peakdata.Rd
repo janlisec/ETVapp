@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_peakdata.R
 \name{get_peakdata}
 \alias{get_peakdata}
-\title{get_peakdata.}
+\title{Generate a table with peak data.}
 \usage{
 get_peakdata(
   pro_data,
@@ -39,21 +39,17 @@ get_peakdata(
 \item{cf}{A correction value for cutting the area around the detected peak.}
 }
 \value{
-A data.frame with the peak boundaries in seconds and the peak area in cps
-.
+A data.frame with the peak boundaries in seconds and the peak area in cps.
 }
 \description{
-\code{get_peakdata} will generate a table with peak data (atart
-    and end point, peak area) or the data of a signal range (start and end point, mean signal intensity) from a data.frame.
+Generate a table with peak data.
 }
 \details{
-# VS: Peak picking method "Peak (height)" returns peak max as peak start and end.
-# $$JL: Sorry, I do not understand the comment; the 'Peak (height)' result depends on 'minpeakheight' as expected (see Examples)
-
 This function provides a simple detection algorithm for peak boundaries
     based on the peak height and alternatively allows for manual setting of the
-    peak boundaries or selecting a signal range. It has implemented a method for baseline correction based on
-    polynomial fitting and will compute the peak area using the trapezoidal rule.
+    peak boundaries or selecting a signal range. It has implemented a method for
+    baseline correction based on polynomial fitting and will compute the peak
+    area using the trapezoidal rule.
 }
 \examples{
 raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]][[1]]

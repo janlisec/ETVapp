@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_helpers.R
 \name{extract_unique_number}
 \alias{extract_unique_number}
-\title{extract_unique_number.}
+\title{Extract a number from a string.}
 \usage{
 extract_unique_number(x)
 }

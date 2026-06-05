@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{calc_N_sp}
 \alias{calc_N_sp}
-\title{calc_N_sp.}
+\title{Calculate the N_sp parameter}
 \usage{
 calc_N_sp(c_sp, V_sp, VF1, M_sp, M_sa)
 }
@@ -18,5 +18,5 @@ calc_N_sp(c_sp, V_sp, VF1, M_sp, M_sa)
 \item{M_sa}{Molar mass of sample.}
 }
 \description{
-calc_N_sp.
+Calculate the N_sp parameter.
 }

@@ -1,7 +1,11 @@
 ^renv$
+^docs$
 ^renv\.lock$
 ^app\.R$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^README\.md$
 ^README\.Rmd$
 ^rsconnect$
+^\.github$
+

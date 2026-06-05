@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_plots.R
 \name{plot_signal_distribution}
 \alias{plot_signal_distribution}
-\title{plot_signal_distribution}
+\title{Plots the signal distribution.}
 \usage{
 plot_signal_distribution(x, LFD = 20000, style = c("hist", "counts"))
 }

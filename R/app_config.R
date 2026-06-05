@@ -21,7 +21,7 @@ app_sys <- function(...) {
 get_app_config <- function(
   value,
   config = Sys.getenv("R_CONFIG_ACTIVE", "default"),
-  file = app_sys("app-config.yml"),
+  file = app_sys("golem-config.yml"),
   use_parent = TRUE
 ) {
   config::get(

@@ -1,7 +1,11 @@
-# ETVapp 0.4.1
+# ETVapp 0.4.3
 
-* Test
-* Vera, please add list of changes after confirming that they work
+* GitHub CI set up
+* GitHub pages set up including the Vignettes for all workflows
+* Vignettes corrected
+* Help system in App established
+* processing functions can work on data frame or list of data frames now
+* README.Rmd set up
 
 # ETVapp 0.3.3
 

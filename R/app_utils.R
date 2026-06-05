@@ -1,25 +1,28 @@
-#' exported functions that solve minor problems
-#'
-#' # function reimplementations (to avoid dependencies)
-#' - ldply_base
-#' - laply_base
-#' - str_sort_num
-#'
-#' perform simple calculations
-#' - calc_N_sp
-#' - calc_analyte_mass_as_element
-#' - calc_massbias
-#' - calc_massflow
-#' - calc_cali_mod
-#' - calc_transeff
-#'
-#' imported from IsoCor
-#' - get_iso_info
-#' - help_the_user
-#' - get_spectrum
-#' - spec_pre_process
+# exported functions that solve minor problems
+#
+# # function reimplementations (to avoid dependencies)
+# - ldply_base
+# - laply_base
+# - str_sort_num
+#
+# perform simple calculations
+# - calc_N_sp
+# - calc_analyte_mass_as_element
+# - calc_massbias
+# - calc_massflow
+# - calc_cali_mod
+# - calc_transeff
+#
+# imported from IsoCor
+# - get_iso_info
+# - help_the_user
+# - get_spectrum
+# - spec_pre_process
 
-#' @title ldply_base
+#' Base-R ldply implementation
+#'
+#' A base R only implementation of plyr::ldply.
+#'
 #' @param .data list.
 #' @param .fun fun.
 #' @export
@@ -30,15 +33,20 @@ ldply_base <- function(.data, .fun = identity) {
   return(df)
 }
 
-#' @title laply_base
+#' Base-R laply implementation
+#'
+#' A base R only implementation of plyr::laply.
+#'
 #' @param .data list.
 #' @param .fun fun.
 #' @param ... additional parameters to lapply.
 #' @param .drop Avoid dropping dimensionality.
+#'
 #' @examples
 #' lst <- list(a = 1:3, b = 4:6, c = 7:9)
 #' laply_base(lst, function(x) x[1:2], .drop = FALSE)
 #' #plyr::laply(lst, function(x) x[1:2], .drop = FALSE)
+#'
 #' @export
 laply_base <- function(.data, .fun, ..., .drop = TRUE) {
   result_list <- lapply(.data, .fun, ...)
@@ -53,6 +61,10 @@ laply_base <- function(.data, .fun, ..., .drop = TRUE) {
   return(result_matrix)
 }
 
+#' Sort strings by first contained numeric
+#'
+#' A base R implementation to sort strings according to first number within string.
+#'
 #' @title str_sort_num
 #' @param x character vector.
 #' @examples
@@ -64,20 +76,16 @@ laply_base <- function(.data, .fun, ..., .drop = TRUE) {
 #' str_sort_num(x)
 #' @export
 str_sort_num <- function(x) {
-  # Zerlege die Strings in numerische und nicht-numerische Teile
   split_parts <- regmatches(x, gregexpr("\\d+|\\D+", x))
 
-  # Konvertiere numerische Teile in Zahlen, nicht-numerische bleiben Strings
   key_list <- lapply(split_parts, function(parts) {
     lapply(parts, function(part) {
       if (grepl("^\\d+$", part)) as.numeric(part) else part
     })
   })
 
-  # Finde die maximale Anzahl an Teilen
   max_len <- max(sapply(key_list, length))
 
-  # Padding: kürzere Listen auffüllen mit NA
   padded_keys <- lapply(key_list, function(k) {
     if (length(k) < max_len) {
       k <- c(k, rep(NA, max_len - length(k)))
@@ -85,17 +93,18 @@ str_sort_num <- function(x) {
     k
   })
 
-  # In Data Frame umwandeln und Listen entpacken
   key_df <- as.data.frame(do.call(rbind, padded_keys), stringsAsFactors = FALSE)
   for (i in seq_along(key_df)) {
     key_df[[i]] <- unlist(key_df[[i]])
   }
 
-  # Sortieren
   x[do.call(order, key_df)]
 }
 
-#' @title calc_N_sp.
+#' Calculate the N_sp parameter
+#'
+#' Calculate the N_sp parameter.
+#'
 #' @param c_sp Concentration of spike isotope in spike stock solution [mg/L].
 #' @param V_sp Volume of spike solution [µL].
 #' @param VF1 Dilution factor of spike solution.
@@ -109,7 +118,10 @@ calc_N_sp <- function(c_sp, V_sp, VF1, M_sp, M_sa) {
   return(N_sp)
 }
 
-#' @title calc_analyte_mass_as_element.
+#' Calculate the analyte mass as element
+#'
+#' Calculate the analyte mass as element.
+#'
 #' @param R_m A vector of isotope ratios.
 #' @param K Massbias correction factor.
 #' @param As_iso1 Natural abundance of the spike isotope.
@@ -136,24 +148,9 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
   }
 }
 
-# #' VS: Check for minimum isotope ratio would be better in function calc_massflow.
-# #' $$JL: I agree. Lets remove function correct_ratio() than altogether as it is a simple multiplication
-# #' @title correct_ratio.
-# #' @param x Numeric vector of isotope ratios (R_m).
-# #' @param K Massbias correction factor.
-# #' @param As_iso1 Natural abundance of the spike isotope.
-# #' @param As_iso2 Natural abundance of the sample isotope.
-# #'
-# #' @export
-# correct_ratio <- function(x, K = 1, As_iso1 = 7.68, As_iso2 = 4.63) {
-#   out <- K * x
-#   if (min(out) < (As_iso1 / As_iso2)) {
-#     message("The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.")
-#   }
-#   return(out)
-# }
-
-#' @title calc_massbias
+#' Calculates the mass bias correction factor K
+#'
+#' Calculates the mass bias correction factor K.
 #'
 #' @description A mass bias correction factor will be determined from measurements
 #'     without added spike.
@@ -177,7 +174,6 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
 #' calc_massbias(mb_peaks[,"R_m"], As_iso1 = 7.68, As_iso2 = 4.63)
 #'
 #' @export
-#'
 calc_massbias <- function (R_m, As_iso1, As_iso2) {
   K <- NULL
   if (length(R_m) > 0 & all(is.finite(c(R_m, As_iso1, As_iso2)))) {
@@ -188,8 +184,10 @@ calc_massbias <- function (R_m, As_iso1, As_iso2) {
   return(K)
 }
 
-#' @title calc_massflow.
-#' @description Transforms one column in a data.frame with respect to parameters.
+#' Calculates the mass flow mf_sp
+#'
+#' Calculates the mass flow mf_sp.
+#'
 #' @param x Input data.
 #' @param n_trans Transport efficiency.
 #' @param As_iso1 Natural abundance of the spike isotope.
@@ -216,7 +214,10 @@ calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36,
   return(mf_sp * ((Asp_iso1 - (x * Asp_iso2)) / ((As_iso2 * x) - As_iso1)))
 }
 
-#' @title calc_cali_mod.
+#' Calculates the calibration model
+#'
+#' Calculates the calibration model.
+#'
 #' @description \code{calc_cali_mod} will provide calibration results based on a linear
 #'     regression model.
 #' @details A calibration curve is provided by a linear fit of peak areas or mean
@@ -278,7 +279,10 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
   return(out)
 }
 
-#' @title calc_transeff
+#' Calculates the transport efficiency
+#'
+#' Calculates the transport efficiency.
+#'
 #' @description The transport efficiency will be calculated based on the particle
 #'     size approach from single particle-ICP-MS data.
 #' @details Determination of the transport efficiency from measurements with
@@ -355,9 +359,13 @@ calc_transeff <- function (data, int_col, LFD = 100, cali_slope = 1, V_fl, part_
   return(out)
 }
 
-#' @title get_iso_info.
-#' @description \code{get_iso_info} will take a string and try to identify an
-#'   isotope name contained within. It will return the requested info for this isotope.
+#' Get mass or abundance information for isotopes.
+#'
+#' Get mass or abundance information for isotopes.
+#'
+#' Will take a string and try to identify an isotope name contained within.
+#' It will return the requested info for this isotope.
+#'
 #' @param x character.
 #' @param isotopes Two column dataframe with isotope definitions.
 #' @param info Column name of the requested parameter.
@@ -512,13 +520,10 @@ extract_shift_and_cut <- function(data, rt_col = "Minutes", c1, c2 = "", cut_ran
 #' @keywords internal
 #' @noRd
 spec_pre_process <- function(data, c1 = "13C", c2 = "80Se", fl = 7, wf = c("IDMS", "oIDMS", "ExtCal", "ExtGasCal")) {
-
   wf <- match.arg(wf)
-
   out <- stats::setNames(lapply(data, function(x) {
     process_data(data = x, wf = wf, c1 = c1, c2 = c2, fl = fl, amend = TRUE)
   }), names(data))
-
   return(out)
 }
 

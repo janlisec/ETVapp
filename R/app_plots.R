@@ -1,6 +1,7 @@
-#' @title ic_specplot
-#' @description Generate an annotated plot of one to several spectra
-#'     to visualize the processing results of ic_app().
+#' Spectra plot.
+#'
+#' Generate an annotated plot of one to several spectra.
+#'
 #' @param opt Vector of keywords to hide/show specific elements of the plot.
 #' @param xrng Numeric vector of length 2 specifying plotting range for x.
 #' @param mi_spec Spectra (list of data.frame objects).
@@ -119,8 +120,10 @@ ic_specplot <- function(
   }
 }
 
-#' @title plot_particle_diameter
-#' @description Plots a histogram of the particle size distribution of a single particle-ICP-MS measurement.
+#' Histogram plot of particle size distribution.
+#'
+#' Plots a histogram of the particle size distribution of a single particle-ICP-MS measurement.
+#'
 #' @details Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet.
 #'     Densities for gold or silver nano particle standards are deposited.
 #' @param x A data.frame containing at least two columns.
@@ -163,8 +166,10 @@ plot_particle_diameter <- function(
   invisible(x)
 }
 
-#' @title plot_signal_distribution
-#' @description Plots the signal distribution of a single particle-ICP-MS measurement.
+#' Plots the signal distribution.
+#'
+#' Plots the signal distribution of a single particle-ICP-MS measurement.
+#'
 #' @details Determination of the intensity limit for the differentiation between particle and background signals.
 #' @param x A data.frame containing at least two columns.
 #' @param LFD Intensity limit for the detection of particle signals.

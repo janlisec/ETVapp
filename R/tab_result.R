@@ -1,10 +1,18 @@
-#' @title tab_result
-#' @description \code{tab_result} computes result data from peak data or a data.frame containing at least two numeric columns.
-#' @details Result data table. Depending on the selected method, the analyte mass will be
-#' calculated from the peak area and calibration data which are provided in data.frames. For the on-line IDMS workflow, values of the
-#' intensity column from a data.frame containing at least two columns are transferred into mass flow data using calibration data from a
-#' data.frame. The analyte mass will be determined via peak integration using the function \code{get_peakdata}. Result data will be provided
-#' for the analyte component itself and as element, as well as content value related to the sample mass.
+#' Tabulate sample data
+#'
+#' Computes result data from peak data or a data.frame containing at least two
+#' numeric columns.
+#'
+#' @details Result data table. Depending on the selected method, the analyte
+#'     mass will be calculated from the peak area and calibration data which are
+#'     provided in data.frames. For the on-line IDMS workflow, values of the
+#'     intensity column from a data.frame containing at least two columns are
+#'     transferred into mass flow data using calibration data from a data.frame.
+#'     The analyte mass will be determined via peak integration using the
+#'     function \code{get_peakdata}. Result data will be provided for the
+#'     analyte component itself and as element, as well as content value related
+#'     to the sample mass.
+#'
 #' @param peak_data Data.frame containing peak information.
 #' @param wf Calibration method/Workflow.
 #' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
@@ -17,6 +25,7 @@
 #' @param mass_fraction2 Mass fraction of the analyte element in the analyte component.
 #' @param sample_mass Sample mass in [mg].
 #' @return A data.frame.
+#'
 #' @examples
 #' # wf "ExtCal", "ExtGasCal" use col = 4
 #' pd <- data.frame("A"=1:3,"B"=1:3,"R_m"=1:3,"col4"=1:3)
@@ -26,6 +35,7 @@
 #' tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L")
 #' tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^3)
 #' tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^4)
+#'
 #' @export
 tab_result <- function(peak_data, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"),
                        ExtCal_unit = c("pg", "ng", "\u00b5g"),

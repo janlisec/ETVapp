@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{calc_massflow}
 \alias{calc_massflow}
-\title{calc_massflow.}
+\title{Calculates the mass flow mf_sp}
 \usage{
 calc_massflow(
   x,
@@ -39,7 +39,7 @@ calc_massflow(
 A numeric vector.
 }
 \description{
-Transforms one column in a data.frame with respect to parameters.
+Calculates the mass flow mf_sp.
 }
 \examples{
 calc_massflow(1:10)

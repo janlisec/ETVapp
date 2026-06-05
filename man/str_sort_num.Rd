@@ -10,7 +10,10 @@ str_sort_num(x)
 \item{x}{character vector.}
 }
 \description{
-str_sort_num
+Sort strings by first contained numeric
+}
+\details{
+A base R implementation to sort strings according to first number within string.
 }
 \examples{
 x <- paste0("File", c(20, 1, 9, 11, 32, 100))

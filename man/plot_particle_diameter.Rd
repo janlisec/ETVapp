@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_plots.R
 \name{plot_particle_diameter}
 \alias{plot_particle_diameter}
-\title{plot_particle_diameter}
+\title{Histogram plot of particle size distribution.}
 \usage{
 plot_particle_diameter(
   x,

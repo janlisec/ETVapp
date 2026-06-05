@@ -1,9 +1,9 @@
 ---
 title: "On-line isotope dilution mass spectrometry (oIDMS) workflow"
-output: 
-  rmarkdown::html_vignette
+output: rmarkdown::html_vignette
+author: "Vera Scharek and Jan Lisec"
 vignette: >
-  %\VignetteIndexEntry{workflow_oIDMS}
+  %\VignetteIndexEntry{On-line isotope dilution mass spectrometry (oIDMS) workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -40,6 +40,7 @@ the *ETVapp* package and can be accessed through the library.
 
 ```{r setup}
 library(ETVapp)
+td <- ETVapp::ETVapp_testdata[["oIDMS"]]
 ```
 
 ## Mass bias
@@ -52,9 +53,8 @@ reference material. The following code will import the raw data files, calculate
 the isotope ratios based on the peak areas and return *K* for each input data.
 
 ```{r MassBias}
-mb_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Massbias"]]
-
-head(mb_imp[[1]])
+mb_imp <- td[["Massbias"]]
+str(mb_imp[[1]])
 
 iso1 <- "117Sn"
 iso2 <- "122Sn"
@@ -72,7 +72,7 @@ mb_peaks <- ldply_base(1:length(mb_imp), function(i) {
   )
 })
 
-head(mb_peaks)
+gt::gt(mb_peaks)
 
 K <- calc_massbias(
   mb_peaks[,"R_m"], 
@@ -93,9 +93,7 @@ pe <- 105
 time_col <- "Time"
 cf <- 50
 
-mb_pro <- lapply(mb_imp, function(x) {
-  process_data(data = x, wf = "IDMS", c1 = iso1, c2 = iso2, fl = NULL)
-})
+mb_pro <- process_data(data = mb_imp, wf = "IDMS", c1 = iso1, c2 = iso2, fl = NULL)
 
 mb_BL <- lapply(1:length(mb_pro), function(i) {
   flt <- (min(which(mb_pro[[i]][,time_col]>=ps))-cf):(max(which(mb_pro[[i]][,time_col]<=pe))+cf)
@@ -132,7 +130,6 @@ for (i in 1:3) {
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,"122Sn_BL"], col = "blue")
   abline(v=c(ps,pe), col=grey(0.8))
 }
-par(mfrow=c(1,1))
 ```
 
 ## Transport efficiency
@@ -156,20 +153,19 @@ obtained *via* the `get_peakdata()`-function using the peak picking method
 concentrations. Calibration parameter are obtained through linear regression.
 
 ```{r load_TransportEfficiency_data}
-spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
-
-head(spion_imp[[1]])
+spion_imp <- td[["sp_ionic"]]
+str(spion_imp[[1]])
 
 sp_cali <- ldply_base(1:length(spion_imp), function(i) {
-  get_peakdata(spion_imp[[i]][,c("Time", "197Au")], "197Au", PPmethod = "mean_signal", peak_start = 0.006, peak_end = 60)
+  get_peakdata(spion_imp[[i]][,c("Time", "197Au")], "197Au", PPmethod = "mean signal", peak_start = 0.006, peak_end = 60)
 })
 
 conc_ion <- c(20, 50, 100, 200, 500)
 sp_cali <- tab_cali(peak_data = sp_cali, wf = "oIDMS", std_info = conc_ion)
-sp_cali
+gt::gt(sp_cali)
 
 cali_lm <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = "oIDMS")
-cali_lm
+gt::gt(cali_lm)
 ```
 
 Signal curves of the ionic measurements and the resulting calibration curve are 
@@ -182,12 +178,12 @@ for (i in 1:min(length(spion_imp), 10)) {
   plot(spion_imp[[i]], type="l", main = sp_cali[i,5], ylab="Intensity [cps]", ylim=ylim)
   abline(v=sp_cali[i,2:3], col=grey(0.8))
 }
-par(mfrow=c(1,1))
 ```
 ```{r calibration_model, fig.width=3, fig.height=3}
-(cm <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = "oIDMS"))
+cm <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = "oIDMS")
 plot(sp_cali[,c(5,4)])
 abline(a = cm[1,3], b = cm[1,1])
+gt::gt(cm)
 ```
 
 To determine the limit for particle detection (LFD), import the single particle 
@@ -210,7 +206,7 @@ if (!is.null(t_fltr) && is.numeric(t_fltr) && t_fltr>min(sp_data[,time_col], na.
 }
   
 sig_data <- table(sp_data_flt[,anlt])
-  
+par(mfrow=c(1,1))  
 plot(sig_data, ylim = c(0, 10), log = 'x', ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution")
 abline(v=LFD, col=2, lwd=3)
 ```
@@ -229,10 +225,10 @@ n_trans <- calc_transeff(
   dia_part = size
 )
 
-print(n_trans)
+gt::gt(n_trans)
 ```
 ```{r Particle_size_distribution, fig.width=3*2, fig.height=3*2, out.width='100%', fig.align='center'}
-sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
+sp_data <- td[["sp_particle"]][[1]]
 
 plot_particle_diameter(
   sp_data[,c(time_col, anlt)], cali_slope = cm[1,1], V_fl = V_fl, part_mat = "Au", dia_part = size, LFD = LFD
@@ -250,14 +246,14 @@ minimum isotope ratio is required determined by the ratio of the natural isotope
 abundances. A result table is obtained by consequent peak evaluation. 
 
 ```{r Samples}
-samp_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]]
+samp_imp <- td[["Samples"]]
 
 samp_ion <- lapply(1:length(samp_imp), function(i) {
   x <- process_data(data = samp_imp[[i]], wf = "oIDMS", c1 = iso1, c2 = iso2, fl = 5)
   x[,"R_corr"] <- x[,"R_m"] * mean(K)
   return(x)
 })
-head(samp_ion[[1]])
+gt::gt(head(samp_ion[[1]]))
 
 sample_mass <- c(1.0119, 0.9042, 0.9151)
 result_df <- ldply_base(1:length(samp_ion), function(i) {#'
@@ -267,7 +263,7 @@ result_df <- ldply_base(1:length(samp_ion), function(i) {#'
   tab_result(pk, wf = "oIDMS", K = K, amae = pk[,4], mass_fraction2 = 1, sample_mass = 1)
 })
 
-DT::datatable(result_df, options = list(dom = "t"))
+gt::gt(result_df)
 ```
 
 View the mass flow diagram to check the integration of the mass flow peak(s).
@@ -302,7 +298,6 @@ for (i in 1:length(mf_BL)){
   lines(x = mf_BL[[i]][,c("Time")], y = mf_BL[[i]][,3], col = "blue")
   abline(v=c(result_df[i,1:2]), col=grey(0.8))
 }
-par(mfrow=c(1,1))
 ```
 
 ## Limits of detection and quantification
@@ -323,14 +318,14 @@ blk_ion <- lapply(1:length(blk_imp), function(i) {
   return(x)
 })
 
-head(blk_ion[[1]])
+gt::gt(head(blk_ion[[1]]))
 
 LOX_df <- ldply_base(1:length(blk_ion), function(i) {
   pk <- get_peakdata(pro_data = blk_ion[[i]], int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = pe, minpeakheight = 1000)
   tab_result(pk, wf = "oIDMS", K = K, amae = pk[,4], mass_fraction2 = 1, sample_mass = 1)
 })
   
-print(LOX_df)
+gt::gt(LOX_df)
 ```
 
 Mass flow diagrams of the blank measurements are plotted as follows.
@@ -353,15 +348,14 @@ for (i in 1:min(length(blk_ion), 10)) {
   lines(x = blk_BL[[i]][,c("Time")], y = blk_BL[[i]][,3], col = "blue")
   abline(abline(v=c(LOX_df[i,1:2]), col=grey(0.8)))
 }
-par(mfrow=c(1,1))
 ```
 
 The LOD and LOQ are computed as three and ten times the standard deviation by 
 calling `tab_LOX()`.
 
 ```{r Result}
-DT::datatable(tab_LOX(
+gt::gt(tab_LOX(
   x = LOX_df[,4], 
   wf = "oIDMS"
-), options = list(dom = "t"))
+))
 ```

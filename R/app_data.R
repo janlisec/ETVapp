@@ -3,9 +3,10 @@
 #' @format A data.frame of chemical isotopes providing mass and natural abundance.
 #' @usage data(isotopes)
 #' @source R-package enviPat
+#' @noRd
 "isotopes"
 
-#' @title ETVapp_testdata.
+#' @title Test data for 4 workflows implemented in ETVapp
 #' @docType data
 #' @format A named list of length 4 (respective of the 4 implemented workflows),
 #'     each containing sublists of blanks, calibration data and measured samples

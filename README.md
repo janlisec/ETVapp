@@ -5,24 +5,49 @@
 
 <!-- badges: start -->
 
+[![Static
+Badge](https://img.shields.io/github/r-package/v/janlisec/ETVapp)](https://img.shields.io/github/r-package/v/janlisec/ETVapp)
+<!-- [![CRAN status](https://www.r-pkg.org/badges/version/eCerto)](https://CRAN.R-project.org/package=ETVapp)  -->
+[![R-CMD-check](https://github.com/janlisec/ETVapp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janlisec/ETVapp/actions/workflows/R-CMD-check.yaml)
+[![test-coverage](https://github.com/janlisec/ETVapp/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/janlisec/ETVapp/actions/workflows/test-coverage.yaml)
+
 <!-- badges: end -->
 
-The goal of ETVapp is to …
+The goal of ETVapp is to provide functions to evaluate ICP-MS and
+ICP-OES experiments. To this end, currently 4 different workflows are
+implemented. The package is based on functions developed by [Vera
+Scharek](https://www.linkedin.com/in/vera-scharek-63932b205/). You can
+find scientific details in her publications on Online Isotope Dilution
+ICP-MS used for [sulfor
+quantification](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553)
+and [tin
+fractionation](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553).
 
 ## Installation
 
-You can install the development version of ETVapp from
-[GitHub](https://github.com/) with:
+You can install the development version of `ETVapp` from
+[GitHub](https://github.com/):
 
 ``` r
 install.packages("janlisec/ETVapp")
 ```
 
-## Example
+## Use the Shiny-App for testing
 
-This is a basic example which shows you how to solve a common problem:
+For users unfamiliar with the R console, the package provides a browser
+based app together with appropriate test data which allows to test the
+package functions. The app also allows to process user data for
+exploratory data analyses. However, it currently does not allow to store
+parameter settings. Therefore, for use in publications, it is
+recommended to script the analysis steps to ensure reproducibility.
 
 ``` r
 library(ETVapp)
 app()
 ```
+
+<figure>
+<img src="dev/ETVapp_screenshot.png?raw=true" title="ETVapp screenshot"
+alt="ETVapp screenshot" />
+<figcaption aria-hidden="true">ETVapp screenshot</figcaption>
+</figure>

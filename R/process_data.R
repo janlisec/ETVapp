@@ -1,31 +1,31 @@
-#' @title process_data
-#' @description Corrects a numeric values in a data.frame column with respect to
-#'     a column containing standard values and applies Savitzky-Golay smoothing.
+#' Column data transformation
+#'
+#' Corrects a numeric values in a data.frame column with respect to a column
+#' containing standard values and applies Savitzky-Golay smoothing.
+#'
 #' @param data Data.frame with at least two numeric columns.
 #' @param wf Calibration method/Workflow.
 #' @param c1 Column name of the intensity column to be used (ExtCal/ExtGasCal) or of the spike isotope (IDMS/oIDMS).
 #' @param c2 Column name of the intensity column to be used as internal standard (ExtCal/ExtGasCal) or of the sample isotope (IDMS/oIDMS).
 #' @param fl Filter length, has to be odd and >= 3.
-#'
 #' @param amend Set TRUE to amend transformed columns instead of replacing them. The input of "0" as filter length will omnit the smoothing step.
-#'
 #'
 #' @return A data.frame with at least two columns.
 #'
 #' @examples
-#' imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']][[1]]
-#' plot(imp[,c("Time","13C")], type="l")
+#' imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']]
+#' plot(imp[[1]][,c("Time","13C")], type="l")
 #' pro_data <- process_data(imp, c1 = "13C", c2 = "80Se", fl = 5)
-#' head(pro_data)
-#' lines(pro_data, col=3)
+#' head(pro_data[[1]])
+#' lines(pro_data[[1]], col=3)
 #'
-#' head(process_data(imp, c1 = "13C", c2 = "80Se", fl = 9, amend = TRUE))
-#' head(process_data(imp, c1 = "13C", c2 = "80Se", amend = TRUE))
+#' head(process_data(imp[[1]], c1 = "13C", c2 = "80Se", fl = 9, amend = TRUE))
+#' head(process_data(imp[[1]], c1 = "13C", c2 = "80Se", amend = TRUE))
 #'
 #' # test all error messages
 #' \dontrun{
-#'   colnames(imp)[1] <- "TIME"
-#'   head(process_data(imp, c1 = "122Sn", c2 = "test", fl = 2))
+#'   colnames(imp[[1]])[1] <- "TIME"
+#'   head(process_data(imp[[1]], c1 = "122Sn", c2 = "test", fl = 2))
 #' }
 #'
 #' @export
@@ -33,46 +33,57 @@ process_data <- function(data, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"), c
 # $$ JL: channel amend parameter to _col functions
   wf <- match.arg(wf)
 
-  # ensure time_col
-  time_col <- check_Time_col(data)
+  process_data_internal <- function(x) {
+    # ensure time_col
+    time_col <- check_Time_col(x)
+    ensure_that(c1 %in% colnames(x), "Please select an existing Intensity column.", opt = "stop")
 
-  if (wf %in% c("ExtCal", "ExtGasCal")) {
-    out <- data[,c(time_col, c1)]
+    if (wf %in% c("ExtCal", "ExtGasCal")) {
+      out <- x[,c(time_col, c1)]
 
-    # correct data using intensity in c2
-    if (!is.null(c2) && c2 != c1) {
-      if (c2 %in% colnames(data)) {
-        out <- cbind(out, data[,c2,drop=FALSE])
-        # perform smoothing
-        out <- smooth_col(df = out, nm = c1, fl = fl, amend = if (amend) "_smooth" else NULL)
-        out <- smooth_col(df = out, nm = c2, fl = fl, amend = if (amend) "_smooth" else NULL)
-        # perform scaling (of smoothed columns if smoothing was performed)
-        test <- amend & !is.null(fl)
-        out <- scale_col(df = out, nm = ifelse(test, paste0(c1, "_smooth"), c1), std = ifelse(test, paste0(c2, "_smooth"), c2), amend = if (amend) "_scale" else NULL)
+      # correct data using intensity in c2
+      if (!is.null(c2) && c2 != c1) {
+        if (c2 %in% colnames(x)) {
+          out <- cbind(out, x[,c2,drop=FALSE])
+          # perform smoothing
+          out <- smooth_col(df = out, nm = c1, fl = fl, amend = if (amend) "_smooth" else NULL)
+          out <- smooth_col(df = out, nm = c2, fl = fl, amend = if (amend) "_smooth" else NULL)
+          # perform scaling (of smoothed columns if smoothing was performed)
+          test <- amend & !is.null(fl)
+          out <- scale_col(df = out, nm = ifelse(test, paste0(c1, "_smooth"), c1), std = ifelse(test, paste0(c2, "_smooth"), c2), amend = if (amend) "_scale" else NULL)
+        } else {
+          message("Column c2 '", c2, "' not found. Correction step omitted.")
+          out <- smooth_col(df = out, nm = c1, fl = fl, amend = if (amend) "_smooth" else NULL)
+        }
       } else {
-        message("Column c2 '", c2, "' not found. Correction step omitted.")
         out <- smooth_col(df = out, nm = c1, fl = fl, amend = if (amend) "_smooth" else NULL)
       }
-    } else {
+    }
+
+    if (wf %in% c("IDMS", "oIDMS")) {
+      check_iso_cols(x, c1, c2)
+      out <- x[,c("Time", c1, c2)]
+
+      # perform smoothing
       out <- smooth_col(df = out, nm = c1, fl = fl, amend = if (amend) "_smooth" else NULL)
+      out <- smooth_col(df = out, nm = c2, fl = fl, amend = if (amend) "_smooth" else NULL)
+
+      if (wf == "oIDMS") {
+        out <- cbind(
+          out,
+          "R_m" = out[,ifelse(amend, paste0(c1, "_smooth"), c1)] / out[,ifelse(amend, paste0(c2, "_smooth"), c2)]
+        )
+      }
     }
+
+    return(out)
   }
 
-  if (wf %in% c("IDMS", "oIDMS")) {
-    check_iso_cols(data, c1, c2)
-    out <- data[,c("Time", c1, c2)]
-
-    # perform smoothing
-    out <- smooth_col(df = out, nm = c1, fl = fl, amend = if (amend) "_smooth" else NULL)
-    out <- smooth_col(df = out, nm = c2, fl = fl, amend = if (amend) "_smooth" else NULL)
-
-    if (wf == "oIDMS") {
-      out <- cbind(
-        out,
-        "R_m" = out[,ifelse(amend, paste0(c1, "_smooth"), c1)] / out[,ifelse(amend, paste0(c2, "_smooth"), c2)]
-      )
-    }
+  # run function on elements of list or on a single data.frame
+  if (!is.data.frame(data) && is.list(data)) {
+    stats::setNames(lapply(data, function(x) { process_data_internal(x = x) }), names(data))
+  } else {
+    process_data_internal(x = data)
   }
 
-  return(out)
 }

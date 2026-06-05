@@ -2,7 +2,7 @@
 % Please edit documentation in R/tab_LOX.R
 \name{tab_LOX}
 \alias{tab_LOX}
-\title{tab_LOX}
+\title{Tabulate LOD/LOQ data}
 \usage{
 tab_LOX(
   x,
@@ -36,8 +36,8 @@ tab_LOX(
 A data.frame.
 }
 \description{
-\code{tab_LOX} estimates the limit of detection (LOD) and
-    quantification (LOQ) and returns a data.frame.
+Estimates the limit of detection (LOD) and quantification (LOQ) and returns
+a data.frame.
 }
 \details{
 The LOD and LOQ will be calculated as three and ten times the

@@ -3,7 +3,7 @@
 \docType{data}
 \name{ETVapp_testdata}
 \alias{ETVapp_testdata}
-\title{ETVapp_testdata.}
+\title{Test data for 4 workflows implemented in ETVapp}
 \format{
 A named list of length 4 (respective of the 4 implemented workflows),
     each containing sublists of blanks, calibration data and measured samples
@@ -16,6 +16,6 @@ vera.scharek@bam.de
 data(ETVapp_testdata)
 }
 \description{
-ETVapp_testdata.
+Test data for 4 workflows implemented in ETVapp
 }
 \keyword{datasets}

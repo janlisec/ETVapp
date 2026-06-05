@@ -1,12 +1,12 @@
-#' @title app.
+#' Start a Shiny-App as GUI for all workflows
 #'
-#' @description \code{app} will start a shiny app that allows to upload raw
-#'  data, process selectively and analyze different methods of ratio calculation
-#'  between two intensity traces.
+#' Start a Shiny-App that allows to upload raw data, process selectively and
+#' analyze different methods of ratio calculation between two intensity traces.
 #'
-#' @details The app is described in detail in \doi{10.1039/D2JA00208F}.
+#' @details The app contains context specific help accessible during run-time
+#'     via links.
 #'
-#' @return A shiny app object. This will effectively launch a browser and start
+#' @return A Shiny-App object. This will effectively launch a browser and start
 #'   the app on local port 7462.
 #'
 #' @import shiny
@@ -70,7 +70,7 @@ app_ui <- function() {
   ExtIDMS_import <- shiny::div(
     id = "ExtIDMS_import",
     input_elem_grid(
-      shiny::HTML("Isotopes:"),
+      div(style = "padding-top: 32px;", shiny::HTML("Isotopes:")),
       selectInput(inputId = "ic_par_mi_col", label = "1", choices = c("")),
       selectInput(inputId = "ic_par_si_col", label = "2", choices = c("")),
       shiny::HTML("Labels:"),
@@ -107,7 +107,7 @@ app_ui <- function() {
     id = "Processing_par_section", fill = FALSE,
     bslib::card_header(
       class = "d-flex justify-content-between",
-      shiny::actionLink(inputId = "ic_help04", label = "Processing"),
+      shiny::actionLink(inputId = "ic_help04", label = "Peak processing"),
       shiny::actionButton(inputId = "btn_card_processing", label = NULL, icon = shiny::icon("compress-arrows-alt"), style = "border: none; padding-left: 5px; padding-right: 5px; padding-top: 0px; padding-bottom: 0px;")
     ),
     shiny::div(
@@ -181,7 +181,7 @@ app_ui <- function() {
   ExtCal_pars <- shiny::div(
     id = "ExtCal_pars",
     input_elem_grid(
-      shiny::HTML("Standard:"),
+      div(style = "padding-top: 32px;", shiny::HTML("Standard:")),
       selectInput(inputId = "ExtCal_unit", label = "Unit", choices = c("pg","ng","\u00b5g")),
       shiny::HTML("")
     )
@@ -189,7 +189,7 @@ app_ui <- function() {
   ExtGasCal_pars <- shiny::div(
     id = "ExtGasCal_pars",
     input_elem_grid(
-      shiny::HTML("Calibration gas:"),
+      div(style = "padding-top: 32px;", shiny::HTML("Calibration gas:")),
       numericInput(inputId = "cali_fac", label = "Conversion factor", value = 0.005002692),
       selectInput(inputId = "ExtGasCal_unit", label = "Unit", choices = c("nL/min", "\u00b5L/min", "mL/min"))
     )
@@ -304,7 +304,9 @@ app_ui <- function() {
         ic_plot_card(),
         bslib::card(
           bslib::card_header("Current peaks"),
-          DT::DTOutput("ic_table_peaks")
+          shiny::div(id = "test",
+            DT::DTOutput("ic_table_peaks")
+          )
         ),
         ic_tables_card(),
         bslib::card(fill = FALSE,
@@ -508,7 +510,7 @@ app_server <- function(input, output, session) {
     if (input$ic_par_isotope) {
       shinyjs::hide("ic_par_specplot")
       shinyjs::show("ic_par_focus_iso")
-      shinyWidgets::updatePickerInput(inputId = "ic_par_focus_sample", selected = "Sample 1", options = pickersOptions(maxOptions = 1)) #clearOptions = TRUE)
+      shinyWidgets::updatePickerInput(inputId = "ic_par_focus_sample", selected = "Sample 1", options = shinyWidgets::pickerOptions(maxOptions = 1)) #clearOptions = TRUE)
     } else {
       shinyjs::show("ic_par_specplot")
       shinyjs::hide("ic_par_focus_iso")
@@ -770,7 +772,9 @@ app_server <- function(input, output, session) {
   })
 
   # peak table output and associated action buttons ----
+  #shinyjs::hide(id = "test")
   output$ic_table_peaks <- DT::renderDT({
+
     req(ic_table_peaks_edit())
     pks <- ic_table_peaks_edit()
     # remove '_smooth' amendment in column 'Isotope' if user omitted smoothing step
@@ -913,16 +917,17 @@ app_server <- function(input, output, session) {
     if ("Isotope" %in% colnames(out) && length(grep("_smooth", out[,"Isotope"]))>=1) out[,"Isotope"] <- gsub("_smooth", "", out[,"Isotope"])
     style_tab_peaks(data = limit_digits(out))
   })
+  shiny::outputOptions(output, "ic_table_peaks", suspendWhenHidden = FALSE)
 
    # enables manual editing of the peak borders in the peak table
-  shiny::observeEvent(input$ic_table_peaks_cell_edit, {
-    # convert column values to numeric
-    x <- as.numeric(gsub("[^[[:digit:]-].]", "", input$ic_table_peaks_cell_edit$value))
-    # replace in correct column and update 'ic_table_peaks_edit'
-    tmp <- ic_table_peaks_edit()
-    tmp[, input$ic_table_peaks_cell_edit$col[1] + 1] <- x
-    ic_table_peaks_edit(tmp)
-  })
+  # shiny::observeEvent(input$ic_table_peaks_cell_edit, {
+  #   # convert column values to numeric
+  #   x <- as.numeric(gsub("[^[[:digit:]-].]", "", input$ic_table_peaks_cell_edit$value))
+  #   # replace in correct column and update 'ic_table_peaks_edit'
+  #   tmp <- ic_table_peaks_edit()
+  #   tmp[, input$ic_table_peaks_cell_edit$col[1] + 1] <- x
+  #   ic_table_peaks_edit(tmp)
+  # })
 
   # cali peaks table ----
   output$table_cali <- DT::renderDT({

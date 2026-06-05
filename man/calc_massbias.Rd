@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{calc_massbias}
 \alias{calc_massbias}
-\title{calc_massbias}
+\title{Calculates the mass bias correction factor K}
 \usage{
 calc_massbias(R_m, As_iso1, As_iso2)
 }
@@ -21,6 +21,8 @@ A mass bias correction factor will be determined from measurements
     without added spike.
 }
 \details{
+Calculates the mass bias correction factor K.
+
 Ratio of the spike to sample isotope peak area from measurements without spike addition.
 }
 \examples{

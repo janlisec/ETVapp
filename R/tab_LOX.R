@@ -1,10 +1,13 @@
-#' @title tab_LOX
-#' @description \code{tab_LOX} estimates the limit of detection (LOD) and
-#'     quantification (LOQ) and returns a data.frame.
+#' Tabulate LOD/LOQ data
+#'
+#' Estimates the limit of detection (LOD) and quantification (LOQ) and returns
+#' a data.frame.
+#'
 #' @details The LOD and LOQ will be calculated as three and ten times the
 #'     standard deviation of at least three peak areas divided by the slope
 #'     of a linear calibration curve (for workflow ExtCal/ExtGasCal). Results are provided
 #'     as element, analyte and relative to a sample mass.
+#'
 #' @param x Variable containing the numeric data to infer SD (either peak area (for ExtCal/ExtGasCal) or analyte mass (for IDMS/oIDMS)).
 #' @param cali_slope A slope from the calibration data.
 #' @param wf Calibration method/Workflow.

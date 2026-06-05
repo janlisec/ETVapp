@@ -2,7 +2,7 @@
 % Please edit documentation in R/tab_cali.R
 \name{tab_cali}
 \alias{tab_cali}
-\title{tab_cali.}
+\title{Tabulate calibration data.}
 \usage{
 tab_cali(
   peak_data,
@@ -27,23 +27,24 @@ tab_cali(
 \item{fac}{A factor to convert the gas flow (gas_density x mass_fraction x mass_percentage).}
 }
 \value{
-A data.frame with the standard no, the isotope, the peak/signal boundaries in seconds, the peak area in counts/mean signal in cps and information for the
-analyte content in the calibration standard.
+A data.frame with the standard no, the isotope, the peak/signal
+    boundaries in seconds, the peak area in counts/mean signal in cps and
+    information for the analyte content in the calibration standard.
 }
 \description{
-\code{tab_cali} will transfer standard information to a data.frame containing peak/signal data.
+Transfer standard information to a data.frame containing peak/signal data.
 }
 \details{
-Selecting "ExtGasCal" enables the input of a conversion factor to calculate the gas flows. A conversion factor (mL/min to µL/s) is implemented in the function.
+Selecting "ExtGasCal" enables the input of a conversion factor to
+    calculate the gas flows. A conversion factor (mL/min to µL/s) is
+    implemented in the function.
 }
 \examples{
 # import all cali files into a list from example data folder
 cali_imp <- ETVapp::ETVapp_testdata[["ExtCal"]][["Cali"]]
 
 # process cali files (and generate plots)
-cali_pro <- lapply(cali_imp, function(x) {
-  process_data(x, c1 = "157", fl = 7)
-})
+cali_pro <- process_data(cali_imp, c1 = "157", fl = 7)
 par(mfrow=grDevices::n2mfrow(nr.plots = length(cali_pro)))
 for (i in 1:length(cali_pro)) plot(cali_pro[[i]][,1:2], type="l")
 

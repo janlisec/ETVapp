@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_data.R
 \name{process_data}
 \alias{process_data}
-\title{process_data}
+\title{Column data transformation}
 \usage{
 process_data(
   data,
@@ -30,23 +30,23 @@ process_data(
 A data.frame with at least two columns.
 }
 \description{
-Corrects a numeric values in a data.frame column with respect to
-    a column containing standard values and applies Savitzky-Golay smoothing.
+Corrects a numeric values in a data.frame column with respect to a column
+containing standard values and applies Savitzky-Golay smoothing.
 }
 \examples{
-imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']][[1]]
-plot(imp[,c("Time","13C")], type="l")
+imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']]
+plot(imp[[1]][,c("Time","13C")], type="l")
 pro_data <- process_data(imp, c1 = "13C", c2 = "80Se", fl = 5)
-head(pro_data)
-lines(pro_data, col=3)
+head(pro_data[[1]])
+lines(pro_data[[1]], col=3)
 
-head(process_data(imp, c1 = "13C", c2 = "80Se", fl = 9, amend = TRUE))
-head(process_data(imp, c1 = "13C", c2 = "80Se", amend = TRUE))
+head(process_data(imp[[1]], c1 = "13C", c2 = "80Se", fl = 9, amend = TRUE))
+head(process_data(imp[[1]], c1 = "13C", c2 = "80Se", amend = TRUE))
 
 # test all error messages
 \dontrun{
-  colnames(imp)[1] <- "TIME"
-  head(process_data(imp, c1 = "122Sn", c2 = "test", fl = 2))
+  colnames(imp[[1]])[1] <- "TIME"
+  head(process_data(imp[[1]], c1 = "122Sn", c2 = "test", fl = 2))
 }
 
 }

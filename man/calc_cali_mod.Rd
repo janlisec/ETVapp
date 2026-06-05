@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{calc_cali_mod}
 \alias{calc_cali_mod}
-\title{calc_cali_mod.}
+\title{Calculates the calibration model}
 \usage{
 calc_cali_mod(
   df,
@@ -28,6 +28,8 @@ A data.frame containing slope and intercept with errors and R square.
     regression model.
 }
 \details{
+Calculates the calibration model.
+
 A calibration curve is provided by a linear fit of peak areas or mean
     signal intensities against analyte masses or gas flows from a data.frame
     containing at least two entries in rows.

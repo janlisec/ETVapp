@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{ldply_base}
 \alias{ldply_base}
-\title{ldply_base}
+\title{Base-R ldply implementation}
 \usage{
 ldply_base(.data, .fun = identity)
 }
@@ -12,25 +12,5 @@ ldply_base(.data, .fun = identity)
 \item{.fun}{fun.}
 }
 \description{
-exported functions that solve minor problems
-}
-\details{
-# function reimplementations (to avoid dependencies)
-- ldply_base
-- laply_base
-- str_sort_num
-
-perform simple calculations
-- calc_N_sp
-- calc_analyte_mass_as_element
-- calc_massbias
-- calc_massflow
-- calc_cali_mod
-- calc_transeff
-
-imported from IsoCor
-- get_iso_info
-- help_the_user
-- get_spectrum
-- spec_pre_process
+A base R only implementation of plyr::ldply.
 }

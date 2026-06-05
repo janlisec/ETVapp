@@ -1,15 +1,21 @@
 Package: ETVapp
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.4.1
-Date: 2025-10-31
+Title: ETV/ICP-MS and -OES data processing functions and Shiny-App
+Version: 0.4.3
+Date: 2026-06-04
 Authors@R: c(
     person("Jan", "Lisec", , "jan.lisec@bam.de", role = c("cre", "aut"),
            comment = c(ORCID = "0000-0003-1220-2286")),
     person("Vera", "Scharek", email = "vera.scharek@bam.de", role = c("aut", "ctb"))
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Processing functions including a Shiny-App to evaluate data from (online) 
+    Isotope dilution mass spectrometry experiments and other ETV/ICP-MS and -OES 
+    based measurements. The package provides a generalized import function for
+    typical data formats, different universal signal processing functions 
+    (smoothing, peak picking etc.) and workflow specific output functions for
+    tabulated results. A Shiny-App allows low level access to potential workflows
+    while several vignettes show examples for the more versatile approach of
+    combining package functions in reproducible processing scipts.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -26,6 +32,7 @@ Imports:
     shinyjs,
     shinyWidgets
 Suggests: 
+    gt,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)

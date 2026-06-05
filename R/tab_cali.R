@@ -1,6 +1,11 @@
-#' @title tab_cali.
-#' @description \code{tab_cali} will transfer standard information to a data.frame containing peak/signal data.
-#' @details Selecting "ExtGasCal" enables the input of a conversion factor to calculate the gas flows. A conversion factor (mL/min to µL/s) is implemented in the function.
+#' Tabulate calibration data.
+#'
+#' Transfer standard information to a data.frame containing peak/signal data.
+#'
+#' @details Selecting "ExtGasCal" enables the input of a conversion factor to
+#'     calculate the gas flows. A conversion factor (mL/min to µL/s) is
+#'     implemented in the function.
+#'
 #' @param peak_data Data.frame containing peak information.
 #' @param wf Calibration method/Workflow.
 #' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
@@ -8,17 +13,16 @@
 #' @param std_info A numeric value giving the analyte mass (ExtCal), the concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).
 #' @param fac A factor to convert the gas flow (gas_density x mass_fraction x mass_percentage).
 #'
-#' @return A data.frame with the standard no, the isotope, the peak/signal boundaries in seconds, the peak area in counts/mean signal in cps and information for the
-#' analyte content in the calibration standard.
+#' @return A data.frame with the standard no, the isotope, the peak/signal
+#'     boundaries in seconds, the peak area in counts/mean signal in cps and
+#'     information for the analyte content in the calibration standard.
 #'
 #' @examples
 #' # import all cali files into a list from example data folder
 #' cali_imp <- ETVapp::ETVapp_testdata[["ExtCal"]][["Cali"]]
 #'
 #' # process cali files (and generate plots)
-#' cali_pro <- lapply(cali_imp, function(x) {
-#'   process_data(x, c1 = "157", fl = 7)
-#' })
+#' cali_pro <- process_data(cali_imp, c1 = "157", fl = 7)
 #' par(mfrow=grDevices::n2mfrow(nr.plots = length(cali_pro)))
 #' for (i in 1:length(cali_pro)) plot(cali_pro[[i]][,1:2], type="l")
 #'
@@ -45,7 +49,6 @@
 #' tab_cali(peak_data = cali_pks, wf = "oIDMS", std_info = c(20, 50, 100, 200, 500))
 #'
 #' @export
-
 tab_cali <- function (peak_data, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
                       ExtCal_unit = c("pg", "ng", "\u00b5g"),
                       ExtGasCal_unit = c("nL/min", "\u00b5L/min", "mL/min"),

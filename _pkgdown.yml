@@ -1,0 +1,8 @@
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left: [home, articles, reference]
+
+url: https://janlisec.github.io/ETVapp

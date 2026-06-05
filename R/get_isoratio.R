@@ -1,22 +1,27 @@
-#' @title get_isoratio
-#' @description \code{get_isoratio} calculate an isotope ratio based on peak areas.
-#' @details Time-resolved ICP-MS data will be integration and optionally baseline corrected.
-#' Peak boundaries will be checked regarding the similarity beween the isotopes.
-#' @param data A data.frame containing at least two columns.
+#' Calculate an isotope ratio based on peak areas.
+#'
+#' Calculate an isotope ratio based on peak areas.
+#'
+#' @details Time-resolved ICP-MS data will be integrated and optionally baseline
+#'     corrected. Peak boundaries will be checked regarding the similarity
+#'     between the isotopes.
+#' @param data A data.frame containing at least two columns or a list of such
+#'     data.frames in which case the result will be a list of data frames as well.
 #' @param iso1_col Spike isotope.
 #' @param iso2_col Sample isotope.
 #' @param PPmethod Peak picking method.
 #' @param peak_start Value which is taken as peak start point, when manual peak picking is chosen.
 #' @param peak_end Value which is taken as peak end point, when manual peak picking is chosen.
-#' @param minpeakheight A threshold value for peak picking via peakheight.
+#' @param minpeakheight A threshold value for peak picking when "Peak (height)" is choosen as an option.
 #' @param BLmethod Method for baseline correction.
 #' @param deg Degree of polynomial for baseline correction.
 #' @param cf A correction value for cutting the area around the detected peak.
-#' @param fl Filter length of smoother, has to be odd and >=3.
-#' @return A data.frame.
+#' @param fl Filter length of smoothing function, has to be odd integer >=3.
+#' @return A data.frame or a list of data.frames when data is a list itself.
 #' @examples
 #' # for sample measurements
-#' lapply(ETVapp::ETVapp_testdata[["IDMS"]], function(x) {
+#' td <- ETVapp::ETVapp_testdata[["IDMS"]]
+#' lapply(td, function(x) {
 #'   print(ldply_base(1:length(x), function(i) {
 #'     get_isoratio(
 #'      x[[i]], iso1_col = "113Cd", iso2_col = "111Cd", PPmethod = "Peak (manual)",
@@ -24,6 +29,7 @@
 #'     )
 #'   }))
 #' })
+#' td <- ETVapp::ETVapp_testdata[["IDMS"]][["Samples"]]
 #' @export
 
 get_isoratio <- function (data, iso1_col, iso2_col, PPmethod = c("Peak (height)", "Peak (manual)"),
