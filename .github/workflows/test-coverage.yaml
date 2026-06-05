@@ -1,18 +1,15 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
-  workflow_run:
-    workflows: ["R-CMD-check"]
-    types: [completed]
-    branches: [devel]
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 name: test-coverage
 
-permissions: read-all
-
 jobs:
   test-coverage:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -39,24 +36,20 @@ jobs:
           covr::to_cobertura(cov)
         shell: Rscript {0}
 
-# [JL] gpg based identfication in codecov-action@v5 would need gpg but is not working 2025-11-18
-#      - name: Install gpg
-#        run: sudo apt-get update && sudo apt-get install -y gnupg
-
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v4
         with:
-          fail_ci_if_error: ${{ github.event_name != 'pull_request' && true || false }}
-          files: ./cobertura.xml
-          plugins: noop
+          # Fail if error if not on PR, or if on PR and token is given
+          fail_ci_if_error: ${{ github.event_name != 'pull_request' || secrets.CODECOV_TOKEN }}
+          file: ./cobertura.xml
+          plugin: noop
           disable_search: true
-          skip_validation: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Show testthat output
         if: always()
         run: |
           ## --------------------------------------------------------------------
-          find '${{ runner.temp }}/package' -name 'testthat.Rout*' -exec cat '{}' \; || true
+          find ${{ runner.temp }}/package -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
 
       - name: Upload test results
@@ -65,3 +58,8 @@ jobs:
         with:
           name: coverage-test-failures
           path: ${{ runner.temp }}/package
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
