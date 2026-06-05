@@ -48,7 +48,7 @@ app()
 ```
 
 <figure>
-<img src="dev/ETVapp_screenshot.png?raw=true" title="ETVapp screenshot"
-alt="ETVapp screenshot" />
+<img src="man/figures/ETVapp_screenshot.png?raw=true"
+title="ETVapp screenshot" alt="ETVapp screenshot" />
 <figcaption aria-hidden="true">ETVapp screenshot</figcaption>
 </figure>
