@@ -1,6 +1,9 @@
 # Workflow derived from copilot, so handle with care
 name: pkgdown
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [main]
