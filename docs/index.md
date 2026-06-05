@@ -35,6 +35,6 @@ app()
 ```
 
 ![ETVapp
-screenshot](dev/ETVapp_screenshot.png?raw=true "ETVapp screenshot")
+screenshot](reference/figures/ETVapp_screenshot.png?raw=true "ETVapp screenshot")
 
 ETVapp screenshot

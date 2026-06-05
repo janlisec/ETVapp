@@ -53,17 +53,17 @@ containing at least two entries in rows.
 df <- data.frame(x=1:5, y=sort(runif(5)))
 calc_cali_mod(df = df, wf = "ExtCal")
 #>   Slope [cts/pg] Slope error [cts/pg] Intercept [cts] Intercept error [cts]
-#> 1      0.1527292           0.02547194      -0.1122796            0.08448087
+#> 1      0.2173878            0.0412136       -0.316073               0.13669
 #>   R square 
-#> 1 0.9229816
+#> 1 0.9026671
 calc_cali_mod(df = df, wf = "ExtGasCal")
 #>   Slope [cps s/pg] Slope error [cps s/pg] Intercept [cps] Intercept error [cps]
-#> 1        0.1527292             0.02547194      -0.1122796            0.08448087
+#> 1        0.2173878              0.0412136       -0.316073               0.13669
 #>   R square 
-#> 1 0.9229816
+#> 1 0.9026671
 calc_cali_mod(df = df, wf = "oIDMS")
 #>   Slope [cps L/µg] Slope error [cps L/µg] Intercept [cps] Intercept error [cps]
-#> 1        0.1527292             0.02547194      -0.1122796            0.08448087
+#> 1        0.2173878              0.0412136       -0.316073               0.13669
 #>   R square 
-#> 1 0.9229816
+#> 1 0.9026671
 ```

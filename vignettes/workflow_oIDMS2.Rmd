@@ -319,7 +319,7 @@ blk_ion <- lapply(1:length(blk_imp), function(i) {
 print(str(blk_ion[[1]]))
 
 LOX_pks <- get_peakdata(pro_data = blk_ion, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = pe, minpeakheight = 1000)
-LOX_df <- tab_result(LOX_pks, wf = "oIDMS", K = K, amae = LOX_df[,4], mass_fraction2 = 1, sample_mass = 1)
+LOX_df <- tab_result(LOX_pks, wf = "oIDMS", K = K, amae = LOX_pks[,4], mass_fraction2 = 1, sample_mass = 1)
   
 gt::gt(LOX_df)
 ```

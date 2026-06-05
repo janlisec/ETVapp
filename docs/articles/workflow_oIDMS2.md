@@ -173,9 +173,7 @@ str(spion_imp[[1]])
 #>  $ Time : num  0.006 0.009 0.012 0.015 0.018 0.021 0.024 0.027 0.03 0.033 ...
 #>  $ 197Au: num  143249 118398 141905 137537 136865 ...
 
-sp_cali <- ldply_base(1:length(spion_imp), function(i) {
-  get_peakdata(spion_imp[[i]][,c("Time", "197Au")], "197Au", PPmethod = "mean signal", peak_start = 0.006, peak_end = 60)
-})
+sp_cali <- get_peakdata(spion_imp, int_col = "197Au", PPmethod = "mean signal", peak_start = 0.006, peak_end = 60)
 
 conc_ion <- c(20, 50, 100, 200, 500)
 sp_cali <- tab_cali(peak_data = sp_cali, wf = "oIDMS", std_info = conc_ion)
@@ -401,35 +399,19 @@ blk_ion <- lapply(1:length(blk_imp), function(i) {
   x[,"mf_s"] <- calc_massflow(x = x[,"R_corr"], n_trans = n_trans[1,4], As_iso1 = abnd1, As_iso2 = abnd2, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = V_fl, c_sp = c_sp, DF = DF)
   return(x)
 })
-#> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
-#> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
-#> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
-#> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
-#> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
-#> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
-#> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
-#> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
-#> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
-#> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
 
-gt::gt(head(blk_ion[[1]]))
-```
+print(str(blk_ion[[1]]))
+#> 'data.frame':    755 obs. of  6 variables:
+#>  $ Time  : num  0.032 0.22 0.408 0.595 0.783 ...
+#>  $ 117Sn : num  1148182 1237134 1237527 1123988 1229097 ...
+#>  $ 122Sn : num  2700 1867 1967 2133 1800 ...
+#>  $ R_m   : num  425 663 629 527 683 ...
+#>  $ R_corr: num  482 752 714 598 775 ...
+#>  $ mf_s  : num  0.0419 0.0158 0.0183 0.0278 0.0144 ...
+#> NULL
 
-| Time  | 117Sn   | 122Sn    | R_m      | R_corr   | mf_s       |
-|-------|---------|----------|----------|----------|------------|
-| 0.032 | 1148182 | 2700.208 | 425.2197 | 482.3689 | 0.04185441 |
-| 0.220 | 1237134 | 1866.766 | 662.7149 | 751.7832 | 0.01580441 |
-| 0.408 | 1237527 | 1966.777 | 629.2156 | 713.7816 | 0.01828478 |
-| 0.595 | 1123988 | 2133.463 | 526.8373 | 597.6437 | 0.02782564 |
-| 0.783 | 1229097 | 1800.092 | 682.7968 | 774.5641 | 0.01443443 |
-| 0.971 | 1148182 | 2400.164 | 478.3763 | 542.6696 | 0.03377021 |
-
-``` r
-
-LOX_df <- ldply_base(1:length(blk_ion), function(i) {
-  pk <- get_peakdata(pro_data = blk_ion[[i]], int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = pe, minpeakheight = 1000)
-  tab_result(pk, wf = "oIDMS", K = K, amae = pk[,4], mass_fraction2 = 1, sample_mass = 1)
-})
+LOX_pks <- get_peakdata(pro_data = blk_ion, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = pe, minpeakheight = 1000)
+LOX_df <- tab_result(LOX_pks, wf = "oIDMS", K = K, amae = LOX_pks[,4], mass_fraction2 = 1, sample_mass = 1)
   
 gt::gt(LOX_df)
 ```

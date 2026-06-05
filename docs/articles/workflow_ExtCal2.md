@@ -94,15 +94,13 @@ ps <- rep(145, length(cali_pro))
 pe <- seq(180, 230, length.out=length(cali_pro))
 cf <- 50
 
-cali_peaks <- ldply_base(1:length(cali_pro), function(i) {
-  get_peakdata(
-    cali_pro[[i]], 
-    int_col = int_col,
-    PPmethod = "Peak (manual)", 
-    peak_start = ps[i], 
-    peak_end = pe[i]
-  )
-})
+cali_peaks <- get_peakdata(
+  cali_pro, 
+  int_col = int_col,
+  PPmethod = "Peak (manual)", 
+  peak_start = ps, 
+  peak_end = pe
+)
 
 cali_peaks <- tab_cali(peak_data = cali_peaks, wf = "ExtCal", std_info = seq(0,50,10))
 gt::gt(cali_peaks)
@@ -239,16 +237,14 @@ according to the blank value method, integrate the blank signals in the
 peak time window.
 
 ``` r
-blnk_peaks <- ldply_base(1:length(blnk_pro), function(i) {
-  get_peakdata(
-    blnk_pro[[i]], 
-    int_col = int_col, 
-    time_col = time_col,
-    BLmethod = "none",
-    peak_start = smpl_peak[1,2], 
-    peak_end = smpl_peak[1,3]
-  )
-})
+blnk_peaks <- get_peakdata(
+  blnk_pro, 
+  int_col = int_col, 
+  time_col = time_col,
+  BLmethod = "none",
+  peak_start = smpl_peak[,2], 
+  peak_end = smpl_peak[,3]
+)
 gt::gt(blnk_peaks)
 ```
 

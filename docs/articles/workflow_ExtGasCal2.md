@@ -70,20 +70,23 @@ The parameter *fac* enables the input of a conversion factor, *e.g.* for
 mass percentage, molar fractions, when computing the gas flows in µg/s.
 
 ``` r
-cali_sig <- ldply_base(1:length(cali_pro), function(i) {
-  get_peakdata(
-    cali_pro[[i]], 
-    int_col = anlt, 
-    PPmethod = "mean signal",
-    peak_start = 78, 
-    peak_end = 96
-  )
-})
-
-fac <- 1.661 * 0.01104347 * 12/44
+cali_sig <- get_peakdata(
+  cali_pro, 
+  int_col = anlt, 
+  PPmethod = "mean signal",
+  peak_start = 78, 
+  peak_end = 96
+)
 
 gas_flow <- extract_unique_number(names(cali_pro))
-cali_peaks <- tab_cali(peak_data = cali_sig, wf = "ExtGasCal", std_info = gas_flow, fac = fac)
+fac <- 1.661 * 0.01104347 * 12/44
+
+cali_peaks <- tab_cali(
+  peak_data = cali_sig, 
+  wf = "ExtGasCal", 
+  std_info = gas_flow, 
+  fac = fac
+)
 gt::gt(cali_peaks)
 ```
 
@@ -147,16 +150,14 @@ ps <- 90
 pe <- 118
 cf <- 50
 
-smpl_peaks <- ldply_base(1:length(smpl_pro), function(i) {
-  get_peakdata(
-    smpl_pro[[i]], 
-    int_col = anlt, 
-    PPmethod = "Peak (manual)",
-    minpeakheight = 1000000,
-    peak_start = ps, 
-    peak_end = pe
-  )
-})
+smpl_peaks <- get_peakdata(
+  smpl_pro, 
+  int_col = anlt, 
+  PPmethod = "Peak (manual)",
+  minpeakheight = 1000000,
+  peak_start = ps, 
+  peak_end = pe
+)
 gt::gt(smpl_peaks)
 ```
 
@@ -234,16 +235,14 @@ blnk_BL <- lapply(1:length(blnk_pro), function(i) {
     amend = "_BL")
 })
 
-blnk_peaks <- ldply_base(1:length(blnk_pro), function(i) {
-  get_peakdata(
-    blnk_pro[[i]], 
-    int_col = anlt, 
-    PPmethod = "Peak (manual)",
-    BLmethod = "modpolyfit",
-    peak_start = ps, 
-    peak_end = pe
-  )
-})
+blnk_peaks <- get_peakdata(
+  blnk_pro, 
+  int_col = anlt, 
+  PPmethod = "Peak (manual)",
+  BLmethod = "modpolyfit",
+  peak_start = ps, 
+  peak_end = pe
+)
 
 gt::gt(blnk_peaks)
 ```

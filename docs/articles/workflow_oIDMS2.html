@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>On-line isotope dilution mass spectrometry (oIDMS) workflow • ETVapp</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="On-line isotope dilution mass spectrometry (oIDMS) workflow">
 </head>
@@ -700,9 +700,7 @@ through linear regression.</p>
 <span><span class="co">#&gt;  $ Time : num  0.006 0.009 0.012 0.015 0.018 0.021 0.024 0.027 0.03 0.033 ...</span></span>
 <span><span class="co">#&gt;  $ 197Au: num  143249 118398 141905 137537 136865 ...</span></span>
 <span></span>
-<span><span class="va">sp_cali</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldply_base.html">ldply_base</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span>, <span class="st">"197Au"</span><span class="op">)</span><span class="op">]</span>, <span class="st">"197Au"</span>, PPmethod <span class="op">=</span> <span class="st">"mean signal"</span>, peak_start <span class="op">=</span> <span class="fl">0.006</span>, peak_end <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">sp_cali</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span><span class="va">spion_imp</span>, int_col <span class="op">=</span> <span class="st">"197Au"</span>, PPmethod <span class="op">=</span> <span class="st">"mean signal"</span>, peak_start <span class="op">=</span> <span class="fl">0.006</span>, peak_end <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">conc_ion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="va">sp_cali</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tab_cali.html">tab_cali</a></span><span class="op">(</span>peak_data <span class="op">=</span> <span class="va">sp_cali</span>, wf <span class="op">=</span> <span class="st">"oIDMS"</span>, std_info <span class="op">=</span> <span class="va">conc_ion</span><span class="op">)</span></span>
@@ -3745,18 +3743,21 @@ by the following code.</p>
 <span>  <span class="va">x</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_massflow.html">calc_massflow</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span>, n_trans <span class="op">=</span> <span class="va">n_trans</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">4</span><span class="op">]</span>, As_iso1 <span class="op">=</span> <span class="va">abnd1</span>, As_iso2 <span class="op">=</span> <span class="va">abnd2</span>, Asp_iso1 <span class="op">=</span> <span class="fl">91.06</span>, Asp_iso2 <span class="op">=</span> <span class="fl">0.08</span>, V_fl <span class="op">=</span> <span class="va">V_fl</span>, c_sp <span class="op">=</span> <span class="va">c_sp</span>, DF <span class="op">=</span> <span class="va">DF</span><span class="op">)</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
 <span></span>
-<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 'data.frame':    755 obs. of  6 variables:</span></span>
+<span><span class="co">#&gt;  $ Time  : num  0.032 0.22 0.408 0.595 0.783 ...</span></span>
+<span><span class="co">#&gt;  $ 117Sn : num  1148182 1237134 1237527 1123988 1229097 ...</span></span>
+<span><span class="co">#&gt;  $ 122Sn : num  2700 1867 1967 2133 1800 ...</span></span>
+<span><span class="co">#&gt;  $ R_m   : num  425 663 629 527 683 ...</span></span>
+<span><span class="co">#&gt;  $ R_corr: num  482 752 714 598 775 ...</span></span>
+<span><span class="co">#&gt;  $ mf_s  : num  0.0419 0.0158 0.0183 0.0278 0.0144 ...</span></span>
+<span><span class="co">#&gt; NULL</span></span>
+<span></span>
+<span><span class="va">LOX_pks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span>pro_data <span class="op">=</span> <span class="va">blk_ion</span>, int_col <span class="op">=</span> <span class="st">"mf_s"</span>, PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, peak_start <span class="op">=</span> <span class="va">ps</span>, peak_end <span class="op">=</span> <span class="va">pe</span>, minpeakheight <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+<span><span class="va">LOX_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tab_result.html">tab_result</a></span><span class="op">(</span><span class="va">LOX_pks</span>, wf <span class="op">=</span> <span class="st">"oIDMS"</span>, K <span class="op">=</span> <span class="va">K</span>, amae <span class="op">=</span> <span class="va">LOX_pks</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, mass_fraction2 <span class="op">=</span> <span class="fl">1</span>, sample_mass <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">LOX_df</span><span class="op">)</span></span></code></pre></div>
 <div id="fvsybhaagl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#fvsybhaagl table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -4208,73 +4209,125 @@ by the following code.</p>
 </style>
 <table class="table gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
 <thead><tr class="gt_col_headings">
-<th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Time">Time</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="a117Sn">117Sn</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="a122Sn">122Sn</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="R_m">R_m</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="R_corr">R_corr</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="mf_s">mf_s</th>
+<th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Start-[s]">Start [s]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="End-[s]">End [s]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="BLmethod">BLmethod</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Analyte-mass-as-element-[pg]">Analyte mass as element [pg]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Sample-mass-[mg]">Sample mass [mg]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Content-as-element-[ppb]">Content as element [ppb]</th>
     </tr></thead>
 <tbody class="gt_table_body">
 <tr>
-<td headers="Time" class="gt_row gt_right">0.032</td>
-<td headers="117Sn" class="gt_row gt_right">1148182</td>
-<td headers="122Sn" class="gt_row gt_right">2700.208</td>
-<td headers="R_m" class="gt_row gt_right">425.2197</td>
-<td headers="R_corr" class="gt_row gt_right">482.3689</td>
-<td headers="mf_s" class="gt_row gt_right">0.04185441</td>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.5665880</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.5665880</td>
 </tr>
 <tr>
-<td headers="Time" class="gt_row gt_right">0.220</td>
-<td headers="117Sn" class="gt_row gt_right">1237134</td>
-<td headers="122Sn" class="gt_row gt_right">1866.766</td>
-<td headers="R_m" class="gt_row gt_right">662.7149</td>
-<td headers="R_corr" class="gt_row gt_right">751.7832</td>
-<td headers="mf_s" class="gt_row gt_right">0.01580441</td>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4079879</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.4079879</td>
 </tr>
 <tr>
-<td headers="Time" class="gt_row gt_right">0.408</td>
-<td headers="117Sn" class="gt_row gt_right">1237527</td>
-<td headers="122Sn" class="gt_row gt_right">1966.777</td>
-<td headers="R_m" class="gt_row gt_right">629.2156</td>
-<td headers="R_corr" class="gt_row gt_right">713.7816</td>
-<td headers="mf_s" class="gt_row gt_right">0.01828478</td>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.5368494</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.5368494</td>
 </tr>
 <tr>
-<td headers="Time" class="gt_row gt_right">0.595</td>
-<td headers="117Sn" class="gt_row gt_right">1123988</td>
-<td headers="122Sn" class="gt_row gt_right">2133.463</td>
-<td headers="R_m" class="gt_row gt_right">526.8373</td>
-<td headers="R_corr" class="gt_row gt_right">597.6437</td>
-<td headers="mf_s" class="gt_row gt_right">0.02782564</td>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4679495</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.4679495</td>
 </tr>
 <tr>
-<td headers="Time" class="gt_row gt_right">0.783</td>
-<td headers="117Sn" class="gt_row gt_right">1229097</td>
-<td headers="122Sn" class="gt_row gt_right">1800.092</td>
-<td headers="R_m" class="gt_row gt_right">682.7968</td>
-<td headers="R_corr" class="gt_row gt_right">774.5641</td>
-<td headers="mf_s" class="gt_row gt_right">0.01443443</td>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.5329198</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.5329198</td>
 </tr>
 <tr>
-<td headers="Time" class="gt_row gt_right">0.971</td>
-<td headers="117Sn" class="gt_row gt_right">1148182</td>
-<td headers="122Sn" class="gt_row gt_right">2400.164</td>
-<td headers="R_m" class="gt_row gt_right">478.3763</td>
-<td headers="R_corr" class="gt_row gt_right">542.6696</td>
-<td headers="mf_s" class="gt_row gt_right">0.03377021</td>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4185505</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.4185505</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4100992</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.4100992</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.3823680</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.3823680</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.3363395</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.3363395</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.3486964</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.3486964</td>
 </tr>
 </tbody>
 </table>
 </div>
+<p>Mass flow diagrams of the blank measurements are plotted as
+follows.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">LOX_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldply_base.html">ldply_base</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">pk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span>pro_data <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, int_col <span class="op">=</span> <span class="st">"mf_s"</span>, PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, peak_start <span class="op">=</span> <span class="va">ps</span>, peak_end <span class="op">=</span> <span class="va">pe</span>, minpeakheight <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="../reference/tab_result.html">tab_result</a></span><span class="op">(</span><span class="va">pk</span>, wf <span class="op">=</span> <span class="st">"oIDMS"</span>, K <span class="op">=</span> <span class="va">K</span>, amae <span class="op">=</span> <span class="va">pk</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, mass_fraction2 <span class="op">=</span> <span class="fl">1</span>, sample_mass <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span>  </span>
-<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">LOX_df</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">blk_BL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="va">flt</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&gt;=</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="va">cf</span><span class="op">)</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&lt;=</span><span class="va">pe</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="va">cf</span><span class="op">)</span></span>
+<span>  <span class="fu">ETVapp</span><span class="fu">:::</span><span class="fu">blcorr_col</span><span class="op">(</span></span>
+<span>    df <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">flt</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">time_col</span>,<span class="st">"mf_s"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>    nm <span class="op">=</span> <span class="st">"mf_s"</span>, </span>
+<span>    BLmethod <span class="op">=</span> <span class="st">"modpolyfit"</span>,</span>
+<span>    rval <span class="op">=</span> <span class="st">"baseline"</span>, </span>
+<span>    amend <span class="op">=</span> <span class="st">"_BL"</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">3</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"Time"</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, ylab<span class="op">=</span><span class="st">"Mass flow"</span>, xlab <span class="op">=</span> <span class="st">"Time [s]"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">blk_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">blk_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">LOX_df</span><span class="op">[</span><span class="va">i</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p><img src="workflow_oIDMS2_files/figure-html/load_blanks-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p>The LOD and LOQ are computed as three and ten times the standard
+deviation by calling <code><a href="../reference/tab_LOX.html">tab_LOX()</a></code>.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="fu"><a href="../reference/tab_LOX.html">tab_LOX</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">LOX_df</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, </span>
+<span>  wf <span class="op">=</span> <span class="st">"oIDMS"</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div id="vijbfglzvn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#vijbfglzvn table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -4721,576 +4774,6 @@ by the following code.</p>
 }
 
 #vijbfglzvn div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-  height: 0px !important;
-}
-</style>
-<table class="table gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-<thead><tr class="gt_col_headings">
-<th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Start-[s]">Start [s]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="End-[s]">End [s]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="BLmethod">BLmethod</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Analyte-mass-as-element-[pg]">Analyte mass as element [pg]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Sample-mass-[mg]">Sample mass [mg]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Content-as-element-[ppb]">Content as element [ppb]</th>
-    </tr></thead>
-<tbody class="gt_table_body">
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.5665880</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.5665880</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4079879</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.4079879</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.5368494</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.5368494</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4679495</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.4679495</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.5329198</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.5329198</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4185505</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.4185505</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4100992</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.4100992</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.3823680</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.3823680</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.3363395</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.3363395</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.3486964</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.3486964</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>Mass flow diagrams of the blank measurements are plotted as
-follows.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">blk_BL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span><span class="va">flt</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&gt;=</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="va">cf</span><span class="op">)</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&lt;=</span><span class="va">pe</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="va">cf</span><span class="op">)</span></span>
-<span>  <span class="fu">ETVapp</span><span class="fu">:::</span><span class="fu">blcorr_col</span><span class="op">(</span></span>
-<span>    df <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">flt</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">time_col</span>,<span class="st">"mf_s"</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>    nm <span class="op">=</span> <span class="st">"mf_s"</span>, </span>
-<span>    BLmethod <span class="op">=</span> <span class="st">"modpolyfit"</span>,</span>
-<span>    rval <span class="op">=</span> <span class="st">"baseline"</span>, </span>
-<span>    amend <span class="op">=</span> <span class="st">"_BL"</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span> </span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">3</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"Time"</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, ylab<span class="op">=</span><span class="st">"Mass flow"</span>, xlab <span class="op">=</span> <span class="st">"Time [s]"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">blk_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">blk_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">LOX_df</span><span class="op">[</span><span class="va">i</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p><img src="workflow_oIDMS2_files/figure-html/load_blanks-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<p>The LOD and LOQ are computed as three and ten times the standard
-deviation by calling <code><a href="../reference/tab_LOX.html">tab_LOX()</a></code>.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="fu"><a href="../reference/tab_LOX.html">tab_LOX</a></span><span class="op">(</span></span>
-<span>  x <span class="op">=</span> <span class="va">LOX_df</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, </span>
-<span>  wf <span class="op">=</span> <span class="st">"oIDMS"</span></span>
-<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div id="egslqeqmfa" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#egslqeqmfa table {
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#egslqeqmfa thead, #egslqeqmfa tbody, #egslqeqmfa tfoot, #egslqeqmfa tr, #egslqeqmfa td, #egslqeqmfa th {
-  border-style: none;
-}
-
-#egslqeqmfa p {
-  margin: 0;
-  padding: 0;
-}
-
-#egslqeqmfa .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#egslqeqmfa .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#egslqeqmfa .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#egslqeqmfa .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#egslqeqmfa .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#egslqeqmfa .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#egslqeqmfa .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#egslqeqmfa .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#egslqeqmfa .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#egslqeqmfa .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#egslqeqmfa .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#egslqeqmfa .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#egslqeqmfa .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#egslqeqmfa .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#egslqeqmfa .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#egslqeqmfa .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#egslqeqmfa .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#egslqeqmfa .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#egslqeqmfa .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#egslqeqmfa .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#egslqeqmfa .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#egslqeqmfa .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#egslqeqmfa .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#egslqeqmfa .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#egslqeqmfa .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#egslqeqmfa .gt_left {
-  text-align: left;
-}
-
-#egslqeqmfa .gt_center {
-  text-align: center;
-}
-
-#egslqeqmfa .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#egslqeqmfa .gt_font_normal {
-  font-weight: normal;
-}
-
-#egslqeqmfa .gt_font_bold {
-  font-weight: bold;
-}
-
-#egslqeqmfa .gt_font_italic {
-  font-style: italic;
-}
-
-#egslqeqmfa .gt_super {
-  font-size: 65%;
-}
-
-#egslqeqmfa .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#egslqeqmfa .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#egslqeqmfa .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#egslqeqmfa .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#egslqeqmfa .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#egslqeqmfa .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#egslqeqmfa .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#egslqeqmfa .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#egslqeqmfa div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>

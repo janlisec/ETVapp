@@ -79,14 +79,14 @@ tab_LOX(x = runif(2))
 tab_LOX(x = runif(5), wf = "IDMS")
 #> At least ten blank values are recommended for estimating the LOD and LOQ.
 #>   LOD as element [pg] LOQ as element [pg] Sample mass [mg]
-#> 1           0.9673392            3.224464                1
+#> 1           0.9426444            3.142148                1
 #>   LOD per sample mass [ppb] LOQ per sample mass [ppb]
-#> 1                 0.9673392                  3.224464
+#> 1                 0.9426444                  3.142148
 tab_LOX(x = runif(10), mass_fraction2 = 0.5, sample_mass = 3, ExtCal_unit = "ng")
 #>   LOD as element [ng] LOQ as element [ng] Mass fraction Sample mass [mg]
-#> 1           0.8660005            2.886668           0.5                3
+#> 1           0.8425434            2.808478           0.5                3
 #>   LOD as analyte [ng] LOQ as analyte [ng] LOD per sample mass [ppm]
-#> 1            1.732001            5.773337                 0.2886668
+#> 1            1.685087            5.616956                 0.2808478
 #>   LOQ per sample mass [ppm]
-#> 1                 0.9622228
+#> 1                 0.9361593
 ```

@@ -11,8 +11,10 @@
 #' @param pro_data Data.frame with at least two numeric columns or a list of such data.frames.
 #' @param int_col Column name of the intensity column to be used.
 #' @param time_col Column name of the time column to be used.
-#' @param peak_start Value which is taken as peak start point, when manual peak picking is chosen.
-#' @param peak_end Value which is taken as peak end point, when manual peak picking is chosen.
+#' @param peak_start Value which is taken as peak start point, when manual peak
+#'     picking is chosen. Can be a vector of length(pro_data) when this is a list
+#'     of files.
+#' @param peak_end Peak end point(s), cf. peak_start.
 #' @param minpeakheight A threshold value for peak picking via peak height.
 #' @param PPmethod Peak picking method.
 #' @param BLmethod Method for baseline correction.
@@ -35,7 +37,8 @@
 #'
 #' # limiting peak detection setting start and end manually
 #' peak_data <- get_peakdata(pro_data, int_col = "117Sn", PPmethod = "Peak (manual)",
-#'   peak_start = 100, peak_end = 130)
+#'   peak_start = 100:102, peak_end = 110:112)
+#' peak_data
 #' abline(v = peak_data[1,2:3], col=3, lwd=2)
 #' @export
 get_peakdata <- function (pro_data, int_col, time_col = "Time",
@@ -46,10 +49,10 @@ get_peakdata <- function (pro_data, int_col, time_col = "Time",
   BLmethod <- match.arg(BLmethod)
   PPmethod <- match.arg(PPmethod)
 
-  get_peakdata_internal <- function(x) {
+  get_peakdata_internal <- function(x, ps, pe) {
 
     # get peak data
-    peak_data <- get_peak(df = x[,c(time_col, int_col)], PPmethod = PPmethod, peak_start = peak_start, peak_end = peak_end, minpeakheight = minpeakheight, cf =cf)
+    peak_data <- get_peak(df = x[,c(time_col, int_col)], PPmethod = PPmethod, peak_start = ps, peak_end = pe, minpeakheight = minpeakheight, cf = cf)
 
     if (PPmethod == "mean signal") { return(peak_data) }
 
@@ -68,8 +71,8 @@ get_peakdata <- function (pro_data, int_col, time_col = "Time",
     # prepare output
     peak_data <- data.frame(
       "Isotope" = int_col,
-      "Start [s]" = ifelse(PPmethod == "Peak (manual)", peak_start, x[peak_data[,2], time_col]),
-      "End [s]" = ifelse(PPmethod == "Peak (manual)", peak_end, x[peak_data[,3], time_col]),
+      "Start [s]" = ifelse(PPmethod == "Peak (manual)", ps, x[peak_data[,2], time_col]),
+      "End [s]" = ifelse(PPmethod == "Peak (manual)", pe, x[peak_data[,3], time_col]),
       "Area [cts]" = peak_area,
       "BLmethod" = BLmethod,
       check.names = FALSE
@@ -82,14 +85,17 @@ get_peakdata <- function (pro_data, int_col, time_col = "Time",
   # run function on elements of list or on a single data.frame
   if (!is.data.frame(pro_data) && is.list(pro_data)) {
     ensure_that(all(sapply(pro_data, function(x) { int_col %in% colnames(x) })), "Please select an existing Intensity column.", opt = "stop")
+    n <- length(pro_data)
+    if (is.null(peak_start)) ps <- NULL else ps <- rep(peak_start, length.out = n)
+    if (is.null(peak_end)) pe <- NULL else pe <- rep(peak_end, length.out = n)
     if (simplify) {
-      ldply_base(pro_data, function(x) { get_peakdata_internal(x = x) })
+      ldply_base(1:n, function(i) { get_peakdata_internal(x = pro_data[[i]], ps = ps[i], pe = pe[i]) })
     } else {
-      stats::setNames(lapply(pro_data, function(x) { get_peakdata_internal(x = x) }), names(pro_data))
+      stats::setNames(lapply(1:n, function(i) { get_peakdata_internal(x = pro_data[[i]], ps = ps[i], pe = pe[i]) }), names(pro_data))
     }
   } else {
     ensure_that(int_col %in% colnames(pro_data), "Please select an existing Intensity column.", opt = "stop")
-    get_peakdata_internal(x = pro_data)
+    get_peakdata_internal(x = pro_data, ps = peak_start, pe = peak_end)
   }
 
 }
