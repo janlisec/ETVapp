@@ -8,6 +8,8 @@
 - Help system in App established
 - processing functions can work on data frame or list of data frames now
 - README.Rmd set up
+- Parameter K can now be edited via input ‘R_m’ in the app
+- peak boarders can be specified per peak in the app
 
 ## ETVapp 0.3.3
 

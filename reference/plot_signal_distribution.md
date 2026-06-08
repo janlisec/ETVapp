@@ -5,7 +5,12 @@ Plots the signal distribution of a single particle-ICP-MS measurement.
 ## Usage
 
 ``` r
-plot_signal_distribution(x, LFD = 20000, style = c("hist", "counts"))
+plot_signal_distribution(
+  x,
+  LFD = 20000,
+  style = c("hist", "counts"),
+  ylim = NULL
+)
 ```
 
 ## Arguments
@@ -20,7 +25,11 @@ plot_signal_distribution(x, LFD = 20000, style = c("hist", "counts"))
 
 - style:
 
-  Choose plotting style
+  Choose plotting style.
+
+- ylim:
+
+  Specify ylim for style = counts.
 
 ## Value
 

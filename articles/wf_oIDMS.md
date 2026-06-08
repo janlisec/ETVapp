@@ -159,11 +159,11 @@ The package provides measurement data of
 
 Import the files form **sp_ionic**. The mean signal of a selected time
 window is obtained *via* the
-[`get_peakdata()`](https://janlisec.github.io/ETVapp/reference/get_peakdata.md)-function
+[`get_peakdata()`](https://janlisec.github.io/ETVapp/reference/get_peakdata.md)
 using the peak picking method “mean_signal”.
 [`tab_cali()`](https://janlisec.github.io/ETVapp/reference/tab_cali.md)
-collects in a *data.frame* with the standard concentrations. Calibration
-parameter are obtained through linear regression.
+combines results with the standard concentrations. Calibration
+parameters are obtained through linear regression.
 
 ``` r
 
@@ -172,78 +172,69 @@ str(spion_imp[[1]])
 #> 'data.frame':    20355 obs. of  2 variables:
 #>  $ Time : num  0.006 0.009 0.012 0.015 0.018 0.021 0.024 0.027 0.03 0.033 ...
 #>  $ 197Au: num  143249 118398 141905 137537 136865 ...
+spion_imp <- spion_imp[str_sort_num(names(spion_imp))]
+
+# the concentration is encoded in the filenames
+names(spion_imp)
+#> [1] "Au_ion_20_ppb_w-_CHF3_P16.csv"  "Au_ion_50_ppb_w-_CHF3_P16.csv" 
+#> [3] "Au_ion_100_ppb_w-_CHF3_P16.csv" "Au_ion_200_ppb_w-_CHF3_P16.csv"
+#> [5] "Au_ion_500_ppb_w-_CHF3_P16.csv"
+conc_ion <- extract_unique_number(names(spion_imp))
 
 sp_cali <- get_peakdata(spion_imp, int_col = "197Au", PPmethod = "mean signal", peak_start = 0.006, peak_end = 60)
 
-conc_ion <- c(20, 50, 100, 200, 500)
 sp_cali <- tab_cali(peak_data = sp_cali, wf = wf, std_info = conc_ion)
 gt::gt(sp_cali)
 ```
 
 | Isotope | Start \[s\] | End \[s\] | Mean Signal \[cps\] | Concentration \[µg/L\] |
 |---------|-------------|-----------|---------------------|------------------------|
-| 197Au   | 0.006       | 60        | 156366.77           | 20                     |
-| 197Au   | 0.006       | 60        | 30696.15            | 50                     |
-| 197Au   | 0.006       | 60        | 322343.25           | 100                    |
-| 197Au   | 0.006       | 60        | 70781.89            | 200                    |
+| 197Au   | 0.006       | 60        | 30696.15            | 20                     |
+| 197Au   | 0.006       | 60        | 70781.89            | 50                     |
+| 197Au   | 0.006       | 60        | 156366.77           | 100                    |
+| 197Au   | 0.006       | 60        | 322343.25           | 200                    |
 | 197Au   | 0.006       | 60        | 844833.94           | 500                    |
 
 ``` r
 
 
-cali_lm <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = wf)
-gt::gt(cali_lm)
-```
-
-| Slope \[cps L/µg\] | Slope error \[cps L/µg\] | Intercept \[cps\] | Intercept error \[cps\] | R square |
-|----|----|----|----|----|
-| 1488.358 | 483.5066 | 26030.13 | 119005.5 | 0.759532 |
-
-Signal curves of the ionic measurements and the resulting calibration
-curve are plotted through:
-
-``` r
-
-par(mfrow=c(1,5))
-for (i in 1:min(length(spion_imp), 10)) {
-  ylim <- c(0, max(sapply(spion_imp, function(x) {max(x[,2])})))
-  plot(spion_imp[[i]], type="l", main = sp_cali[i,5], ylab="Intensity [cps]", ylim=ylim)
-  abline(v=sp_cali[i,2:3], col=grey(0.8))
-}
-```
-
-![](wf_oIDMS_files/figure-html/TransportEfficiency_data-1.png)
-
-``` r
-
 cm <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = wf)
-plot(sp_cali[,c(5,4)])
-abline(a = cm[1,3], b = cm[1,1])
-```
-
-![](wf_oIDMS_files/figure-html/calibration_model-1.png)
-
-``` r
-
 gt::gt(cm)
 ```
 
 | Slope \[cps L/µg\] | Slope error \[cps L/µg\] | Intercept \[cps\] | Intercept error \[cps\] | R square |
 |----|----|----|----|----|
-| 1488.358 | 483.5066 | 26030.13 | 119005.5 | 0.759532 |
+| 1707.507 | 17.92912 | -12101.85 | 4412.895 | 0.9996693 |
+
+For reference, here are the signal curves of the ionic measurements and
+the resulting calibration curve.
+
+``` r
+
+par(mfrow=c(1,2))
+# imported data
+plot(x = c(0, 60), y = c(0, max(sapply(spion_imp, function(x) {max(x[,2])}))), type="n", xlab="Time", ylab="Signal")
+for (i in 1:length(spion_imp)) {
+  points(spion_imp[[i]], type="l", col=i)
+}
+legend(x = "topleft", fill = 1:length(spion_imp), legend = conc_ion)
+# calibration model
+plot(sp_cali[,c(5,4)], pch=21, bg=1:length(spion_imp))
+abline(a = cm[1,3], b = cm[1,1])
+```
+
+![](wf_oIDMS_files/figure-html/TransportEfficiency_data-1.png)
 
 To determine the limit for particle detection (LFD), import the single
 particle data and plot the signal distribution. The LFD is shown in red.
 Output parameter of the single particle analysis are obtain by
 [`calc_transeff()`](https://janlisec.github.io/ETVapp/reference/calc_transeff.md)
-and a histogram of the particle size distribution is provided by the
+and a histogram of the particle size distribution are provided by the
 following code.
 
 ``` r
 
 sp_data <- td[["sp_particle"]][[1]]
-
-# plot_signal_distribution(x = sp_data[,2], style="counts")
 
 time_col <- "Time"
 anlt <- "197Au"
@@ -252,16 +243,11 @@ LFD <- 20000
 
 if (!is.null(t_fltr) && is.numeric(t_fltr) && t_fltr>min(sp_data[,time_col], na.rm=TRUE)) {
   message("calc_transeff(): remove data with ", time_col, " > ", t_fltr)
-  sp_data_flt <- sp_data[sp_data[,time_col]<t_fltr,]
+  sp_data_flt <- sp_data[sp_data[,time_col]<t_fltr,,drop=FALSE]
 }
-#> calc_transeff(): remove data with Time > 60
-  
-sig_data <- table(sp_data_flt[,anlt])
+
 par(mfrow=c(1,1))  
-plot(sig_data, ylim = c(0, 10), log = 'x', ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution")
-#> Warning in xy.coords(x, y, xlabel, ylabel, log): 1 x value <= 0 omitted from
-#> logarithmic plot
-abline(v=LFD, col=2, lwd=3)
+plot_signal_distribution(x = sp_data_flt[,2], LFD = LFD, style="counts", ylim = c(0, 10))
 ```
 
 ![](wf_oIDMS_files/figure-html/get_Transportefficiency_LFD-1.png)
@@ -275,9 +261,9 @@ n_trans <- calc_transeff(
   sp_data_flt, 
   int_col = anlt,
   LFD = LFD, 
-  cali_slope = cali_lm[,1], 
+  cali_slope = cm[,1], 
   V_fl = V_fl, 
-  part_mat = c("Au"),
+  part_mat = "Au",
   dia_part = size
 )
 
@@ -286,7 +272,7 @@ gt::gt(n_trans)
 
 | Signal response \[cps\*L/µg\] | Detected particle number \[/min\] | Detected particle mass \[fg\] | Calculated trans_eff \[%\] |
 |----|----|----|----|
-| 1488.358 | 1148.766 | 15.047 | 14.5064 |
+| 1707.507 | 1148.766 | 13.1158 | 16.64236 |
 
 ``` r
 
@@ -327,17 +313,23 @@ str(samp_ion[[1]])
 #>  $ R_m   : num  841 1003 1028 810 893 ...
 #>  $ R_corr: num  954 1137 1166 919 1013 ...
 
+Asp_iso1 <- 91.06
+Asp_iso2 <- 0.08
+V_fl <- 0.0075
+c_sp <- 19581.71
+DF <- 20
 sample_mass <- c(1.0119, 0.9042, 0.9151)
+
 result_df <- ldply_base(1:length(samp_ion), function(i) {
   x <- samp_ion[[i]][,c("Time","R_corr")]
   x[,"mf_s"] <- calc_massflow(
     x = x[,"R_corr"], 
     n_trans = n_trans[,4], 
     As_iso1 = abnd1, As_iso2 = abnd2, 
-    Asp_iso1 = 91.06, Asp_iso2 = 0.08, 
-    V_fl = 0.0075, c_sp = 19581.71, DF = 20
+    Asp_iso1 = Asp_iso1, Asp_iso2 = Asp_iso2, 
+    V_fl = V_fl, c_sp = c_sp, DF = DF
   )
-  pk <- get_peakdata(x, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = 100)
+  pk <- get_peakdata(x, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = pe)
   tab_result(pk, wf = wf, K = K, amae = pk[,4], mass_fraction2 = 1, sample_mass = sample_mass[i])
 })
 #> The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.
@@ -349,20 +341,14 @@ gt::gt(result_df)
 
 | Start \[s\] | End \[s\] | BLmethod | Analyte mass as element \[pg\] | Sample mass \[mg\] | Content as element \[ppb\] |
 |----|----|----|----|----|----|
-| 70 | 100 | modpolyfit | 547.4301 | 1.0119 | 540.9923 |
-| 70 | 100 | modpolyfit | 600.9719 | 0.9042 | 664.6449 |
-| 70 | 100 | modpolyfit | 457.3979 | 0.9151 | 499.8338 |
+| 70 | 105 | modpolyfit | 631.5748 | 1.0119 | 624.1474 |
+| 70 | 105 | modpolyfit | 693.5853 | 0.9042 | 767.0707 |
+| 70 | 105 | modpolyfit | 526.8465 | 0.9151 | 575.7256 |
 
 View the mass flow diagram to check the integration of the mass flow
 peak(s).
 
 ``` r
-
-Asp_iso1 <- 91.06
-Asp_iso2 <- 0.08
-V_fl <- 0.0075
-c_sp <- 19581.71
-DF <- 20
 
 mf_sp <- 0.0075 * n_trans[,4] * (1 / 60) * (c_sp / DF)
 
@@ -417,7 +403,7 @@ str(blk_ion[[1]])
 #>  $ 122Sn : num  2700 1867 1967 2133 1800 ...
 #>  $ R_m   : num  425 663 629 527 683 ...
 #>  $ R_corr: num  482 752 714 598 775 ...
-#>  $ mf_s  : num  0.0419 0.0158 0.0183 0.0278 0.0144 ...
+#>  $ mf_s  : num  0.048 0.0181 0.021 0.0319 0.0166 ...
 
 LOX_pks <- get_peakdata(pro_data = blk_ion, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = pe, minpeakheight = 1000)
 LOX_df <- tab_result(LOX_pks, wf = wf, K = K, amae = LOX_pks[,4], mass_fraction2 = 1, sample_mass = 1)
@@ -427,16 +413,16 @@ gt::gt(LOX_df)
 
 | Start \[s\] | End \[s\] | BLmethod | Analyte mass as element \[pg\] | Sample mass \[mg\] | Content as element \[ppb\] |
 |----|----|----|----|----|----|
-| 70 | 105 | modpolyfit | 0.5665880 | 1 | 0.5665880 |
-| 70 | 105 | modpolyfit | 0.4079879 | 1 | 0.4079879 |
-| 70 | 105 | modpolyfit | 0.5368494 | 1 | 0.5368494 |
-| 70 | 105 | modpolyfit | 0.4679495 | 1 | 0.4679495 |
-| 70 | 105 | modpolyfit | 0.5329198 | 1 | 0.5329198 |
-| 70 | 105 | modpolyfit | 0.4185505 | 1 | 0.4185505 |
-| 70 | 105 | modpolyfit | 0.4100992 | 1 | 0.4100992 |
-| 70 | 105 | modpolyfit | 0.3823680 | 1 | 0.3823680 |
-| 70 | 105 | modpolyfit | 0.3363395 | 1 | 0.3363395 |
-| 70 | 105 | modpolyfit | 0.3486964 | 1 | 0.3486964 |
+| 70 | 105 | modpolyfit | 0.6500138 | 1 | 0.6500138 |
+| 70 | 105 | modpolyfit | 0.4680610 | 1 | 0.4680610 |
+| 70 | 105 | modpolyfit | 0.6158963 | 1 | 0.6158963 |
+| 70 | 105 | modpolyfit | 0.5368515 | 1 | 0.5368515 |
+| 70 | 105 | modpolyfit | 0.6113881 | 1 | 0.6113881 |
+| 70 | 105 | modpolyfit | 0.4801788 | 1 | 0.4801788 |
+| 70 | 105 | modpolyfit | 0.4704832 | 1 | 0.4704832 |
+| 70 | 105 | modpolyfit | 0.4386688 | 1 | 0.4386688 |
+| 70 | 105 | modpolyfit | 0.3858629 | 1 | 0.3858629 |
+| 70 | 105 | modpolyfit | 0.4000392 | 1 | 0.4000392 |
 
 Mass flow diagrams of the blank measurements are plotted as follows.
 
@@ -474,4 +460,4 @@ gt::gt(tab_LOX(x = LOX_df[,4], wf = wf))
 
 | LOD as element \[pg\] | LOQ as element \[pg\] | Sample mass \[mg\] | LOD per sample mass \[ppb\] | LOQ per sample mass \[ppb\] |
 |----|----|----|----|----|
-| 0.2441205 | 0.8137351 | 1 | 0.2441205 | 0.8137351 |
+| 0.2800654 | 0.9335514 | 1 | 0.2800654 | 0.9335514 |
