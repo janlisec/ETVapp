@@ -177,14 +177,11 @@ treatment analog to the sample data is recommended.
 
 ```{r load_blanks, fig.width=3*5, fig.height=3*2, out.width='100%', fig.align='center'}
 blnk_pro <- process_data(data = td[['Blanks']], c1 = int_col, fl = 9, wf = wf)
+blnk_pro <- blnk_pro[str_sort_num(names(blnk_pro))]
 
-par(mfrow=c(2,5))
-par(mar=c(5,3,0,0)+0.1)
-for (i in 1:min(length(blnk_pro), 10)) {
-  ylim <- c(0, max(sapply(blnk_pro, function(x) {max(x[,2])})))
-  plot(blnk_pro[[i]], type="l", main = names(blnk_pro)[i], ylab="", ylim=ylim)
-  abline(v=smpl_peak[1,2:3], col=grey(0.8))
-}
+par(mfrow=c(1,1))
+plot_spec(mi_spec = blnk_pro[1:6], c1 = "157", opt = "overlay_legend")
+abline(v=smpl_peak[1,2:3], col=grey(0.8), lwd=3)
 ```
 
 For estimating the limit of detection (LOD) and quantification (LOQ) according 

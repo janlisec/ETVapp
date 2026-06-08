@@ -1,40 +1,42 @@
-#' Spectra plot.
+#' Spectra and peaks plot.
 #'
 #' Generate an annotated plot of one to several spectra.
 #'
 #' @param opt Vector of keywords to hide/show specific elements of the plot.
 #' @param xrng Numeric vector of length 2 specifying plotting range for x.
+#' @param yrng Numeric vector of length 2 specifying plotting range for y.
 #' @param mi_spec Spectra (list of data.frame objects).
 #' @param c1 Main isotope.
+#' @param xlab Character to be used for bottom axis labeling.
 #' @param ylab Character to be used for left axis labeling.
 #' @param T_prog Temperature program (a data frame with columns Time and Temp).
 #' @param s_focus Index of sample within focus.
 #' @param pks Data frame of peaks with columns 'Sample', 'Peak ID', 'Scan start' and 'Scan end'.
 #' @param BLmethod Hide or show baseline.
 #' @param sel_pk Selected peak as numeric index of length one.
+#'
 #' @importFrom graphics abline axTicks axis box legend lines mtext par points segments
 #' @importFrom grDevices grey
 #' @return An annotated plot of one to several spectra.
 #' @examples
 #' if (interactive()) {
-#'   testdata <- ETVapp::ETVapp_testdata[["ExtGasCal"]][["Samples"]]
-#'   mi_spec <- lapply(testdata, function(x) {
-#'     x[,c("Time", "13C", "80Se")]
-#'   })
-#'   ETVapp:::ic_specplot(mi_spec=mi_spec)
-#'   ETVapp:::ic_specplot(
-#'     opt = c("overlay_mi", "overlay_legend", "overlay_drift"),
-#'     mi_spec=mi_spec, c1="13C"
-#'   )
+#'   wf <- "ExtGasCal"
+#'   c1 <- "13C"
+#'   td <- ETVapp::ETVapp_testdata[[wf]][["Samples"]]
+#'   pro_data <- process_data(td, wf=wf, c1=c1, fl=9)
+#'   plot_spec(mi_spec = pro_data, opt = "overlay_legend")
+#'   peak_data <- cbind("Sample"=1:length(pro_data), get_peakdata(pro_data, int_col = c1, minpeakheight = 10^6))
 #'   T_prog <- data.frame(
-#'     "Time"=seq(min(mi_spec[[1]][,"Time"]), max(mi_spec[[1]][,"Time"]), length.out=7),
+#'     "Time"=seq(min(pro_data[[1]][,"Time"]), max(pro_data[[1]][,"Time"]), length.out=7),
 #'     "Temp"=c(20,20,50,50,150,170,170)
 #'   )
-#'   ETVapp:::ic_specplot(mi_spec=mi_spec, T_prog=T_prog)
+#'   plot_spec(
+#'     mi_spec = pro_data, opt=c("overlay_pb", "overlay_Temp"), BLmethod = "modpolyfit",
+#'     T_prog = T_prog, pks = peak_data, s_focus = 2
+#'   )
 #' }
-#' @keywords internal
-#' @noRd
-ic_specplot <- function(
+#' @export
+plot_spec <- function(
   opt = "",
   xrng = NULL,
   yrng = NULL,
@@ -43,20 +45,24 @@ ic_specplot <- function(
   xlab = paste0("Time [", "s", "]"),
   ylab = "Intensity [cps]",
   T_prog = NULL,
-  s_focus = "Sample 1",
+  s_focus = NULL,
   pks = NULL,
   BLmethod = "none",
   sel_pk = NULL
 ) {
   # determine data ranges to display
-  idx_all <- as.numeric(gsub("[^[:digit:]]", "", s_focus))
+  if (is.null(s_focus)) {
+    idx_all <- 1:length(mi_spec)
+  } else {
+    idx_all <- as.numeric(gsub("[^[:digit:]]", "", s_focus))
+  }
   if (!all(idx_all %in% 1:length(mi_spec))) message("Error in ic_specplot -- check")
   if (length(idx_all) == 1) { cols <- rep(1, idx_all) } else { cols <- 2:(max(idx_all)+1) }
   if (is.null(xrng)) xrng <- range(sapply(mi_spec[idx_all], function(x) { range(x[,"Time"], na.rm=TRUE) }))
   if (is.null(yrng)) yrng <- range(sapply(mi_spec[idx_all], function(x) { c(0, max(x[,c1], na.rm=TRUE)) }))
 
   # modify plot margins
-  par(mar = c(4.5, 4.5, 0.5, ifelse(is.null(T_prog), 0.5, 4.5)))
+  par(mar = c(4, 4, 0, ifelse(is.null(T_prog) || all(T_prog==""), 0, 4)) + 0.1)
   par(cex = 1.4)
   # render base plot
   plot(x = xrng, y = yrng, type = "n", xaxs = "i", yaxs = "i", xlab = xlab, ylab = ylab)
@@ -68,17 +74,6 @@ ic_specplot <- function(
     axis(side = 4, at = Temp_ori, labels = Temp_ticks)
     mtext(text = "Temperature [\u00b0C]", side = 4, line = 3, cex=par("cex.lab")*par("cex"))
   }
-  #if (length(c1) > 1) {
-
-    #idx_all <- 1:(length(c1))
-    #cols <- 2:(length(c1)+1)
-
-    #for (idx in idx_all){
-      #sm <- mi_spec[[1]][,"Time"]
-      #si <- mi_spec[[1]][,c(idx+1)]
-      #plot(x = sm, y = si, type = "l", col=cols[idx])
-    #}
-  #}
   for (idx in idx_all) {
     if ("overlay_legend" %in% opt) {
       f_in <- names(mi_spec)
@@ -173,7 +168,8 @@ plot_particle_diameter <- function(
 #' @details Determination of the intensity limit for the differentiation between particle and background signals.
 #' @param x A data.frame containing at least two columns.
 #' @param LFD Intensity limit for the detection of particle signals.
-#' @param style Choose plotting style
+#' @param style Choose plotting style.
+#' @param ylim Specify ylim for style = counts.
 #'
 #' @return A data.frame containing single particle data (invisible) and a plot.
 #'
@@ -182,7 +178,7 @@ plot_particle_diameter <- function(
 #' plot_signal_distribution(x = sp_data[,2])
 #' plot_signal_distribution(x = sp_data[,2], style="counts")
 #' @export
-plot_signal_distribution <- function(x, LFD = 20000, style = c("hist", "counts")) {
+plot_signal_distribution <- function(x, LFD = 20000, style = c("hist", "counts"), ylim = NULL) {
   style <- match.arg(style)
   opar <- par(no.readonly = TRUE)
   on.exit(par(opar))
@@ -191,7 +187,6 @@ plot_signal_distribution <- function(x, LFD = 20000, style = c("hist", "counts")
     par(cex = 1.4)
     rng <- floor(min(log10(x[x>0]))):floor(max(log10(x[x>0])))
     brks <- log10(unique(unlist(lapply(rng, function(i) { seq(10^i,10^(i+1),length.out=10) }))))
-    par(cex = 1.4)
     graphics::hist(log10(x[x>0]), breaks=brks, axes = FALSE, xlab = "Intensity [cps]", main = "")
     axis(2)
     axis(1, at = c(rng, max(rng)+1), labels = 10^c(rng, max(rng)+1))
@@ -200,7 +195,7 @@ plot_signal_distribution <- function(x, LFD = 20000, style = c("hist", "counts")
   }
   if (style=="counts") {
     x <- table(x)
-    plot(x, log = "x", ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution")
+    plot(x = round(as.numeric(names(x))), y = x, log = "x", type="h", ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution", ylim = ylim)
     abline(v=LFD, col=2, lwd=3)
   }
   invisible(x)

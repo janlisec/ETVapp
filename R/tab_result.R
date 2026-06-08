@@ -72,6 +72,7 @@ tab_result <- function(peak_data, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS")
   if (wf %in% c("IDMS","oIDMS")) {
     result <- amae
     if (wf == "IDMS") {
+      #browser()
       peak_data[,"R_corr"] <- peak_data[,"R_m"] * K
     }
     if (wf == "oIDMS") {

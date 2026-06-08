@@ -220,14 +220,11 @@ treatment analog to the sample data is recommended.
 
 ``` r
 blnk_pro <- process_data(data = td[['Blanks']], c1 = int_col, fl = 9, wf = wf)
+blnk_pro <- blnk_pro[str_sort_num(names(blnk_pro))]
 
-par(mfrow=c(2,5))
-par(mar=c(5,3,0,0)+0.1)
-for (i in 1:min(length(blnk_pro), 10)) {
-  ylim <- c(0, max(sapply(blnk_pro, function(x) {max(x[,2])})))
-  plot(blnk_pro[[i]], type="l", main = names(blnk_pro)[i], ylab="", ylim=ylim)
-  abline(v=smpl_peak[1,2:3], col=grey(0.8))
-}
+par(mfrow=c(1,1))
+plot_spec(mi_spec = blnk_pro[1:6], c1 = "157", opt = "overlay_legend")
+abline(v=smpl_peak[1,2:3], col=grey(0.8), lwd=3)
 ```
 
 ![](wf_ExtCal_files/figure-html/load_blanks-1.png)
@@ -251,8 +248,6 @@ gt::gt(blnk_peaks)
 | Isotope | Start \[s\] | End \[s\] | Area \[cts\] | BLmethod |
 |---------|-------------|-----------|--------------|----------|
 | 157     | 0.05198     | 320.0285  | 1591587      | none     |
-| 157     | 0.05211     | 320.0286  | 2214883      | none     |
-| 157     | 0.05206     | 320.0285  | 2029298      | none     |
 | 157     | 0.05111     | 320.0276  | 1294937      | none     |
 | 157     | 0.05199     | 320.0285  | 1389711      | none     |
 | 157     | 0.05102     | 320.0275  | 1704857      | none     |
@@ -261,6 +256,8 @@ gt::gt(blnk_peaks)
 | 157     | 0.05102     | 320.0275  | 1638883      | none     |
 | 157     | 0.05106     | 320.0275  | 1486251      | none     |
 | 157     | 0.05117     | 320.0276  | 1814962      | none     |
+| 157     | 0.05211     | 320.0286  | 2214883      | none     |
+| 157     | 0.05206     | 320.0285  | 2029298      | none     |
 
 The LOD and LOQ are estimated as three and ten times the standard
 deviation of the blank values divided by the slope of the linear

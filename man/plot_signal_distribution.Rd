@@ -4,14 +4,21 @@
 \alias{plot_signal_distribution}
 \title{Plots the signal distribution.}
 \usage{
-plot_signal_distribution(x, LFD = 20000, style = c("hist", "counts"))
+plot_signal_distribution(
+  x,
+  LFD = 20000,
+  style = c("hist", "counts"),
+  ylim = NULL
+)
 }
 \arguments{
 \item{x}{A data.frame containing at least two columns.}
 
 \item{LFD}{Intensity limit for the detection of particle signals.}
 
-\item{style}{Choose plotting style}
+\item{style}{Choose plotting style.}
+
+\item{ylim}{Specify ylim for style = counts.}
 }
 \value{
 A data.frame containing single particle data (invisible) and a plot.

@@ -77,6 +77,8 @@ ETVapp screenshot
   : Histogram plot of particle size distribution.
 - [`plot_signal_distribution()`](https://janlisec.github.io/ETVapp/reference/plot_signal_distribution.md)
   : Plots the signal distribution.
+- [`plot_spec()`](https://janlisec.github.io/ETVapp/reference/plot_spec.md)
+  : Spectra and peaks plot.
 - [`process_data()`](https://janlisec.github.io/ETVapp/reference/process_data.md)
   : Column data transformation
 - [`str_sort_num()`](https://janlisec.github.io/ETVapp/reference/str_sort_num.md)

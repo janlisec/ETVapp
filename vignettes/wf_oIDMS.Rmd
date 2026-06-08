@@ -134,7 +134,8 @@ efficiency *n_trans* through the particle size method using a nano particle
 standard to correct for this effect. Equations and data processing steps 
 included in the package are based on the Excel sheet RIKILT single particle 
 calculation tool (version 2) published in [this article](https://pubs.rsc.org/en/content/articlelanding/2015/ja/c4ja00357h).
-For a detailed tutorial of on single particle measurements, view the [standard operating procedure](https://www.google.com/url?client=internal-element-cse&cx=a5297c89c4bbec8e2&q=https://www.wur.nl/nl/show/spicpms-procedure-version-2.htm&sa=U&ved=2ahUKEwjJh7y-2uuPAxV3SfEDHcl4KTAQFnoECAEQAQ&usg=AOvVaw1dElg273-ODufTr_qkAMiq).
+For a detailed tutorial of on single particle measurements, view the 
+[standard operating procedure](https://www.google.com/url?client=internal-element-cse&cx=a5297c89c4bbec8e2&q=https://www.wur.nl/nl/show/spicpms-procedure-version-2.htm&sa=U&ved=2ahUKEwjJh7y-2uuPAxV3SfEDHcl4KTAQFnoECAEQAQ&usg=AOvVaw1dElg273-ODufTr_qkAMiq).
 
 The package provides measurement data of 
 
@@ -142,50 +143,51 @@ The package provides measurement data of
 * a nano particle standard of known size.
 
 Import the files form **sp_ionic**. The mean signal of a selected time window is 
-obtained *via* the `get_peakdata()`-function using the peak picking method 
-"mean_signal". `tab_cali()` collects in a *data.frame* with the standard 
-concentrations. Calibration parameter are obtained through linear regression.
+obtained *via* the `get_peakdata()` using the peak picking method "mean_signal". 
+`tab_cali()` combines results with the standard concentrations. Calibration 
+parameters are obtained through linear regression.
 
 ```{r load_TransportEfficiency_data}
 spion_imp <- td[["sp_ionic"]]
 str(spion_imp[[1]])
+spion_imp <- spion_imp[str_sort_num(names(spion_imp))]
+
+# the concentration is encoded in the filenames
+names(spion_imp)
+conc_ion <- extract_unique_number(names(spion_imp))
 
 sp_cali <- get_peakdata(spion_imp, int_col = "197Au", PPmethod = "mean signal", peak_start = 0.006, peak_end = 60)
 
-conc_ion <- c(20, 50, 100, 200, 500)
 sp_cali <- tab_cali(peak_data = sp_cali, wf = wf, std_info = conc_ion)
 gt::gt(sp_cali)
 
-cali_lm <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = wf)
-gt::gt(cali_lm)
-```
-
-Signal curves of the ionic measurements and the resulting calibration curve are 
-plotted through:
-
-```{r TransportEfficiency_data, fig.width=3*5, fig.height=3*1, out.width='100%', fig.align='center'} 
-par(mfrow=c(1,5))
-for (i in 1:min(length(spion_imp), 10)) {
-  ylim <- c(0, max(sapply(spion_imp, function(x) {max(x[,2])})))
-  plot(spion_imp[[i]], type="l", main = sp_cali[i,5], ylab="Intensity [cps]", ylim=ylim)
-  abline(v=sp_cali[i,2:3], col=grey(0.8))
-}
-```
-```{r calibration_model, fig.width=3, fig.height=3}
 cm <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = wf)
-plot(sp_cali[,c(5,4)])
-abline(a = cm[1,3], b = cm[1,1])
 gt::gt(cm)
 ```
 
+For reference, here are the signal curves of the ionic measurements and the 
+resulting calibration curve.
+
+```{r TransportEfficiency_data, out.width='100%', fig.align='center'} 
+par(mfrow=c(1,2))
+# imported data
+plot(x = c(0, 60), y = c(0, max(sapply(spion_imp, function(x) {max(x[,2])}))), type="n", xlab="Time", ylab="Signal")
+for (i in 1:length(spion_imp)) {
+  points(spion_imp[[i]], type="l", col=i)
+}
+legend(x = "topleft", fill = 1:length(spion_imp), legend = conc_ion)
+# calibration model
+plot(sp_cali[,c(5,4)], pch=21, bg=1:length(spion_imp))
+abline(a = cm[1,3], b = cm[1,1])
+```
+
 To determine the limit for particle detection (LFD), import the single particle 
-data and plot the signal distribution. The LFD is shown in red. Output parameter of the single particle analysis are obtain by `calc_transeff()` 
-and a histogram of the particle size distribution is provided by the following code.
+data and plot the signal distribution. The LFD is shown in red. Output parameter 
+of the single particle analysis are obtain by `calc_transeff()` and a histogram 
+of the particle size distribution are provided by the following code.
 
-```{r get_Transportefficiency_LFD}
+```{r get_Transportefficiency_LFD, warning=FALSE, message=FALSE}
 sp_data <- td[["sp_particle"]][[1]]
-
-# plot_signal_distribution(x = sp_data[,2], style="counts")
 
 time_col <- "Time"
 anlt <- "197Au"
@@ -194,13 +196,12 @@ LFD <- 20000
 
 if (!is.null(t_fltr) && is.numeric(t_fltr) && t_fltr>min(sp_data[,time_col], na.rm=TRUE)) {
   message("calc_transeff(): remove data with ", time_col, " > ", t_fltr)
-  sp_data_flt <- sp_data[sp_data[,time_col]<t_fltr,]
+  sp_data_flt <- sp_data[sp_data[,time_col]<t_fltr,,drop=FALSE]
 }
-  
-sig_data <- table(sp_data_flt[,anlt])
+
 par(mfrow=c(1,1))  
-plot(sig_data, ylim = c(0, 10), log = 'x', ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution")
-abline(v=LFD, col=2, lwd=3)
+plot_signal_distribution(x = sp_data_flt[,2], LFD = LFD, style="counts", ylim = c(0, 10))
+
 ```
 
 ```{r TransportEfficiency}
@@ -211,9 +212,9 @@ n_trans <- calc_transeff(
   sp_data_flt, 
   int_col = anlt,
   LFD = LFD, 
-  cali_slope = cali_lm[,1], 
+  cali_slope = cm[,1], 
   V_fl = V_fl, 
-  part_mat = c("Au"),
+  part_mat = "Au",
   dia_part = size
 )
 
@@ -247,17 +248,23 @@ samp_ion <- lapply(1:length(samp_imp), function(i) {
 })
 str(samp_ion[[1]])
 
+Asp_iso1 <- 91.06
+Asp_iso2 <- 0.08
+V_fl <- 0.0075
+c_sp <- 19581.71
+DF <- 20
 sample_mass <- c(1.0119, 0.9042, 0.9151)
+
 result_df <- ldply_base(1:length(samp_ion), function(i) {
   x <- samp_ion[[i]][,c("Time","R_corr")]
   x[,"mf_s"] <- calc_massflow(
     x = x[,"R_corr"], 
     n_trans = n_trans[,4], 
     As_iso1 = abnd1, As_iso2 = abnd2, 
-    Asp_iso1 = 91.06, Asp_iso2 = 0.08, 
-    V_fl = 0.0075, c_sp = 19581.71, DF = 20
+    Asp_iso1 = Asp_iso1, Asp_iso2 = Asp_iso2, 
+    V_fl = V_fl, c_sp = c_sp, DF = DF
   )
-  pk <- get_peakdata(x, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = 100)
+  pk <- get_peakdata(x, int_col = "mf_s", PPmethod = "Peak (manual)", peak_start = ps, peak_end = pe)
   tab_result(pk, wf = wf, K = K, amae = pk[,4], mass_fraction2 = 1, sample_mass = sample_mass[i])
 })
 
@@ -267,12 +274,6 @@ gt::gt(result_df)
 View the mass flow diagram to check the integration of the mass flow peak(s).
 
 ```{r mass_flow_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
-Asp_iso1 <- 91.06
-Asp_iso2 <- 0.08
-V_fl <- 0.0075
-c_sp <- 19581.71
-DF <- 20
-
 mf_sp <- 0.0075 * n_trans[,4] * (1 / 60) * (c_sp / DF)
 
 mf_data <- lapply(1:length(samp_ion), function(i) {

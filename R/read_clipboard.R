@@ -70,7 +70,7 @@ read_clipboard_Server <- function(id, btn_txt="Paste from clipboard<br>(show tex
           rows = ifelse(is.null(nr), 6, min(nr, 12))
         ),
         bslib::layout_columns(
-          actionButton(ns("btn_textAreaInput"), "Upload"),
+          actionButton(ns("btn_textAreaInput"), "Apply"),
           actionButton(ns("btn_textAreaInput2"), "Cancel")
         )
       )

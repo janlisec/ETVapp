@@ -70,7 +70,7 @@ and Jan Lisec</h4>
     
     
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="introduction-to-oidms">Introduction to oIDMS<a class="anchor" aria-label="anchor" href="#introduction-to-oidms"></a>
 </h2>
 <p>On-line IDMS is a variation of IDMS. The isotope-enriched spike is
 not mixed with sample prior to a separation technique but continuously
@@ -137,15 +137,6 @@ data.</p>
 <span>  peak_start <span class="op">=</span> <span class="va">ps</span>, </span>
 <span>  peak_end <span class="op">=</span> <span class="va">pe</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
-<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
-<span><span class="co">#&gt; ratio determination.</span></span>
-<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
-<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
-<span><span class="co">#&gt; ratio determination.</span></span>
-<span><span class="co">#&gt; Warning: Different peak boundaries for the isotopes found. Please check the</span></span>
-<span><span class="co">#&gt; integration. Complete peak integration is necessary for an accurate isotope</span></span>
-<span><span class="co">#&gt; ratio determination.</span></span>
 <span></span>
 <span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">mb_peaks</span><span class="op">)</span></span></code></pre></div>
 <div id="mwlefoodfi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -624,13 +615,11 @@ data.</p>
 </div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">K</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_massbias.html">calc_massbias</a></span><span class="op">(</span></span>
+<span><span class="op">(</span><span class="va">K</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_massbias.html">calc_massbias</a></span><span class="op">(</span></span>
 <span>  <span class="va">mb_peaks</span><span class="op">[</span>,<span class="st">"R_m"</span><span class="op">]</span>, </span>
 <span>  As_iso1 <span class="op">=</span> <span class="va">abnd1</span>, </span>
 <span>  As_iso2 <span class="op">=</span> <span class="va">abnd2</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">K</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1.127378 1.143564 1.132254</span></span></code></pre></div>
 <p>View time scans of the spike and sample isotope with peak integration
 parameter by computing the following code.</p>
@@ -664,14 +653,12 @@ parameter by computing the following code.</p>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mb_pro</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, <span class="va">mb_pro</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"117Sn"</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, </span>
 <span>       ylab <span class="op">=</span> <span class="st">"Intensity [cps]"</span>, xlab <span class="op">=</span> <span class="st">"Time [s]"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"117Sn"</span>, <span class="va">mb_no</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="co">#lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mb_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">mb_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"117Sn_BL"</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ps</span>,<span class="va">pe</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mb_pro</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, <span class="va">mb_pro</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"122Sn"</span><span class="op">)</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, </span>
 <span>       ylab <span class="op">=</span> <span class="st">"Intensity [cps]"</span>, xlab <span class="op">=</span> <span class="st">"Time [s]"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"122Sn"</span>, <span class="va">mb_no</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="co">#lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mb_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">mb_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"122Sn_BL"</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ps</span>,<span class="va">pe</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -697,20 +684,27 @@ operating procedure</a>.</p>
 </ul>
 <p>Import the files form <strong>sp_ionic</strong>. The mean signal of a
 selected time window is obtained <em>via</em> the
-<code><a href="../reference/get_peakdata.html">get_peakdata()</a></code>-function using the peak picking method
-“mean_signal”. <code><a href="../reference/tab_cali.html">tab_cali()</a></code> collects in a <em>data.frame</em>
-with the standard concentrations. Calibration parameter are obtained
-through linear regression.</p>
+<code><a href="../reference/get_peakdata.html">get_peakdata()</a></code> using the peak picking method “mean_signal”.
+<code><a href="../reference/tab_cali.html">tab_cali()</a></code> combines results with the standard
+concentrations. Calibration parameters are obtained through linear
+regression.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spion_imp</span> <span class="op">&lt;-</span> <span class="va">td</span><span class="op">[[</span><span class="st">"sp_ionic"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 'data.frame':    20355 obs. of  2 variables:</span></span>
 <span><span class="co">#&gt;  $ Time : num  0.006 0.009 0.012 0.015 0.018 0.021 0.024 0.027 0.03 0.033 ...</span></span>
 <span><span class="co">#&gt;  $ 197Au: num  143249 118398 141905 137537 136865 ...</span></span>
+<span><span class="va">spion_imp</span> <span class="op">&lt;-</span> <span class="va">spion_imp</span><span class="op">[</span><span class="fu"><a href="../reference/str_sort_num.html">str_sort_num</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># the concentration is encoded in the filenames</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Au_ion_20_ppb_w-_CHF3_P16.csv"  "Au_ion_50_ppb_w-_CHF3_P16.csv" </span></span>
+<span><span class="co">#&gt; [3] "Au_ion_100_ppb_w-_CHF3_P16.csv" "Au_ion_200_ppb_w-_CHF3_P16.csv"</span></span>
+<span><span class="co">#&gt; [5] "Au_ion_500_ppb_w-_CHF3_P16.csv"</span></span>
+<span><span class="va">conc_ion</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_unique_number.html">extract_unique_number</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sp_cali</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span><span class="va">spion_imp</span>, int_col <span class="op">=</span> <span class="st">"197Au"</span>, PPmethod <span class="op">=</span> <span class="st">"mean signal"</span>, peak_start <span class="op">=</span> <span class="fl">0.006</span>, peak_end <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">conc_ion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="va">sp_cali</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tab_cali.html">tab_cali</a></span><span class="op">(</span>peak_data <span class="op">=</span> <span class="va">sp_cali</span>, wf <span class="op">=</span> <span class="va">wf</span>, std_info <span class="op">=</span> <span class="va">conc_ion</span><span class="op">)</span></span>
 <span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">sp_cali</span><span class="op">)</span></span></code></pre></div>
 <div id="eexombwkke" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -1175,28 +1169,28 @@ through linear regression.</p>
 <td headers="Isotope" class="gt_row gt_left">197Au</td>
 <td headers="Start [s]" class="gt_row gt_right">0.006</td>
 <td headers="End [s]" class="gt_row gt_right">60</td>
-<td headers="Mean Signal [cps]" class="gt_row gt_right">156366.77</td>
+<td headers="Mean Signal [cps]" class="gt_row gt_right">30696.15</td>
 <td headers="Concentration [µg/L]" class="gt_row gt_right">20</td>
 </tr>
 <tr>
 <td headers="Isotope" class="gt_row gt_left">197Au</td>
 <td headers="Start [s]" class="gt_row gt_right">0.006</td>
 <td headers="End [s]" class="gt_row gt_right">60</td>
-<td headers="Mean Signal [cps]" class="gt_row gt_right">30696.15</td>
+<td headers="Mean Signal [cps]" class="gt_row gt_right">70781.89</td>
 <td headers="Concentration [µg/L]" class="gt_row gt_right">50</td>
 </tr>
 <tr>
 <td headers="Isotope" class="gt_row gt_left">197Au</td>
 <td headers="Start [s]" class="gt_row gt_right">0.006</td>
 <td headers="End [s]" class="gt_row gt_right">60</td>
-<td headers="Mean Signal [cps]" class="gt_row gt_right">322343.25</td>
+<td headers="Mean Signal [cps]" class="gt_row gt_right">156366.77</td>
 <td headers="Concentration [µg/L]" class="gt_row gt_right">100</td>
 </tr>
 <tr>
 <td headers="Isotope" class="gt_row gt_left">197Au</td>
 <td headers="Start [s]" class="gt_row gt_right">0.006</td>
 <td headers="End [s]" class="gt_row gt_right">60</td>
-<td headers="Mean Signal [cps]" class="gt_row gt_right">70781.89</td>
+<td headers="Mean Signal [cps]" class="gt_row gt_right">322343.25</td>
 <td headers="Concentration [µg/L]" class="gt_row gt_right">200</td>
 </tr>
 <tr>
@@ -1211,8 +1205,8 @@ through linear regression.</p>
 </div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">cali_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_cali_mod.html">calc_cali_mod</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">sp_cali</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">4</span><span class="op">)</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span><span class="op">)</span></span>
-<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">cali_lm</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_cali_mod.html">calc_cali_mod</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">sp_cali</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">4</span><span class="op">)</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span><span class="op">)</span></span>
+<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">cm</span><span class="op">)</span></span></code></pre></div>
 <div id="ulbfdpbcyv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#ulbfdpbcyv table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -1671,31 +1665,64 @@ through linear regression.</p>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="R-square-">R square </th>
     </tr></thead>
 <tbody class="gt_table_body"><tr>
-<td headers="Slope [cps L/µg]" class="gt_row gt_right">1488.358</td>
-<td headers="Slope error [cps L/µg]" class="gt_row gt_right">483.5066</td>
-<td headers="Intercept [cps]" class="gt_row gt_right">26030.13</td>
-<td headers="Intercept error [cps]" class="gt_row gt_right">119005.5</td>
-<td headers="R square " class="gt_row gt_right">0.759532</td>
+<td headers="Slope [cps L/µg]" class="gt_row gt_right">1707.507</td>
+<td headers="Slope error [cps L/µg]" class="gt_row gt_right">17.92912</td>
+<td headers="Intercept [cps]" class="gt_row gt_right">-12101.85</td>
+<td headers="Intercept error [cps]" class="gt_row gt_right">4412.895</td>
+<td headers="R square " class="gt_row gt_right">0.9996693</td>
 </tr></tbody>
 </table>
 </div>
-<p>Signal curves of the ionic measurements and the resulting calibration
-curve are plotted through:</p>
+<p>For reference, here are the signal curves of the ionic measurements
+and the resulting calibration curve.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">ylim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">spion_imp</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">}</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, main <span class="op">=</span> <span class="va">sp_cali</span><span class="op">[</span><span class="va">i</span>,<span class="fl">5</span><span class="op">]</span>, ylab<span class="op">=</span><span class="st">"Intensity [cps]"</span>, ylim<span class="op">=</span><span class="va">ylim</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">sp_cali</span><span class="op">[</span><span class="va">i</span>,<span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p><img src="wf_oIDMS_files/figure-html/TransportEfficiency_data-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_cali_mod.html">calc_cali_mod</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">sp_cali</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">4</span><span class="op">)</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sp_cali</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">4</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># imported data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">60</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">spion_imp</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">}</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, type<span class="op">=</span><span class="st">"n"</span>, xlab<span class="op">=</span><span class="st">"Time"</span>, ylab<span class="op">=</span><span class="st">"Signal"</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, col<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"topleft"</span>, fill <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">)</span>, legend <span class="op">=</span> <span class="va">conc_ion</span><span class="op">)</span></span>
+<span><span class="co"># calibration model</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sp_cali</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">4</span><span class="op">)</span><span class="op">]</span>, pch<span class="op">=</span><span class="fl">21</span>, bg<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spion_imp</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>a <span class="op">=</span> <span class="va">cm</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">]</span>, b <span class="op">=</span> <span class="va">cm</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="wf_oIDMS_files/figure-html/calibration_model-1.png" class="r-plt" alt="" width="288"></p>
+<p><img src="wf_oIDMS_files/figure-html/TransportEfficiency_data-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p>To determine the limit for particle detection (LFD), import the
+single particle data and plot the signal distribution. The LFD is shown
+in red. Output parameter of the single particle analysis are obtain by
+<code><a href="../reference/calc_transeff.html">calc_transeff()</a></code> and a histogram of the particle size
+distribution are provided by the following code.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sp_data</span> <span class="op">&lt;-</span> <span class="va">td</span><span class="op">[[</span><span class="st">"sp_particle"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">time_col</span> <span class="op">&lt;-</span> <span class="st">"Time"</span></span>
+<span><span class="va">anlt</span> <span class="op">&lt;-</span> <span class="st">"197Au"</span></span>
+<span><span class="va">t_fltr</span> <span class="op">&lt;-</span> <span class="fl">60</span></span>
+<span><span class="va">LFD</span> <span class="op">&lt;-</span> <span class="fl">20000</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">t_fltr</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">t_fltr</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="va">t_fltr</span><span class="op">&gt;</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">sp_data</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"calc_transeff(): remove data with "</span>, <span class="va">time_col</span>, <span class="st">" &gt; "</span>, <span class="va">t_fltr</span><span class="op">)</span></span>
+<span>  <span class="va">sp_data_flt</span> <span class="op">&lt;-</span> <span class="va">sp_data</span><span class="op">[</span><span class="va">sp_data</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&lt;</span><span class="va">t_fltr</span>,,drop<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span>  </span>
+<span><span class="fu"><a href="../reference/plot_signal_distribution.html">plot_signal_distribution</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">sp_data_flt</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, LFD <span class="op">=</span> <span class="va">LFD</span>, style<span class="op">=</span><span class="st">"counts"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="wf_oIDMS_files/figure-html/get_Transportefficiency_LFD-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">cm</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">V_fl</span> <span class="op">&lt;-</span> <span class="fl">0.0075</span></span>
+<span><span class="va">size</span> <span class="op">&lt;-</span> <span class="fl">60</span></span>
+<span></span>
+<span><span class="va">n_trans</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_transeff.html">calc_transeff</a></span><span class="op">(</span></span>
+<span>  <span class="va">sp_data_flt</span>, </span>
+<span>  int_col <span class="op">=</span> <span class="va">anlt</span>,</span>
+<span>  LFD <span class="op">=</span> <span class="va">LFD</span>, </span>
+<span>  cali_slope <span class="op">=</span> <span class="va">cm</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, </span>
+<span>  V_fl <span class="op">=</span> <span class="va">V_fl</span>, </span>
+<span>  part_mat <span class="op">=</span> <span class="st">"Au"</span>,</span>
+<span>  dia_part <span class="op">=</span> <span class="va">size</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">n_trans</span><span class="op">)</span></span></code></pre></div>
 <div id="kgufivjubq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#kgufivjubq table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -2147,64 +2174,77 @@ curve are plotted through:</p>
 </style>
 <table class="table gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
 <thead><tr class="gt_col_headings">
-<th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Slope-[cps-L/µg]">Slope [cps L/µg]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Slope-error-[cps-L/µg]">Slope error [cps L/µg]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Intercept-[cps]">Intercept [cps]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Intercept-error-[cps]">Intercept error [cps]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="R-square-">R square </th>
+<th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Signal-response-[cps*L/µg]">Signal response [cps*L/µg]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Detected-particle-number-[/min]">Detected particle number [/min]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Detected-particle-mass-[fg]">Detected particle mass [fg]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Calculated-trans_eff-[%]">Calculated trans_eff [%]</th>
     </tr></thead>
 <tbody class="gt_table_body"><tr>
-<td headers="Slope [cps L/µg]" class="gt_row gt_right">1488.358</td>
-<td headers="Slope error [cps L/µg]" class="gt_row gt_right">483.5066</td>
-<td headers="Intercept [cps]" class="gt_row gt_right">26030.13</td>
-<td headers="Intercept error [cps]" class="gt_row gt_right">119005.5</td>
-<td headers="R square " class="gt_row gt_right">0.759532</td>
+<td headers="Signal response [cps*L/µg]" class="gt_row gt_right">1707.507</td>
+<td headers="Detected particle number [/min]" class="gt_row gt_right">1148.766</td>
+<td headers="Detected particle mass [fg]" class="gt_row gt_right">13.1158</td>
+<td headers="Calculated trans_eff [%]" class="gt_row gt_right">16.64236</td>
 </tr></tbody>
 </table>
 </div>
-<p>To determine the limit for particle detection (LFD), import the
-single particle data and plot the signal distribution. The LFD is shown
-in red. Output parameter of the single particle analysis are obtain by
-<code><a href="../reference/calc_transeff.html">calc_transeff()</a></code> and a histogram of the particle size
-distribution is provided by the following code.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sp_data</span> <span class="op">&lt;-</span> <span class="va">td</span><span class="op">[[</span><span class="st">"sp_particle"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co"># plot_signal_distribution(x = sp_data[,2], style="counts")</span></span>
-<span></span>
-<span><span class="va">time_col</span> <span class="op">&lt;-</span> <span class="st">"Time"</span></span>
-<span><span class="va">anlt</span> <span class="op">&lt;-</span> <span class="st">"197Au"</span></span>
-<span><span class="va">t_fltr</span> <span class="op">&lt;-</span> <span class="fl">60</span></span>
-<span><span class="va">LFD</span> <span class="op">&lt;-</span> <span class="fl">20000</span></span>
-<span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">t_fltr</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">t_fltr</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="va">t_fltr</span><span class="op">&gt;</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">sp_data</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"calc_transeff(): remove data with "</span>, <span class="va">time_col</span>, <span class="st">" &gt; "</span>, <span class="va">t_fltr</span><span class="op">)</span></span>
-<span>  <span class="va">sp_data_flt</span> <span class="op">&lt;-</span> <span class="va">sp_data</span><span class="op">[</span><span class="va">sp_data</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&lt;</span><span class="va">t_fltr</span>,<span class="op">]</span></span>
-<span><span class="op">}</span></span>
-<span><span class="co">#&gt; calc_transeff(): remove data with Time &gt; 60</span></span>
-<span>  </span>
-<span><span class="va">sig_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sp_data_flt</span><span class="op">[</span>,<span class="va">anlt</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span>  </span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sig_data</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span>, log <span class="op">=</span> <span class="st">'x'</span>, ylab <span class="op">=</span> <span class="st">"Frequency"</span>, xlab <span class="op">=</span> <span class="st">"Intensity [cps]"</span>, main <span class="op">=</span> <span class="st">"Signal distribution"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in xy.coords(x, y, xlabel, ylabel, log): 1 x value &lt;= 0 omitted from</span></span>
-<span><span class="co">#&gt; logarithmic plot</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">LFD</span>, col<span class="op">=</span><span class="fl">2</span>, lwd<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="wf_oIDMS_files/figure-html/get_Transportefficiency_LFD-1.png" class="r-plt" alt="" width="700"></p>
+<span><span class="fu"><a href="../reference/plot_particle_diameter.html">plot_particle_diameter</a></span><span class="op">(</span></span>
+<span>  <span class="va">sp_data</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">time_col</span>, <span class="va">anlt</span><span class="op">)</span><span class="op">]</span>, cali_slope <span class="op">=</span> <span class="va">cm</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span>, V_fl <span class="op">=</span> <span class="va">V_fl</span>, part_mat <span class="op">=</span> <span class="st">"Au"</span>, dia_part <span class="op">=</span> <span class="va">size</span>, LFD <span class="op">=</span> <span class="va">LFD</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="wf_oIDMS_files/figure-html/Particle_size_distribution-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level2">
+<h2 id="sample-evaluation">Sample evaluation<a class="anchor" aria-label="anchor" href="#sample-evaluation"></a>
+</h2>
+<p>Import and process the spike containing sample measurement file using
+the workflow “oIDMS”. Correcting the ratio on the column “R_m” provides
+mass bias corrected values “R_corr”. The implemented IDMS equation for
+the mass flow calculation is adapted from <a href="https://link.springer.com/article/10.1007/BF00322473" class="external-link">Rottmann and
+Heumann</a>. A minimum isotope ratio is required determined by the ratio
+of the natural isotope abundances. A result table is obtained by
+consequent peak evaluation.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">V_fl</span> <span class="op">&lt;-</span> <span class="fl">0.0075</span></span>
-<span><span class="va">size</span> <span class="op">&lt;-</span> <span class="fl">60</span></span>
+<code class="sourceCode R"><span><span class="va">samp_imp</span> <span class="op">&lt;-</span> <span class="va">td</span><span class="op">[[</span><span class="st">"Samples"</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
-<span><span class="va">n_trans</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_transeff.html">calc_transeff</a></span><span class="op">(</span></span>
-<span>  <span class="va">sp_data_flt</span>, </span>
-<span>  int_col <span class="op">=</span> <span class="va">anlt</span>,</span>
-<span>  LFD <span class="op">=</span> <span class="va">LFD</span>, </span>
-<span>  cali_slope <span class="op">=</span> <span class="va">cali_lm</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, </span>
-<span>  V_fl <span class="op">=</span> <span class="va">V_fl</span>, </span>
-<span>  part_mat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Au"</span><span class="op">)</span>,</span>
-<span>  dia_part <span class="op">=</span> <span class="va">size</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">samp_ion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">samp_imp</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_data.html">process_data</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">samp_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span>, c1 <span class="op">=</span> <span class="va">iso1</span>, c2 <span class="op">=</span> <span class="va">iso2</span>, fl <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span>  <span class="va">x</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span>,<span class="st">"R_m"</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">K</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">samp_ion</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 'data.frame':    754 obs. of  5 variables:</span></span>
+<span><span class="co">#&gt;  $ Time  : num  0.032 0.22 0.408 0.595 0.783 ...</span></span>
+<span><span class="co">#&gt;  $ 117Sn : num  2438466 2339865 2227398 2268996 2471078 ...</span></span>
+<span><span class="co">#&gt;  $ 122Sn : num  2900 2333 2167 2800 2767 ...</span></span>
+<span><span class="co">#&gt;  $ R_m   : num  841 1003 1028 810 893 ...</span></span>
+<span><span class="co">#&gt;  $ R_corr: num  954 1137 1166 919 1013 ...</span></span>
 <span></span>
-<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">n_trans</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">Asp_iso1</span> <span class="op">&lt;-</span> <span class="fl">91.06</span></span>
+<span><span class="va">Asp_iso2</span> <span class="op">&lt;-</span> <span class="fl">0.08</span></span>
+<span><span class="va">V_fl</span> <span class="op">&lt;-</span> <span class="fl">0.0075</span></span>
+<span><span class="va">c_sp</span> <span class="op">&lt;-</span> <span class="fl">19581.71</span></span>
+<span><span class="va">DF</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
+<span><span class="va">sample_mass</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.0119</span>, <span class="fl">0.9042</span>, <span class="fl">0.9151</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">result_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldply_base.html">ldply_base</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">samp_ion</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">samp_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span>,<span class="st">"R_corr"</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="va">x</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_massflow.html">calc_massflow</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="va">x</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span>, </span>
+<span>    n_trans <span class="op">=</span> <span class="va">n_trans</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, </span>
+<span>    As_iso1 <span class="op">=</span> <span class="va">abnd1</span>, As_iso2 <span class="op">=</span> <span class="va">abnd2</span>, </span>
+<span>    Asp_iso1 <span class="op">=</span> <span class="va">Asp_iso1</span>, Asp_iso2 <span class="op">=</span> <span class="va">Asp_iso2</span>, </span>
+<span>    V_fl <span class="op">=</span> <span class="va">V_fl</span>, c_sp <span class="op">=</span> <span class="va">c_sp</span>, DF <span class="op">=</span> <span class="va">DF</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="va">pk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span><span class="va">x</span>, int_col <span class="op">=</span> <span class="st">"mf_s"</span>, PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, peak_start <span class="op">=</span> <span class="va">ps</span>, peak_end <span class="op">=</span> <span class="va">pe</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/tab_result.html">tab_result</a></span><span class="op">(</span><span class="va">pk</span>, wf <span class="op">=</span> <span class="va">wf</span>, K <span class="op">=</span> <span class="va">K</span>, amae <span class="op">=</span> <span class="va">pk</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, mass_fraction2 <span class="op">=</span> <span class="fl">1</span>, sample_mass <span class="op">=</span> <span class="va">sample_mass</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
+<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
+<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
+<span></span>
+<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">result_df</span><span class="op">)</span></span></code></pre></div>
 <div id="txvafbsnay" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#txvafbsnay table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -2656,71 +2696,101 @@ distribution is provided by the following code.</p>
 </style>
 <table class="table gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
 <thead><tr class="gt_col_headings">
-<th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Signal-response-[cps*L/µg]">Signal response [cps*L/µg]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Detected-particle-number-[/min]">Detected particle number [/min]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Detected-particle-mass-[fg]">Detected particle mass [fg]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Calculated-trans_eff-[%]">Calculated trans_eff [%]</th>
+<th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Start-[s]">Start [s]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="End-[s]">End [s]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="BLmethod">BLmethod</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Analyte-mass-as-element-[pg]">Analyte mass as element [pg]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Sample-mass-[mg]">Sample mass [mg]</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Content-as-element-[ppb]">Content as element [ppb]</th>
     </tr></thead>
-<tbody class="gt_table_body"><tr>
-<td headers="Signal response [cps*L/µg]" class="gt_row gt_right">1488.358</td>
-<td headers="Detected particle number [/min]" class="gt_row gt_right">1148.766</td>
-<td headers="Detected particle mass [fg]" class="gt_row gt_right">15.047</td>
-<td headers="Calculated trans_eff [%]" class="gt_row gt_right">14.5064</td>
-</tr></tbody>
+<tbody class="gt_table_body">
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">631.5748</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1.0119</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">624.1474</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">693.5853</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">0.9042</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">767.0707</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">526.8465</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">0.9151</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">575.7256</td>
+</tr>
+</tbody>
 </table>
 </div>
+<p>View the mass flow diagram to check the integration of the mass flow
+peak(s).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sp_data</span> <span class="op">&lt;-</span> <span class="va">td</span><span class="op">[[</span><span class="st">"sp_particle"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<code class="sourceCode R"><span><span class="va">mf_sp</span> <span class="op">&lt;-</span> <span class="fl">0.0075</span> <span class="op">*</span> <span class="va">n_trans</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fl">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span><span class="va">c_sp</span> <span class="op">/</span> <span class="va">DF</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/plot_particle_diameter.html">plot_particle_diameter</a></span><span class="op">(</span></span>
-<span>  <span class="va">sp_data</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">time_col</span>, <span class="va">anlt</span><span class="op">)</span><span class="op">]</span>, cali_slope <span class="op">=</span> <span class="va">cm</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span>, V_fl <span class="op">=</span> <span class="va">V_fl</span>, part_mat <span class="op">=</span> <span class="st">"Au"</span>, dia_part <span class="op">=</span> <span class="va">size</span>, LFD <span class="op">=</span> <span class="va">LFD</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="wf_oIDMS_files/figure-html/Particle_size_distribution-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<span><span class="va">mf_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">samp_ion</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span> <span class="va">mf_s</span> <span class="op">&lt;-</span> <span class="va">mf_sp</span> <span class="op">*</span> <span class="op">(</span><span class="op">(</span><span class="va">Asp_iso1</span> <span class="op">-</span> <span class="op">(</span><span class="va">samp_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span> <span class="op">*</span> <span class="va">Asp_iso2</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="op">(</span><span class="va">abnd2</span> <span class="op">*</span> <span class="va">samp_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span><span class="op">)</span> <span class="op">-</span> <span class="va">abnd1</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">samp_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span>,<span class="st">"R_corr"</span><span class="op">)</span><span class="op">]</span>, <span class="va">mf_s</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">mf_BL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">mf_data</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="va">flt</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">mf_data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&gt;=</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="va">cf</span><span class="op">)</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">mf_data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&lt;=</span><span class="va">pe</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="va">cf</span><span class="op">)</span></span>
+<span>  <span class="fu">ETVapp</span><span class="fu">:::</span><span class="fu">blcorr_col</span><span class="op">(</span></span>
+<span>    df <span class="op">=</span> <span class="va">mf_data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">flt</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">time_col</span>,<span class="st">"mf_s"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>    nm <span class="op">=</span> <span class="st">"mf_s"</span>, </span>
+<span>    BLmethod <span class="op">=</span> <span class="st">"modpolyfit"</span>,</span>
+<span>    rval <span class="op">=</span> <span class="st">"baseline"</span>, </span>
+<span>    amend <span class="op">=</span> <span class="st">"_BL"</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">mf_BL</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mf_data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"Time"</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">mf_data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, ylab<span class="op">=</span><span class="st">"Mass flow [pg/s]"</span>, xlab<span class="op">=</span><span class="st">"Time [s]"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mf_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">mf_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">result_df</span><span class="op">[</span><span class="va">i</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p><img src="wf_oIDMS_files/figure-html/mass_flow_plot-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
-<h2 id="sample-evaluation">Sample evaluation<a class="anchor" aria-label="anchor" href="#sample-evaluation"></a>
+<h2 id="limits-of-detection-and-quantification">Limits of detection and quantification<a class="anchor" aria-label="anchor" href="#limits-of-detection-and-quantification"></a>
 </h2>
-<p>Import and process the spike containing sample measurement file using
-the workflow “oIDMS”. Correcting the ratio on the column “R_m” provides
-mass bias corrected values “R_corr”. The implemented IDMS equation for
-the mass flow calculation is adapted from <a href="https://link.springer.com/article/10.1007/BF00322473" class="external-link">Rottmann and
-Heumann</a>. A minimum isotope ratio is required determined by the ratio
-of the natural isotope abundances. A result table is obtained by
-consequent peak evaluation.</p>
+<p>To determine the limit of detection (LOD) and quantification (LOQ),
+the <em>ETVapp</em> package includes ten blank measurements with spike.
+Perform data treatment of the blank files analog to the samples files
+(import, optional smoothing, mass bias correction, and mass flow
+calculation). A <em>data.frame</em> containing result data is generated
+by the following code.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">samp_imp</span> <span class="op">&lt;-</span> <span class="va">td</span><span class="op">[[</span><span class="st">"Samples"</span><span class="op">]</span><span class="op">]</span></span>
+<code class="sourceCode R"><span><span class="va">blk_imp</span> <span class="op">&lt;-</span> <span class="va">td</span><span class="op">[[</span><span class="st">"Blanks"</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
-<span><span class="va">samp_ion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">samp_imp</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_data.html">process_data</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">samp_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span>, c1 <span class="op">=</span> <span class="va">iso1</span>, c2 <span class="op">=</span> <span class="va">iso2</span>, fl <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">blk_ion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_imp</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_data.html">process_data</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">blk_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span>, c1 <span class="op">=</span> <span class="va">iso1</span>, c2 <span class="op">=</span> <span class="va">iso2</span>, fl <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span>  <span class="va">x</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span>,<span class="st">"R_m"</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">K</span><span class="op">)</span></span>
+<span>  <span class="va">x</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_massflow.html">calc_massflow</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span>, n_trans <span class="op">=</span> <span class="va">n_trans</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">4</span><span class="op">]</span>, As_iso1 <span class="op">=</span> <span class="va">abnd1</span>, As_iso2 <span class="op">=</span> <span class="va">abnd2</span>, Asp_iso1 <span class="op">=</span> <span class="fl">91.06</span>, Asp_iso2 <span class="op">=</span> <span class="fl">0.08</span>, V_fl <span class="op">=</span> <span class="va">V_fl</span>, c_sp <span class="op">=</span> <span class="va">c_sp</span>, DF <span class="op">=</span> <span class="va">DF</span><span class="op">)</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">samp_ion</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 'data.frame':    754 obs. of  5 variables:</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 'data.frame':    755 obs. of  6 variables:</span></span>
 <span><span class="co">#&gt;  $ Time  : num  0.032 0.22 0.408 0.595 0.783 ...</span></span>
-<span><span class="co">#&gt;  $ 117Sn : num  2438466 2339865 2227398 2268996 2471078 ...</span></span>
-<span><span class="co">#&gt;  $ 122Sn : num  2900 2333 2167 2800 2767 ...</span></span>
-<span><span class="co">#&gt;  $ R_m   : num  841 1003 1028 810 893 ...</span></span>
-<span><span class="co">#&gt;  $ R_corr: num  954 1137 1166 919 1013 ...</span></span>
+<span><span class="co">#&gt;  $ 117Sn : num  1148182 1237134 1237527 1123988 1229097 ...</span></span>
+<span><span class="co">#&gt;  $ 122Sn : num  2700 1867 1967 2133 1800 ...</span></span>
+<span><span class="co">#&gt;  $ R_m   : num  425 663 629 527 683 ...</span></span>
+<span><span class="co">#&gt;  $ R_corr: num  482 752 714 598 775 ...</span></span>
+<span><span class="co">#&gt;  $ mf_s  : num  0.048 0.0181 0.021 0.0319 0.0166 ...</span></span>
 <span></span>
-<span><span class="va">sample_mass</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.0119</span>, <span class="fl">0.9042</span>, <span class="fl">0.9151</span><span class="op">)</span></span>
-<span><span class="va">result_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldply_base.html">ldply_base</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">samp_ion</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">samp_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span>,<span class="st">"R_corr"</span><span class="op">)</span><span class="op">]</span></span>
-<span>  <span class="va">x</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_massflow.html">calc_massflow</a></span><span class="op">(</span></span>
-<span>    x <span class="op">=</span> <span class="va">x</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span>, </span>
-<span>    n_trans <span class="op">=</span> <span class="va">n_trans</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, </span>
-<span>    As_iso1 <span class="op">=</span> <span class="va">abnd1</span>, As_iso2 <span class="op">=</span> <span class="va">abnd2</span>, </span>
-<span>    Asp_iso1 <span class="op">=</span> <span class="fl">91.06</span>, Asp_iso2 <span class="op">=</span> <span class="fl">0.08</span>, </span>
-<span>    V_fl <span class="op">=</span> <span class="fl">0.0075</span>, c_sp <span class="op">=</span> <span class="fl">19581.71</span>, DF <span class="op">=</span> <span class="fl">20</span></span>
-<span>  <span class="op">)</span></span>
-<span>  <span class="va">pk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span><span class="va">x</span>, int_col <span class="op">=</span> <span class="st">"mf_s"</span>, PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, peak_start <span class="op">=</span> <span class="va">ps</span>, peak_end <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="../reference/tab_result.html">tab_result</a></span><span class="op">(</span><span class="va">pk</span>, wf <span class="op">=</span> <span class="va">wf</span>, K <span class="op">=</span> <span class="va">K</span>, amae <span class="op">=</span> <span class="va">pk</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, mass_fraction2 <span class="op">=</span> <span class="fl">1</span>, sample_mass <span class="op">=</span> <span class="va">sample_mass</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span><span class="co">#&gt; The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.</span></span>
-<span></span>
-<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">result_df</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">LOX_pks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span>pro_data <span class="op">=</span> <span class="va">blk_ion</span>, int_col <span class="op">=</span> <span class="st">"mf_s"</span>, PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, peak_start <span class="op">=</span> <span class="va">ps</span>, peak_end <span class="op">=</span> <span class="va">pe</span>, minpeakheight <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+<span><span class="va">LOX_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tab_result.html">tab_result</a></span><span class="op">(</span><span class="va">LOX_pks</span>, wf <span class="op">=</span> <span class="va">wf</span>, K <span class="op">=</span> <span class="va">K</span>, amae <span class="op">=</span> <span class="va">LOX_pks</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, mass_fraction2 <span class="op">=</span> <span class="fl">1</span>, sample_mass <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">LOX_df</span><span class="op">)</span></span></code></pre></div>
 <div id="orehalspkz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#orehalspkz table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -3182,97 +3252,112 @@ consequent peak evaluation.</p>
 <tbody class="gt_table_body">
 <tr>
 <td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">100</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
 <td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">547.4301</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1.0119</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">540.9923</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.6500138</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.6500138</td>
 </tr>
 <tr>
 <td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">100</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
 <td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">600.9719</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">0.9042</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">664.6449</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4680610</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.4680610</td>
 </tr>
 <tr>
 <td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">100</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
 <td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">457.3979</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">0.9151</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">499.8338</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.6158963</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.6158963</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.5368515</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.5368515</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.6113881</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.6113881</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4801788</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.4801788</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4704832</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.4704832</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4386688</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.4386688</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.3858629</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.3858629</td>
+</tr>
+<tr>
+<td headers="Start [s]" class="gt_row gt_right">70</td>
+<td headers="End [s]" class="gt_row gt_right">105</td>
+<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
+<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4000392</td>
+<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
+<td headers="Content as element [ppb]" class="gt_row gt_right">0.4000392</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>View the mass flow diagram to check the integration of the mass flow
-peak(s).</p>
+<p>Mass flow diagrams of the blank measurements are plotted as
+follows.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Asp_iso1</span> <span class="op">&lt;-</span> <span class="fl">91.06</span></span>
-<span><span class="va">Asp_iso2</span> <span class="op">&lt;-</span> <span class="fl">0.08</span></span>
-<span><span class="va">V_fl</span> <span class="op">&lt;-</span> <span class="fl">0.0075</span></span>
-<span><span class="va">c_sp</span> <span class="op">&lt;-</span> <span class="fl">19581.71</span></span>
-<span><span class="va">DF</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
-<span></span>
-<span><span class="va">mf_sp</span> <span class="op">&lt;-</span> <span class="fl">0.0075</span> <span class="op">*</span> <span class="va">n_trans</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fl">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span><span class="va">c_sp</span> <span class="op">/</span> <span class="va">DF</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">mf_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">samp_ion</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span> <span class="va">mf_s</span> <span class="op">&lt;-</span> <span class="va">mf_sp</span> <span class="op">*</span> <span class="op">(</span><span class="op">(</span><span class="va">Asp_iso1</span> <span class="op">-</span> <span class="op">(</span><span class="va">samp_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span> <span class="op">*</span> <span class="va">Asp_iso2</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="op">(</span><span class="va">abnd2</span> <span class="op">*</span> <span class="va">samp_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span><span class="op">)</span> <span class="op">-</span> <span class="va">abnd1</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">samp_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span>,<span class="st">"R_corr"</span><span class="op">)</span><span class="op">]</span>, <span class="va">mf_s</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span> </span>
-<span></span>
-<span><span class="va">mf_BL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">mf_data</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span><span class="va">flt</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">mf_data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&gt;=</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="va">cf</span><span class="op">)</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">mf_data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&lt;=</span><span class="va">pe</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="va">cf</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">blk_BL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="va">flt</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&gt;=</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="va">cf</span><span class="op">)</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&lt;=</span><span class="va">pe</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="va">cf</span><span class="op">)</span></span>
 <span>  <span class="fu">ETVapp</span><span class="fu">:::</span><span class="fu">blcorr_col</span><span class="op">(</span></span>
-<span>    df <span class="op">=</span> <span class="va">mf_data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">flt</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">time_col</span>,<span class="st">"mf_s"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>    df <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">flt</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">time_col</span>,<span class="st">"mf_s"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>    nm <span class="op">=</span> <span class="st">"mf_s"</span>, </span>
 <span>    BLmethod <span class="op">=</span> <span class="st">"modpolyfit"</span>,</span>
 <span>    rval <span class="op">=</span> <span class="st">"baseline"</span>, </span>
 <span>    amend <span class="op">=</span> <span class="st">"_BL"</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">mf_BL</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mf_data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"Time"</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">mf_data</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, ylab<span class="op">=</span><span class="st">"Mass flow [pg/s]"</span>, xlab<span class="op">=</span><span class="st">"Time [s]"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mf_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">mf_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">result_df</span><span class="op">[</span><span class="va">i</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">3</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"Time"</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, ylab<span class="op">=</span><span class="st">"Mass flow"</span>, xlab <span class="op">=</span> <span class="st">"Time [s]"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">blk_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">blk_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">LOX_df</span><span class="op">[</span><span class="va">i</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="wf_oIDMS_files/figure-html/mass_flow_plot-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-</div>
-<div class="section level2">
-<h2 id="limits-of-detection-and-quantification">Limits of detection and quantification<a class="anchor" aria-label="anchor" href="#limits-of-detection-and-quantification"></a>
-</h2>
-<p>To determine the limit of detection (LOD) and quantification (LOQ),
-the <em>ETVapp</em> package includes ten blank measurements with spike.
-Perform data treatment of the blank files analog to the samples files
-(import, optional smoothing, mass bias correction, and mass flow
-calculation). A <em>data.frame</em> containing result data is generated
-by the following code.</p>
+<p><img src="wf_oIDMS_files/figure-html/load_blanks-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p>The LOD and LOQ are computed as three and ten times the standard
+deviation by calling <code><a href="../reference/tab_LOX.html">tab_LOX()</a></code>.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">blk_imp</span> <span class="op">&lt;-</span> <span class="va">td</span><span class="op">[[</span><span class="st">"Blanks"</span><span class="op">]</span><span class="op">]</span></span>
-<span></span>
-<span><span class="va">blk_ion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_imp</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_data.html">process_data</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">blk_imp</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span>, c1 <span class="op">=</span> <span class="va">iso1</span>, c2 <span class="op">=</span> <span class="va">iso2</span>, fl <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span>  <span class="va">x</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span>,<span class="st">"R_m"</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">K</span><span class="op">)</span></span>
-<span>  <span class="va">x</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_massflow.html">calc_massflow</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span><span class="op">[</span>,<span class="st">"R_corr"</span><span class="op">]</span>, n_trans <span class="op">=</span> <span class="va">n_trans</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">4</span><span class="op">]</span>, As_iso1 <span class="op">=</span> <span class="va">abnd1</span>, As_iso2 <span class="op">=</span> <span class="va">abnd2</span>, Asp_iso1 <span class="op">=</span> <span class="fl">91.06</span>, Asp_iso2 <span class="op">=</span> <span class="fl">0.08</span>, V_fl <span class="op">=</span> <span class="va">V_fl</span>, c_sp <span class="op">=</span> <span class="va">c_sp</span>, DF <span class="op">=</span> <span class="va">DF</span><span class="op">)</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 'data.frame':    755 obs. of  6 variables:</span></span>
-<span><span class="co">#&gt;  $ Time  : num  0.032 0.22 0.408 0.595 0.783 ...</span></span>
-<span><span class="co">#&gt;  $ 117Sn : num  1148182 1237134 1237527 1123988 1229097 ...</span></span>
-<span><span class="co">#&gt;  $ 122Sn : num  2700 1867 1967 2133 1800 ...</span></span>
-<span><span class="co">#&gt;  $ R_m   : num  425 663 629 527 683 ...</span></span>
-<span><span class="co">#&gt;  $ R_corr: num  482 752 714 598 775 ...</span></span>
-<span><span class="co">#&gt;  $ mf_s  : num  0.0419 0.0158 0.0183 0.0278 0.0144 ...</span></span>
-<span></span>
-<span><span class="va">LOX_pks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_peakdata.html">get_peakdata</a></span><span class="op">(</span>pro_data <span class="op">=</span> <span class="va">blk_ion</span>, int_col <span class="op">=</span> <span class="st">"mf_s"</span>, PPmethod <span class="op">=</span> <span class="st">"Peak (manual)"</span>, peak_start <span class="op">=</span> <span class="va">ps</span>, peak_end <span class="op">=</span> <span class="va">pe</span>, minpeakheight <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">LOX_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tab_result.html">tab_result</a></span><span class="op">(</span><span class="va">LOX_pks</span>, wf <span class="op">=</span> <span class="va">wf</span>, K <span class="op">=</span> <span class="va">K</span>, amae <span class="op">=</span> <span class="va">LOX_pks</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, mass_fraction2 <span class="op">=</span> <span class="fl">1</span>, sample_mass <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span>  </span>
-<span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">LOX_df</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="fu"><a href="../reference/tab_LOX.html">tab_LOX</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">LOX_df</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div id="cbwjcfdjag" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#cbwjcfdjag table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -3724,573 +3809,6 @@ by the following code.</p>
 </style>
 <table class="table gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
 <thead><tr class="gt_col_headings">
-<th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Start-[s]">Start [s]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="End-[s]">End [s]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="BLmethod">BLmethod</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Analyte-mass-as-element-[pg]">Analyte mass as element [pg]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Sample-mass-[mg]">Sample mass [mg]</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Content-as-element-[ppb]">Content as element [ppb]</th>
-    </tr></thead>
-<tbody class="gt_table_body">
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.5665880</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.5665880</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4079879</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.4079879</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.5368494</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.5368494</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4679495</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.4679495</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.5329198</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.5329198</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4185505</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.4185505</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.4100992</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.4100992</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.3823680</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.3823680</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.3363395</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.3363395</td>
-</tr>
-<tr>
-<td headers="Start [s]" class="gt_row gt_right">70</td>
-<td headers="End [s]" class="gt_row gt_right">105</td>
-<td headers="BLmethod" class="gt_row gt_left">modpolyfit</td>
-<td headers="Analyte mass as element [pg]" class="gt_row gt_right">0.3486964</td>
-<td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="Content as element [ppb]" class="gt_row gt_right">0.3486964</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>Mass flow diagrams of the blank measurements are plotted as
-follows.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">blk_BL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span><span class="va">flt</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&gt;=</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="va">cf</span><span class="op">)</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="va">time_col</span><span class="op">]</span><span class="op">&lt;=</span><span class="va">pe</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="va">cf</span><span class="op">)</span></span>
-<span>  <span class="fu">ETVapp</span><span class="fu">:::</span><span class="fu">blcorr_col</span><span class="op">(</span></span>
-<span>    df <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">flt</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">time_col</span>,<span class="st">"mf_s"</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>    nm <span class="op">=</span> <span class="st">"mf_s"</span>, </span>
-<span>    BLmethod <span class="op">=</span> <span class="st">"modpolyfit"</span>,</span>
-<span>    rval <span class="op">=</span> <span class="st">"baseline"</span>, </span>
-<span>    amend <span class="op">=</span> <span class="st">"_BL"</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span> </span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">3</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"Time"</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">blk_ion</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="st">"mf_s"</span><span class="op">]</span>, type<span class="op">=</span><span class="st">"l"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">blk_ion</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, ylab<span class="op">=</span><span class="st">"Mass flow"</span>, xlab <span class="op">=</span> <span class="st">"Time [s]"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">blk_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span><span class="op">)</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">blk_BL</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">LOX_df</span><span class="op">[</span><span class="va">i</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/gray.html" class="external-link">grey</a></span><span class="op">(</span><span class="fl">0.8</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p><img src="wf_oIDMS_files/figure-html/load_blanks-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<p>The LOD and LOQ are computed as three and ten times the standard
-deviation by calling <code><a href="../reference/tab_LOX.html">tab_LOX()</a></code>.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="fu"><a href="../reference/tab_LOX.html">tab_LOX</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">LOX_df</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div id="fvsybhaagl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#fvsybhaagl table {
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#fvsybhaagl thead, #fvsybhaagl tbody, #fvsybhaagl tfoot, #fvsybhaagl tr, #fvsybhaagl td, #fvsybhaagl th {
-  border-style: none;
-}
-
-#fvsybhaagl p {
-  margin: 0;
-  padding: 0;
-}
-
-#fvsybhaagl .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#fvsybhaagl .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#fvsybhaagl .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#fvsybhaagl .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#fvsybhaagl .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#fvsybhaagl .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#fvsybhaagl .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#fvsybhaagl .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#fvsybhaagl .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#fvsybhaagl .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#fvsybhaagl .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#fvsybhaagl .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#fvsybhaagl .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#fvsybhaagl .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#fvsybhaagl .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#fvsybhaagl .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#fvsybhaagl .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#fvsybhaagl .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#fvsybhaagl .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#fvsybhaagl .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#fvsybhaagl .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#fvsybhaagl .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#fvsybhaagl .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#fvsybhaagl .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#fvsybhaagl .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#fvsybhaagl .gt_left {
-  text-align: left;
-}
-
-#fvsybhaagl .gt_center {
-  text-align: center;
-}
-
-#fvsybhaagl .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#fvsybhaagl .gt_font_normal {
-  font-weight: normal;
-}
-
-#fvsybhaagl .gt_font_bold {
-  font-weight: bold;
-}
-
-#fvsybhaagl .gt_font_italic {
-  font-style: italic;
-}
-
-#fvsybhaagl .gt_super {
-  font-size: 65%;
-}
-
-#fvsybhaagl .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#fvsybhaagl .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#fvsybhaagl .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#fvsybhaagl .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#fvsybhaagl .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#fvsybhaagl .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#fvsybhaagl .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#fvsybhaagl .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#fvsybhaagl div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-  height: 0px !important;
-}
-</style>
-<table class="table gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-<thead><tr class="gt_col_headings">
 <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="LOD-as-element-[pg]">LOD as element [pg]</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="LOQ-as-element-[pg]">LOQ as element [pg]</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Sample-mass-[mg]">Sample mass [mg]</th>
@@ -4298,11 +3816,11 @@ deviation by calling <code><a href="../reference/tab_LOX.html">tab_LOX()</a></co
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="LOQ-per-sample-mass-[ppb]">LOQ per sample mass [ppb]</th>
     </tr></thead>
 <tbody class="gt_table_body"><tr>
-<td headers="LOD as element [pg]" class="gt_row gt_right">0.2441205</td>
-<td headers="LOQ as element [pg]" class="gt_row gt_right">0.8137351</td>
+<td headers="LOD as element [pg]" class="gt_row gt_right">0.2800654</td>
+<td headers="LOQ as element [pg]" class="gt_row gt_right">0.9335514</td>
 <td headers="Sample mass [mg]" class="gt_row gt_right">1</td>
-<td headers="LOD per sample mass [ppb]" class="gt_row gt_right">0.2441205</td>
-<td headers="LOQ per sample mass [ppb]" class="gt_row gt_right">0.8137351</td>
+<td headers="LOD per sample mass [ppb]" class="gt_row gt_right">0.2800654</td>
+<td headers="LOQ per sample mass [ppb]" class="gt_row gt_right">0.9335514</td>
 </tr></tbody>
 </table>
 </div>
