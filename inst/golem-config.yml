@@ -4,7 +4,7 @@ default:
   app_date: !expr as.character(utils::packageDate("ETVapp"))
   app_wd: !expr system.file(package = "ETVapp")
   app_prod: no
-  bam_server: true
+  bam_server: false
 production:
   app_prod: yes
 dev:

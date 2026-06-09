@@ -853,9 +853,26 @@ app_server <- function(input, output, session) {
       if (input$par_wf=="ExtGasCal") pars$ExtGasCal_cali <- df
     }
     if (input$par_filetype %in% c("Massbias")) {
-      df <- ldply_base(1:length(ic_mi_spectra()), function(i) {
-        get_isoratio(
-          data = ic_mi_spectra()[[i]],
+      df <- get_isoratio(
+        data = ic_mi_spectra(),
+        iso1_col = input$ic_par_mi_col,
+        iso2_col = input$ic_par_si_col,
+        PPmethod = input$peak_method,
+        peak_start = p_start,
+        peak_end = p_end,
+        BLmethod = input$baseline_method,
+        fl = input$smoothing_fl
+      )
+
+      req(df)
+      if (input$par_wf=="IDMS") pars$IDMS_cali <- df
+      if (input$par_wf=="oIDMS") pars$oIDMS_cali <- df
+    }
+    # compute and store samples table
+    if (input$par_filetype %in% c("Sample","Samples")) {
+      if (input$par_wf == "IDMS") {
+        IDMS_pks <- get_isoratio(
+          data = ic_mi_spectra(),
           iso1_col = input$ic_par_mi_col,
           iso2_col = input$ic_par_si_col,
           PPmethod = input$peak_method,
@@ -864,26 +881,6 @@ app_server <- function(input, output, session) {
           BLmethod = input$baseline_method,
           fl = input$smoothing_fl
         )
-      })
-      req(df)
-      if (input$par_wf=="IDMS") pars$IDMS_cali <- df
-      if (input$par_wf=="oIDMS") pars$oIDMS_cali <- df
-    }
-    # compute and store samples table
-    if (input$par_filetype %in% c("Sample","Samples")) {
-      if (input$par_wf == "IDMS") {
-        IDMS_pks <- ldply_base(1:length(ic_mi_spectra()), function(i) {
-          get_isoratio(
-            data = ic_mi_spectra()[[i]],
-            iso1_col = input$ic_par_mi_col,
-            iso2_col = input$ic_par_si_col,
-            PPmethod = input$peak_method,
-            peak_start = p_start,
-            peak_end = p_end,
-            BLmethod = input$baseline_method,
-            fl = input$smoothing_fl
-          )
-        })
         amae <- calc_analyte_mass_as_element(
           R_m = IDMS_pks[,"R_m"], K = pars$K, Asp_iso1 = input$Asp_iso1, Asp_iso2 = input$Asp_iso2, As_iso1 = input$ic_par_mi_amu, As_iso2 = input$ic_par_si_amu, N_sp = input$N_sp
         )
@@ -891,17 +888,14 @@ app_server <- function(input, output, session) {
         amae <- 0
       }
       if (input$par_wf == "oIDMS") {
-        x <- ic_mi_spectra()
-        IDMS_pks <- ldply_base(1:length(x), function(i) {
-          get_peakdata(
-            x[[i]],
-            int_col = "mf_s",
-            PPmethod = input$peak_method,
-            peak_start = p_start,
-            peak_end = p_end,
-            minpeakheight = input$peak_height
-          )
-        })
+        IDMS_pks <- get_peakdata(
+          ic_mi_spectra(),
+          int_col = "mf_s",
+          PPmethod = input$peak_method,
+          peak_start = p_start,
+          peak_end = p_end,
+          minpeakheight = input$peak_height
+        )
         # $$JL: sample_mass seems to be sample specific parameter; needs to get another input type and clearified if this is the case for all workflows
         #sample_mass <- c(1.0119, 0.9042, 0.9151)
         amae <- IDMS_pks[,4]
@@ -926,32 +920,27 @@ app_server <- function(input, output, session) {
     # compute LOx table
     if (input$par_filetype %in% c("Blanks")) {
       if (input$par_wf=="IDMS") {
-        IDMS_pks <- ldply_base(1:length(ic_mi_spectra()), function(i) {
-          get_isoratio(
-            data = ic_mi_spectra()[[i]],
-            iso1_col = input$ic_par_mi_col,
-            iso2_col = input$ic_par_si_col,
-            PPmethod = input$peak_method,
-            peak_start = p_start,
-            peak_end = p_end
-          )
-        })
+        IDMS_pks <- get_isoratio(
+          data = ic_mi_spectra(),
+          iso1_col = input$ic_par_mi_col,
+          iso2_col = input$ic_par_si_col,
+          PPmethod = input$peak_method,
+          peak_start = p_start,
+          peak_end = p_end
+        )
         amae <- calc_analyte_mass_as_element(
           R_m = IDMS_pks[,"R_m"], K = pars$K, Asp_iso1 = input$Asp_iso1, Asp_iso2 = input$Asp_iso2, As_iso1 = input$ic_par_mi_amu, As_iso2 = input$ic_par_si_amu, N_sp = input$N_sp
         )
         tmp <- tab_result(IDMS_pks, wf = input$par_wf, K = pars$K, amae = amae, mass_fraction2 = pars$mass_frac, sample_mass = input$sample_mass)[,"R_corr"]
       } else if (input$par_wf=="oIDMS") {
-        x <- ic_mi_spectra()
-        pk <- ldply_base(1:length(x), function(i) {
-          get_peakdata(
-            x[[i]],
-            int_col = "mf_s",
-            PPmethod = input$peak_method,
-            peak_start = p_start,
-            peak_end = p_end,
-            minpeakheight = input$peak_height
-          )
-        })
+        pk <- get_peakdata(
+          ic_mi_spectra(),
+          int_col = "mf_s",
+          PPmethod = input$peak_method,
+          peak_start = p_start,
+          peak_end = p_end,
+          minpeakheight = input$peak_height
+        )
         tmp <- tab_result(pk, wf = "oIDMS", K = pars$K, amae = pk[,4], mass_fraction2 = pars$mass_frac, sample_mass = input$sample_mass)[,4]
       } else {
         tmp <- pks[,-c(1:2)][,4]
