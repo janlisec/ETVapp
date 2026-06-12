@@ -1,6 +1,6 @@
 # External gas calibration (ExtGasCal) workflow
 
-## Introduction
+## Introduction to External Gas Calibration
 
 External gas calibration is a new approach used in combination with ICP
 techniques and has been applied for the determination of microplastics
@@ -296,7 +296,12 @@ carbon (measured element) and polyethylene (analyte).
 
 ``` r
 
-gt::gt(tab_LOX(x = blnk_peaks[,4], cali_slope = cm[1,1], wf = wf, mass_fraction2 = w_PE))
+gt::gt(tab_LOX(
+  x = blnk_peaks[,4], 
+  cali_slope = cm[1,1], 
+  wf = wf, 
+  mass_fraction2 = w_PE
+))
 #> At least ten blank values are recommended for estimating the LOD and LOQ.
 ```
 

@@ -70,7 +70,7 @@ and Jan Lisec</h4>
     
     
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="introduction-to-external-calibration">Introduction to External Calibration<a class="anchor" aria-label="anchor" href="#introduction-to-external-calibration"></a>
 </h2>
 <p>External calibration with dried liquid standards, matrix-matched
 standards or reference materials is a common approach for calibrating
@@ -2726,7 +2726,13 @@ statistical evaluation. Less than the recommended 10 entries will still
 give a result. The input of a theoretical sample mass will compute the
 LOD and LOQ per sample mass.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="fu"><a href="../reference/tab_LOX.html">tab_LOX</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">blnk_peaks</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, cali_slope <span class="op">=</span> <span class="va">cm</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span>, mass_fraction2 <span class="op">=</span> <span class="fl">1</span>, sample_mass <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="fu"><a href="../reference/tab_LOX.html">tab_LOX</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">blnk_peaks</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, </span>
+<span>  cali_slope <span class="op">=</span> <span class="va">cm</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span>, </span>
+<span>  wf <span class="op">=</span> <span class="va">wf</span>, </span>
+<span>  mass_fraction2 <span class="op">=</span> <span class="fl">1</span>, </span>
+<span>  sample_mass <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div id="orehalspkz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#orehalspkz table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';

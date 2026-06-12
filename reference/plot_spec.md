@@ -85,7 +85,10 @@ if (interactive()) {
   td <- ETVapp::ETVapp_testdata[[wf]][["Samples"]]
   pro_data <- process_data(td, wf=wf, c1=c1, fl=9)
   plot_spec(mi_spec = pro_data, opt = "overlay_legend")
-  peak_data <- cbind("Sample"=1:length(pro_data), get_peakdata(pro_data, int_col = c1, minpeakheight = 10^6))
+  peak_data <- cbind(
+    "Sample"=1:length(pro_data),
+    get_peakdata(pro_data, int_col = c1, minpeakheight = 10^6)
+  )
   T_prog <- data.frame(
     "Time"=seq(min(pro_data[[1]][,"Time"]), max(pro_data[[1]][,"Time"]), length.out=7),
     "Temp"=c(20,20,50,50,150,170,170)

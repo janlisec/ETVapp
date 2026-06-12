@@ -1,6 +1,6 @@
 # External calibration (ExtCal) workflow
 
-## Introduction
+## Introduction to External Calibration
 
 External calibration with dried liquid standards, matrix-matched
 standards or reference materials is a common approach for calibrating
@@ -280,7 +280,13 @@ LOD and LOQ per sample mass.
 
 ``` r
 
-gt::gt(tab_LOX(x = blnk_peaks[,4], cali_slope = cm[1,1], wf = wf, mass_fraction2 = 1, sample_mass = 1))
+gt::gt(tab_LOX(
+  x = blnk_peaks[,4], 
+  cali_slope = cm[1,1], 
+  wf = wf, 
+  mass_fraction2 = 1, 
+  sample_mass = 1
+))
 ```
 
 | LOD as element \[pg\] | LOQ as element \[pg\] | Sample mass \[mg\] | LOD per sample mass \[ppb\] | LOQ per sample mass \[ppb\] |

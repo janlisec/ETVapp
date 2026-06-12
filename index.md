@@ -13,8 +13,8 @@ fractionation](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553).
 
 ## Installation
 
-You can install the development version of `ETVapp` from this [GitHub
-page](https://github.com/janlisec/ETVapp).
+You can install the development version of `ETVapp` package from this
+[GitHub page](https://github.com/janlisec/ETVapp) in `R` using:
 
 ``` r
 
@@ -23,9 +23,9 @@ install.packages("janlisec/ETVapp")
 
 ## Use the Shiny-App for testing
 
-For users unfamiliar with the R console, the package provides a browser
-based app together with appropriate test data which allows to test the
-package functions. The app also allows to process user data for
+For users unfamiliar with the `R` console, the package provides a
+browser based app together with appropriate test data which allows to
+test the package functions. The app also allows to process user data for
 exploratory data analyses. However, it currently does not allow to store
 parameter settings. Therefore, for use in publications, it is
 recommended to script the analysis steps to ensure reproducibility.

@@ -59,19 +59,18 @@
 </h1></div>
 <!-- badges: start -->
 
-<!-- badges: end -->
 <p>The goal of ETVapp is to provide functions to evaluate ICP-MS and ICP-OES experiments. To this end, currently 4 different workflows are implemented. The package is based on functions developed by <a href="https://www.linkedin.com/in/vera-scharek-63932b205/" class="external-link">Vera Scharek</a>, publicly available on her <a href="https://github.com/VSc811" class="external-link">GitHub profile</a>. You can find scientific details in her publications on Online Isotope Dilution ICP-MS used for <a href="https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553" class="external-link">sulfor quantification</a> and <a href="https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553" class="external-link">tin fractionation</a>.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of <code>ETVapp</code> from this <a href="https://github.com/janlisec/ETVapp" class="external-link">GitHub page</a>.</p>
+<p>You can install the development version of <code>ETVapp</code> package from this <a href="https://github.com/janlisec/ETVapp" class="external-link">GitHub page</a> in <code>R</code> using:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"janlisec/ETVapp"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="use-the-shiny-app-for-testing">Use the Shiny-App for testing<a class="anchor" aria-label="anchor" href="#use-the-shiny-app-for-testing"></a>
 </h2>
-<p>For users unfamiliar with the R console, the package provides a browser based app together with appropriate test data which allows to test the package functions. The app also allows to process user data for exploratory data analyses. However, it currently does not allow to store parameter settings. Therefore, for use in publications, it is recommended to script the analysis steps to ensure reproducibility.</p>
+<p>For users unfamiliar with the <code>R</code> console, the package provides a browser based app together with appropriate test data which allows to test the package functions. The app also allows to process user data for exploratory data analyses. However, it currently does not allow to store parameter settings. Therefore, for use in publications, it is recommended to script the analysis steps to ensure reproducibility.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janlisec.github.io/ETVapp">ETVapp</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/app.html">app</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>

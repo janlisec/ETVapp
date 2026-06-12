@@ -1,6 +1,6 @@
 # Isotope dilution mass spectrometry (IDMS) workflow
 
-## Introduction
+## Introduction to IDMS
 
 IDMS has first been introduced as a calibration strategy in combination
 with ETV/ICP-MS by [Vanhaecke *et
