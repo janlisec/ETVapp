@@ -241,8 +241,8 @@ app_ui <- function() {
               bslib::layout_columns(
                 col_widths = 6,
                 shiny::div(
-                  shinyWidgets::pickerInput(inputId = "ic_par_focus_sample", label = NULL, choices = "", multiple = TRUE, options = list(`actions-box` = TRUE)),
-                  shinyWidgets::pickerInput(inputId = "ic_par_focus_iso", label = NULL, choices = "", multiple = TRUE, options = list(`actions-box` = TRUE)),
+                  shinyWidgets::pickerInput(inputId = "focus_sample", label = NULL, choices = "", multiple = TRUE, options = list(`actions-box` = TRUE)),
+                  shinyWidgets::pickerInput(inputId = "focus_iso", label = NULL, choices = "", multiple = TRUE, options = list(`actions-box` = TRUE)),
                   checkboxGroupInput(
                     inputId = "ic_par_specplot",
                     label = shiny::actionLink(inputId = "ic_help05", label = "Plot options"),
@@ -527,11 +527,11 @@ app_server <- function(input, output, session) {
   shiny::observeEvent(input$ic_par_isotope, {
     if (input$ic_par_isotope) {
       shinyjs::hide("ic_par_specplot")
-      shinyjs::show("ic_par_focus_iso")
-      shinyWidgets::updatePickerInput(inputId = "ic_par_focus_sample", selected = "Sample 1", options = shinyWidgets::pickerOptions(maxOptions = 1)) #clearOptions = TRUE)
+      shinyjs::show("focus_iso")
+      shinyWidgets::updatePickerInput(inputId = "focus_sample", selected = "Sample 1", clearOptions = TRUE)
     } else {
       shinyjs::show("ic_par_specplot")
-      shinyjs::hide("ic_par_focus_iso")
+      shinyjs::hide("focus_iso")
     }
   })
 
@@ -547,7 +547,7 @@ app_server <- function(input, output, session) {
     pars$current_files <- names(file_in())
     nval <- paste("Sample", 1:length(file_in()))
     message("Update Sample Picker Input to ", paste(nval, collapse = ","))
-    shinyWidgets::updatePickerInput(inputId = "ic_par_focus_sample", choices = nval, selected = nval)
+    shinyWidgets::updatePickerInput(inputId = "focus_sample", choices = nval, selected = nval)
   })
 
   # register the file_in reactive for app testing
@@ -730,7 +730,7 @@ app_server <- function(input, output, session) {
     n <- length(fic)
     mi_old <- shiny::isolate(input$ic_par_mi_col)
     si_old <- shiny::isolate(input$ic_par_si_col)
-    iso_old <- shiny::isolate(input$ic_par_focus_iso)
+    iso_old <- shiny::isolate(input$focus_iso)
     rt_selected <- ifelse("Time" %in% fic, "Time", fic[1])
     mi_sel <- ifelse(mi_old %in% fic, mi_old, fic[2])
     si_sel <- ifelse(si_old %in% fic, si_old, ifelse(length(fic)>=3, fic[3], fic[2]))
@@ -739,7 +739,7 @@ app_server <- function(input, output, session) {
     updateSelectInput(inputId = "ic_par_mi_col", choices = I(fic[-1]), selected = mi_sel)
     updateSelectInput(inputId = "ic_par_si_col", choices = I(fic[-1]), selected = si_sel)
     shinyWidgets::updatePickerInput(
-      inputId = "ic_par_focus_iso", choices = I(fic[-1]), selected = I(fic[-1]),
+      inputId = "focus_iso", choices = I(fic[-1]), selected = I(fic[-1]),
       choicesOpt = list(
         style = paste0("color: ", pars$color_isos[1:length(fic[-1])], ";")
       )
@@ -1061,19 +1061,19 @@ app_server <- function(input, output, session) {
   # spectrum plot ----
   output$ic_specplot <- shiny::renderPlot({
     req(ic_mi_spectra(), input$ic_par_mi_col_name)
-    validate(need(input$ic_par_focus_sample, "Please select a sample..."))
-    validate(need(length(ic_mi_spectra())>=max(as.numeric(gsub("[^[:digit:]]", "", input$ic_par_focus_sample))), "Sample selection and current spectra number do not match"))
+    validate(need(input$focus_sample, "Please select a sample..."))
+    validate(need(length(ic_mi_spectra())>=max(as.numeric(gsub("[^[:digit:]]", "", input$focus_sample))), "Sample selection and current spectra number do not match"))
     message("output$ic_specplot")
     if (input$ic_par_isotope) {
       # this is a small isotope overview plot function
-      idx_all <- as.numeric(gsub("[^[:digit:]]", "", input$ic_par_focus_sample))
+      idx_all <- as.numeric(gsub("[^[:digit:]]", "", input$focus_sample))
       # !!! $$JL:$$ strong assumption that Time column is always column 1 (not guaranteed for user imported data)
       x_rng <- range(sapply(file_in()[idx_all], function(x) { range(x[,1], na.rm=TRUE) }), na.rm=TRUE)
-      y_rng <- c(0, max(sapply(file_in()[idx_all], function(x) { range(x[,input$ic_par_focus_iso], na.rm=TRUE) }), na.rm=TRUE))
+      y_rng <- c(0, max(sapply(file_in()[idx_all], function(x) { range(x[,input$focus_iso], na.rm=TRUE) }), na.rm=TRUE))
       par("mar"=c(4,4,0,0)+0.1, "cex"=1.4)
       plot(x = x_rng, y = y_rng, type="n", "xaxs"="i", yaxs = "i", xlab="Time [s]", ylab="Intensity [cts]")
       for (i in idx_all) {
-        for (j in input$ic_par_focus_iso) {
+        for (j in input$focus_iso) {
           lines(x = file_in()[[i]][,1], y = file_in()[[i]][,j], lty = i, col = pars$color_isos[which(pars$current_isos %in% j)])
         }
       }
@@ -1097,7 +1097,7 @@ app_server <- function(input, output, session) {
         xlab = paste0("Time [s]"),
         ylab = ylab,
         T_prog = pars$T_prog,
-        s_focus = input$ic_par_focus_sample,
+        s_focus = input$focus_sample,
         pks = ic_table_peaks_edit(),
         BLmethod = input$baseline_method,
         sel_pk = input$ic_table_peaks_rows_selected

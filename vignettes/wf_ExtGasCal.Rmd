@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
+## Introduction to External Gas Calibration
 
 External gas calibration is a new approach used in combination with ICP techniques 
 and has been applied for the determination of microplastics with [single particle 
@@ -226,5 +226,10 @@ sample mass will compute the LOD and LOQ per sample mass. Figures of merit are
 provided related to carbon (measured element) and polyethylene (analyte).
 
 ```{r get_LOX}
-gt::gt(tab_LOX(x = blnk_peaks[,4], cali_slope = cm[1,1], wf = wf, mass_fraction2 = w_PE))
+gt::gt(tab_LOX(
+  x = blnk_peaks[,4], 
+  cali_slope = cm[1,1], 
+  wf = wf, 
+  mass_fraction2 = w_PE
+))
 ```

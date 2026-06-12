@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
+## Introduction to External Calibration
 
 External calibration with dried liquid standards, matrix-matched standards or 
 reference materials is a common approach for calibrating transient signal from 
@@ -206,5 +206,11 @@ recommended 10 entries will still give a result. The input of a theoretical
 sample mass will compute the LOD and LOQ per sample mass.
 
 ```{r get_LOX}
-gt::gt(tab_LOX(x = blnk_peaks[,4], cali_slope = cm[1,1], wf = wf, mass_fraction2 = 1, sample_mass = 1))
+gt::gt(tab_LOX(
+  x = blnk_peaks[,4], 
+  cali_slope = cm[1,1], 
+  wf = wf, 
+  mass_fraction2 = 1, 
+  sample_mass = 1
+))
 ```

@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
+## Introduction to IDMS
 
 IDMS has first been introduced as a calibration strategy in combination with 
 ETV/ICP-MS by [Vanhaecke *et al.*](https://pubs.rsc.org/en/content/articlelanding/1997/ja/a604133g). Using IDMS corrects non-spectral 
