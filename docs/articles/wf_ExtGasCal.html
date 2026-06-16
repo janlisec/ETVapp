@@ -70,7 +70,7 @@ and Jan Lisec</h4>
     
     
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="introduction-to-external-gas-calibration">Introduction to External Gas Calibration<a class="anchor" aria-label="anchor" href="#introduction-to-external-gas-calibration"></a>
 </h2>
 <p>External gas calibration is a new approach used in combination with
 ICP techniques and has been applied for the determination of
@@ -3292,7 +3292,12 @@ give a result. The input of a theoretical sample mass will compute the
 LOD and LOQ per sample mass. Figures of merit are provided related to
 carbon (measured element) and polyethylene (analyte).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="fu"><a href="../reference/tab_LOX.html">tab_LOX</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">blnk_peaks</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, cali_slope <span class="op">=</span> <span class="va">cm</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span>, wf <span class="op">=</span> <span class="va">wf</span>, mass_fraction2 <span class="op">=</span> <span class="va">w_PE</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="fu"><a href="../reference/tab_LOX.html">tab_LOX</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">blnk_peaks</span><span class="op">[</span>,<span class="fl">4</span><span class="op">]</span>, </span>
+<span>  cali_slope <span class="op">=</span> <span class="va">cm</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span>, </span>
+<span>  wf <span class="op">=</span> <span class="va">wf</span>, </span>
+<span>  mass_fraction2 <span class="op">=</span> <span class="va">w_PE</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; At least ten blank values are recommended for estimating the LOD and LOQ.</span></span></code></pre></div>
 <div id="cbwjcfdjag" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#cbwjcfdjag table {

@@ -23,15 +23,12 @@ knitr::opts_chunk$set(
 
 The goal of ETVapp is to provide functions to evaluate ICP-MS and ICP-OES 
 experiments. To this end, currently 4 different workflows are implemented. 
-The package is based on functions developed by 
-[Vera Scharek](https://www.linkedin.com/in/vera-scharek-63932b205/), publicly 
-available on her 
-[GitHub profile](https://github.com/VSc811).
-You can find scientific details in her publications on Online Isotope Dilution 
-ICP-MS used for
-[sulfor quantification](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553) 
+The package is based on functions developed by Vera Scharek.
+You can find scientific details in her publications on 
+[microplastic](https://link.springer.com/article/10.1007/s00216-025-06146-x),
+[fluorine determination](https://pubs.rsc.org/en/content/articlelanding/2026/ja/d6ja00014b)
 and 
-[tin fractionation](https://pubs.acs.org/doi/full/10.1021/acs.analchem.3c03553).
+[tin fractionation](https://link.springer.com/article/10.1007/s00216-025-06064-y).
 
 ## Installation
 
