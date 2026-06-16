@@ -14,7 +14,8 @@ and thus the signal response. The use of an internal standard allows to
 correct for non-linearity and enables accurate analysis.
 
 As an example, we provide the data of fluorine measurements included in
-\[paper\].
+[this
+paper](https://pubs.rsc.org/en/content/articlelanding/2026/ja/d6ja00014b).
 
 ## Calibration data
 
