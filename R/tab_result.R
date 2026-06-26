@@ -70,9 +70,9 @@ tab_result <- function(peak_data, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS")
     result <- (peak_data[,4] - a) / b
   }
   if (wf %in% c("IDMS","oIDMS")) {
+    ensure_that(!is.null(amae), msg = "The isotope ratio is below the limit for IDMS calculation. Increase the spike amount or select a more abundant sample isotope.", opt = "stop")
     result <- amae
     if (wf == "IDMS") {
-      #browser()
       peak_data[,"R_corr"] <- peak_data[,"R_m"] * K
     }
     if (wf == "oIDMS") {

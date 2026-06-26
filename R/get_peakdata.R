@@ -14,7 +14,7 @@
 #' @param peak_start Value which is taken as peak start point, when manual peak
 #'     picking is chosen. Can be a vector of length(pro_data) when this is a list
 #'     of files.
-#' @param peak_end Peak end point(s), cf. peak_start.
+#' @param peak_end Peak end point(s).
 #' @param minpeakheight A threshold value for peak picking via peak height.
 #' @param PPmethod Peak picking method.
 #' @param BLmethod Method for baseline correction.

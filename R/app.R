@@ -113,19 +113,14 @@ app_ui <- function() {
     shiny::div(
       id = "body_card_processing",
       input_elem_grid(
-        numericInput(inputId = "smoothing_fl", label = "Smoothing", value = 9, min=1, max=151, step=2),# |> bslib::tooltip("Smoothing parameter 'filter length'. Set to '1' to omit this processing step. Set to '151' to use smooth.spline()."),
-        selectInput(inputId = "peak_method", label = "Peak Method", choices = c("Peak (height)", "Peak (manual)", "mean signal"), selected = "Peak (manual)"), #|> bslib::tooltip("Select method for Peak picking."),
-        shiny::HTML(""),
-        shiny::HTML("Peak (height):"),
-        numericInput(inputId = "peak_height", label = "Threshold", value = 1000, min=0, step=1),
-        shiny::HTML(""),
-        shiny::HTML("Peak(manual)/ mean signal:"),
-        numericInput(inputId = "peak_start", label = "Start", value = 70, min=0, step=1),
-        numericInput(inputId = "peak_end", label = "End", value = 105, min=1, max=1000, step=1),
-        shiny::HTML("Baseline correction:"),
-        selectInput(inputId = "baseline_method", label = "Method", choices = c("none", "modpolyfit"), selected = "modpolyfit"), #|> bslib::tooltip("Select method for baseline estimation or 'none' to omit this processing step."),
-        numericInput(inputId = "cf", label = "Correction factor", value = 50, min=0, max=1000, step=1) #|> bslib::tooltip("Peak picking parameter: peak_end."),
-      )
+        numericInput(inputId = "smoothing_fl", label = "Smoothing", value = 9, min=1, max=151, step=2) |> bslib::tooltip("Smoothing parameter 'filter length'. Set to '1' to omit this processing step. Set to '151' to use smooth.spline()."),
+        selectInput(inputId = "peak_method", label = "Peak Method", choices = c("Peak (height)", "Peak (manual)", "mean signal"), selected = "Peak (manual)") |> bslib::tooltip("Select a method for Peak picking. Additional parameters will be shown dependent on the selected method."),
+        selectInput(inputId = "baseline_method", label = "BL Method", choices = c("none", "modpolyfit"), selected = "modpolyfit") |> bslib::tooltip("Select a method to estimate (and remove) the baseline or 'none' to omit this processing step."),
+        numericInput(inputId = "peak_height", label = "Threshold", value = 1000, min=0, step=1) |> bslib::tooltip("Height threshold above which peak picking is applied."),
+        numericInput(inputId = "peak_start", label = "Peak Start", value = 70, min=0, step=1),
+        numericInput(inputId = "peak_end", label = "Peak End", value = 105, min=1, max=1000, step=1),
+        numericInput(inputId = "cf", label = "Correction factor", value = 50, min=0, max=1000, step=1) |> bslib::tooltip("A correction value for cutting the area around the detected peak (in number of scans)."),
+      ),
     )
   )
 
@@ -486,6 +481,13 @@ app_server <- function(input, output, session) {
     shinyjs::toggleElement(id = "sp_particle_size_distribution_plot", condition = input$par_filetype %in% c("sp_particle"))
     shinyjs::toggleElement(id = "sp_particle_plot", condition = input$par_filetype %in% c("sp_particle"))
     shinyjs::toggleElement(id = "cali_plot", condition = input$par_filetype %in% c("Cali", "sp_ionic"))
+  })
+
+  shiny::observeEvent(input$peak_method, {
+    shinyjs::toggleElement(id = "peak_start", condition = !(input$peak_method %in% c("Peak (height)")))
+    shinyjs::toggleElement(id = "peak_end", condition = !(input$peak_method %in% c("Peak (height)")))
+    shinyjs::toggleElement(id = "peak_height", condition = input$peak_method %in% c("Peak (height)"))
+    shinyjs::toggleElement(id = "cf", condition = !(input$peak_method %in% c("mean signal")))
   })
 
   ### reactives ########################################################### ----
@@ -900,7 +902,6 @@ app_server <- function(input, output, session) {
         #sample_mass <- c(1.0119, 0.9042, 0.9151)
         amae <- IDMS_pks[,4]
       }
-      #if (input$par_filetype=="Samples") browser()
       df <- tab_result(
         peak_data = if (input$par_wf %in% c("ExtCal", "ExtGasCal")) pks[,-c(1:2)] else IDMS_pks,
         wf = input$par_wf,
