@@ -43,7 +43,7 @@ get_peakdata(
 
 - peak_end:
 
-  Peak end point(s), cf. peak_start.
+  Peak end point(s).
 
 - minpeakheight:
 
