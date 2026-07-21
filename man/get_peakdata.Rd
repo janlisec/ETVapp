@@ -29,7 +29,7 @@ get_peakdata(
 picking is chosen. Can be a vector of length(pro_data) when this is a list
 of files.}
 
-\item{peak_end}{Peak end point(s), cf. peak_start.}
+\item{peak_end}{Peak end point(s).}
 
 \item{minpeakheight}{A threshold value for peak picking via peak height.}
 

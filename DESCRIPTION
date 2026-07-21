@@ -28,13 +28,13 @@ Imports:
     bslib,
     config,
     DT,
+    gt,
     markdown (>= 1.5.0),
     pracma,
     shiny,
     shinyjs,
     shinyWidgets
 Suggests: 
-    gt,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)

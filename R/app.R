@@ -38,7 +38,7 @@ app_ui <- function() {
         class = "ms-auto d-flex align-items-center",
         shiny::radioButtons(
           inputId = "ic_par_libsource", label = NULL, inline=TRUE,
-          choices = c("Upload files", "Testdata"), selected = "Upload files")
+          choices = c("Upload files", "Testdata"), selected = "Testdata")
       )
     ),
     bslib::navset_tab(
