@@ -49,3 +49,10 @@ app()
 title="ETVapp screenshot" alt="ETVapp screenshot" />
 <figcaption aria-hidden="true">ETVapp screenshot</figcaption>
 </figure>
+
+## Use package functions to establish reproducible workflows
+
+Use the template workflows described in
+[Vignettes](https://janlisec.github.io/ETVapp/articles/) to set up a
+local workflow according to your needs. Store this workflow together
+with your measurement data to achieve maximum reproducibility.
