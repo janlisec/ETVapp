@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 inst/doc
+manifest.json
+dev
+rsconnect
