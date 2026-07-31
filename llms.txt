@@ -17,7 +17,7 @@ You can install the development version of `ETVapp` package from this
 
 ``` r
 
-install.packages("janlisec/ETVapp")
+devtools::install_github("janlisec/ETVapp")
 ```
 
 ## Use the Shiny-App for testing
