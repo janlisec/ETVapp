@@ -18,17 +18,8 @@ app_sys <- function(...) {
 #'
 #' @keywords internal
 #' @noRd
-get_app_config <- function(
-  value,
-  config = Sys.getenv("R_CONFIG_ACTIVE", "default"),
-  use_parent = TRUE
-) {
-  config::get(
-    value = value,
-    config = config,
-    file = app_sys("golem-config.yml"),
-    use_parent = use_parent
-  )
+get_app_config <- function(value) {
+  config::get(value = value, file = app_sys("app-config.yml"))
 }
 
 #' Add external Resources to the Application

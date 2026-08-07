@@ -43,9 +43,17 @@ app_ui <- function() {
     ),
     bslib::navset_tab(
       id = "navset_flow",
+      selected = "testdata",
       bslib::nav_panel(
-        title = "Workflow", value = "workflow",
-        bslib::card_body(radioButtons(inputId = "par_wf", label = NULL, choices = "", inline = TRUE))
+        title = "Workflow",
+        value = "workflow",
+        bslib::card_body(
+          shiny::div(
+            style = "display: flex; align-items: flex-start; gap: 6px;",
+            radioButtons(inputId = "par_wf", label = NULL, choices = "", inline = TRUE),
+            shiny::div(style = "padding-top: 3px; margin: 0; line-height: 1;", shiny::actionLink(inputId = "ic_help01", label = NULL, icon = shiny::icon(name = "question-circle")))
+          )
+        )
       ),
       bslib::nav_panel(
         title = "Testdata Files", value = "testdata",
@@ -215,8 +223,7 @@ app_ui <- function() {
       card_data_source,
       card_import,
       card_workflow,
-      card_processing,
-      bslib::card_footer(class = "d-flex justify-content-bottom", app_status_line())
+      card_processing
     )
   }
 
@@ -326,20 +333,21 @@ app_ui <- function() {
     shinyjs::useShinyjs(),
     bslib::page_sidebar(
       sidebar = bslib::sidebar(
-        position = "left", open = "open", width = "520px",
-        main_menu_ui()
+        position = "left", open = "open", width = "520px", padding = 16,
+        shiny::div(
+          style = "display:flex; flex-direction:column; height:97vh;",
+          shiny::div(
+            style = "flex-grow: 1;",
+            shiny::div(style = "padding-bottom: 16px;", img(src = "www/bam_logo_20pt.gif", alt="BAM Logo"), strong("BAM"), em("ETVapp"), " - automatic processing of ICP-MS data"),
+            main_menu_ui()
+          ),
+          shiny::div(style = "padding-top:16px; padding-bottom: 0px; margin: 0px;", app_status_line())
+        )
       ),
       ic_plot_card(),
       ic_tables_card(),
-      title = bslib::card_title(
-        style = "width: 100%; margin: 0px;",
-        class = "d-flex justify-content-between align-items-center",
-        shiny::div(
-          img(src = "www/bam_logo_20pt.gif", alt="BAM Logo"),
-          strong("BAM"), em("ETVapp"), " - automatic processing of ICP-MS data"
-        ),
-        shiny::actionLink(inputId = "ic_help01", label = NULL, icon = shiny::icon(name = "question-circle"))
-      )
+      title = NULL,
+      window_title = "ETVapp"
     )
   )
 
@@ -475,6 +483,7 @@ app_server <- function(input, output, session) {
       shinyjs::show(id = "ic_par_mi_amu")
       shinyjs::show(id = "ic_par_si_amu")
     }
+    if (input$ic_par_libsource=="Testdata") bslib::nav_select("navset_flow", "testdata")
   })
 
   shiny::observeEvent(input$par_filetype, {
@@ -707,6 +716,7 @@ app_server <- function(input, output, session) {
       bslib::nav_select("navset_flow", "workflow")
       updateRadioButtons(inputId = "par_wf", selected = input$par_wf)
       updateRadioButtons(inputId = "par_filetype", selected = wf_definition[[input$par_wf]][1])
+      bslib::nav_select("navset_flow", "testdata")
     } else {
       bslib::nav_hide("navset_flow", "testdata")
       bslib::nav_show("navset_flow", "upload")

@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![Static
+Badge](https://img.shields.io/badge/LiveApp-blue)](https://jali-etvapp.share.connect.posit.cloud/)
+[![Static
 Badge](https://img.shields.io/github/r-package/v/janlisec/ETVapp)](https://img.shields.io/github/r-package/v/janlisec/ETVapp)
 [![R-CMD-check](https://github.com/janlisec/ETVapp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janlisec/ETVapp/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/janlisec/ETVapp/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/janlisec/ETVapp/actions/workflows/test-coverage.yaml)

@@ -2,10 +2,9 @@
 
 ### The ETVApp performs calculations in 4 workflows
 
-- ExtCal
-- ExtGasCal
-- IDMS
-- oIDMS
+- <a href="https://janlisec.github.io/ETVapp/articles/wf_ExtCal.html" target="_blank" rel="noopener noreferrer">External calibration</a>
+- <a href="https://janlisec.github.io/ETVapp/articles/wf_ExtGasCal.html" target="_blank" rel="noopener noreferrer">External gas calibration</a>
+- <a href="https://janlisec.github.io/ETVapp/articles/wf_IDMS.html" target="_blank" rel="noopener noreferrer">Isotope dilution mass spectrometry</a>
+- <a href="https://janlisec.github.io/ETVapp/articles/wf_oIDMS.html" target="_blank" rel="noopener noreferrer">On-line isotope dilution mass spectrometry</a>
 
-Please go to the GitHub page and check out the Vignettes section to learn about
-the details for each workflow.
+Use the above links to view the respective Vignettes on the ETVapp GitHub page.

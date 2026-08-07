@@ -2,7 +2,7 @@ Package: ETVapp
 Type: Package
 Title: ETV/ICP-MS and -OES data processing functions and Shiny-App
 Version: 0.4.3
-Date: 2026-06-26
+Date: 2026-08-07
 Authors@R: c(
     person("Vera", "Scharek", email = "vera.scharek@bam.de", role = c("aut", "ctb")),
     person("Jan", "Lisec", , "jan.lisec@bam.de", role = c("cre", "aut"),

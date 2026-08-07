@@ -10,6 +10,9 @@
 # To deploy to shinyapps.io:
 # rsconnect::deployApp(appDir = "C:/Users/jlisec/Documents/Rpackages/Rpackage_ETVapp/ETVapp/", appName = "test", forceUpdate = TRUE)
 
+# To deploy to cloudconnect:
+# rsconnect::deployApp(appName = "ETVapp", forceUpdate = TRUE)
+
 # To check for errors in shinyapps.io:
 # rsconnect::showLogs(appName = c("test","eCerto")[1], account = "jali")
 

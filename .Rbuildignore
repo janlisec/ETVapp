@@ -10,4 +10,4 @@
 ^README\.Rmd$
 ^rsconnect$
 ^\.github$
-
+^manifest.json$
