@@ -30,8 +30,11 @@ process_data(
 A data.frame with at least two columns.
 }
 \description{
-Corrects a numeric values in a data.frame column with respect to a column
-containing standard values and applies Savitzky-Golay smoothing.
+Applies Savitzky-Golay smoothing and corrects numeric values in a data.frame column with respect to a column
+containing standard values (internal standardization).
+}
+\details{
+For the external calibration methods (ExtCal/ExtGasCal), smoothing and optional standard correction are implemented. Calling the IDMS workflows, enables smoothing. Isotope ratios will be computed in case of on-line IDMS (oIDMS).
 }
 \examples{
 imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']]

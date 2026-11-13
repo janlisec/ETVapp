@@ -122,7 +122,7 @@ plot_spec <- function(
 #'
 #' Plots a histogram of the particle size distribution of a single particle-ICP-MS measurement.
 #'
-#' @details Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measuremet.
+#' @details Check the particle size distribution for the quality of the nano particle standard and single particle-ICP-MS measurement.
 #'     Densities for gold or silver nano particle standards are deposited.
 #' @param x A data.frame containing at least two columns.
 #' @param cali_slope Calibration lm slope result for ionic standards.
@@ -171,35 +171,22 @@ plot_particle_diameter <- function(
 #' @details Determination of the intensity limit for the differentiation between particle and background signals.
 #' @param x A data.frame containing at least two columns.
 #' @param LFD Intensity limit for the detection of particle signals.
-#' @param style Choose plotting style.
-#' @param ylim Specify ylim for style = counts.
+#' @param ylim Specify ylim.
 #'
 #' @return A data.frame containing single particle data (invisible) and a plot.
 #'
 #' @examples
 #' sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
 #' plot_signal_distribution(x = sp_data[,2])
-#' plot_signal_distribution(x = sp_data[,2], style="counts")
+#' plot_signal_distribution(x = sp_data[,2], ylim = c(0,20))
 #' @export
-plot_signal_distribution <- function(x, LFD = 20000, style = c("hist", "counts"), ylim = NULL) {
-  style <- match.arg(style)
+plot_signal_distribution <- function(x, LFD = 20000, ylim = NULL) {
   opar <- par(no.readonly = TRUE)
   on.exit(par(opar))
-  if (style=="hist") {
-    par(mar=c(5,4,0,0)+0.5)
-    par(cex = 1.4)
-    rng <- floor(min(log10(x[x>0]))):floor(max(log10(x[x>0])))
-    brks <- log10(unique(unlist(lapply(rng, function(i) { seq(10^i,10^(i+1),length.out=10) }))))
-    graphics::hist(log10(x[x>0]), breaks=brks, axes = FALSE, xlab = "Intensity [cps]", main = "")
-    axis(2)
-    axis(1, at = c(rng, max(rng)+1), labels = 10^c(rng, max(rng)+1))
-    axis(1, at = brks, labels = FALSE, tcl=-0.25)
-    abline(v=log10(LFD), col=2)
-  }
-  if (style=="counts") {
+
     x <- table(x)
-    plot(x = round(as.numeric(names(x))), y = x, log = "x", type="h", ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution", ylim = ylim)
+    suppressWarnings(plot(x = round(as.numeric(names(x))), y = x, log = "x", type="h", ylab = "Frequency", xlab = "Intensity [cps]", main = "Signal distribution", ylim = ylim))
     abline(v=LFD, col=2, lwd=3)
-  }
+
   invisible(x)
 }

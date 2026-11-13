@@ -1,7 +1,9 @@
 ---
 title: "External gas calibration (ExtGasCal) workflow"
-output: rmarkdown::html_vignette
-author: "Vera Scharek and Jan Lisec"
+output: 
+  rmarkdown::html_vignette:
+  css: styles.css
+author: "Vera Scharek"
 vignette: >
   %\VignetteIndexEntry{External gas calibration (ExtGasCal) workflow}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,82 +17,66 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction to External Gas Calibration
+## Introduction
 
-External gas calibration is a new approach used in combination with ICP techniques 
-and has been applied for the determination of microplastics with [single particle 
-ICP-MS](https://link.springer.com/article/10.1007/s00216-025-05934-9) and 
-ETV/ICP-MS.The working principle is based on the introduction of a dynamically 
-diluted calibration gas into the ICP-MS system. Consequently, data processing 
-requires calculation of a mean value from the continuous signal curves.
+External gas calibration is a new approach used in combination with ICP techniques and has been applied for the determination of microplastics with [single particle ICP-MS](https://link.springer.com/article/10.1007/s00216-025-05934-9) and [ETV/ICP-MS](https://link.springer.com/article/10.1007/s00216-025-06146-x). The working principle is based on the introduction of a dynamically diluted calibration gas into the ICP-MS system. Consequently, data processing requires calculation of a mean value from the continuous signal curves.
 
 The workflow external gas calibration (ExtGasCal) is compatible with ICP-MS or 
-ICP-OES data.
+-OES data.
 
-In the package *ETVapp*, we provide the example data of microplastic measurements. 
-They can be accessed by `ETVapp::ETVapp_testdata[['ExtGasCal']]`.
-
-```{r setup}
-library(ETVapp)
-wf <- "ExtGasCal"
-td <- ETVapp::ETVapp_testdata[[wf]]
-```
+In the package *ETVapp*, we provide example data of microplastic measurements 
+accessable through `ETVapp::ETVapp_testdata`.
 
 ## Calibration data
 
-Import the calibration data and check the available isotope intensities recorded
-(see column names).
+Import the calibration files through the following code.
 
 ```{r cali_import}
-cali_imp <- td[['Cali']]
-str(cali_imp[[1]])
+library(ETVapp)
+wf <- "ExtGasCal"
+cali_imp <- ETVapp::ETVapp_testdata[[wf]][['Cali']]
+head(cali_imp[[1]])
 ```
 
-Select the isotope `13C` (parameter *c1*) and set filter length *fl = 9* for 
-Savitzky-Golay smoothing. `process_data()` provides optional correction 
-with an internal standard (parameter *c2*) and smoothing could be omitted with `fl=NULL`.
+Select the analyte (parameter *c1*) and set a filter length *fl* for 
+Savitzky-Golay smoothing. Set *fl* to `NULL` to omit the step. `Process_data()` 
+provides optional correction with an internal standard (parameter *c2*).
 
 ```{r cali_processing}
 anlt <- "13C"
 time_col <- "Time"
 cali_pro <- process_data(data = cali_imp, c1 = anlt, fl = 9, wf = wf)
-
-# observe the intensity modification made by process_data()
-gt::gt(head(cbind(
-  cali_imp[[1]], 
-  setNames(cali_pro[[1]], paste0(" ", colnames(cali_pro[[1]])))
-))) |> 
-  gt::tab_spanner(label = "processed", columns = 5:6) |> 
-  gt::tab_spanner(label = "original", columns = 1:4)
+head(cali_pro[[1]])
 ```
 
 ### Signal evaluation
 
-Receive mean signal intensities *via* the peak picking method "mean signal". The 
-signal integration range is defined by *peak_start* and *peak_end*. Gas 
-flows [mL/min] are asigned to the signal data with `tab_cali()`. The parameter 
-*fac* enables the input of a conversion factor, *e.g.* for mass percentage, molar 
-fractions, when computing the gas flows in µg/s.
+Receive mean signal intensities *via* the peak picking method "mean signal". The signal integration range is defined by *peak_start* and *peak_end*. Gas flows are asigned to the signal data with `tab_cali()`. Through the parameter *ExtGasCal_unit* specifying the unit of the gas flow is enabled. The parameter *fac* requires the input of a conversion factor for gas density, and optional mass percentage and molar fractions, to compute the mass flow rate. The units of the gas flows are automatically asigned to the output *data.frame*. 
 
 ```{r get_cali_peaks}
-cali_sig <- get_peakdata(
-  cali_pro, 
-  int_col = anlt, 
-  PPmethod = "mean signal",
-  peak_start = 78, 
-  peak_end = 96
-)
+ps <- 90
+pe <- 118
 
-gas_flow <- extract_unique_number(names(cali_pro))
+cali_sig <- get_peakdata(
+    cali_pro, 
+    int_col = anlt, 
+    PPmethod = "mean signal",
+    peak_start = ps, 
+    peak_end = pe
+  )
+
 fac <- 1.661 * 0.01104347 * 12/44
+gas_flows <- extract_unique_number(names(cali_pro))
+ExtGasCal_unit <- c("mL/min")
 
 cali_peaks <- tab_cali(
   peak_data = cali_sig, 
   wf = wf, 
-  std_info = gas_flow, 
-  fac = fac
-)
-gt::gt(cali_peaks)
+  ExtGasCal_unit = ExtGasCal_unit,
+  std_info = gas_flows,
+  fac = fac)
+
+print(cali_peaks)
 ```
 
 The following code will plot the time scans of the calibration standards. The 
@@ -99,32 +85,33 @@ evaluated signal range is framed by grey vertical lines.
 ```{r cali_peak_detection_plot, fig.width=3*3, fig.height=2*3, out.width='100%', fig.align='center'}
 par(mfrow=c(3,3))
 for (i in 1:9) {
-  plot(cali_pro[[i]], type="l", ylab = "Intensity [cps]", xlab = "Time [s]", main = paste(cali_peaks[i,5], "mL/min"))
+  plot(cali_pro[[i]], type="l", ylab = "Intensity [cps]", xlab = "Time [s]", main = paste(cali_peaks[i,5], ExtGasCal_unit))
   abline(v=cali_peaks[i,2:3], col=grey(0.8))
 }
 ```
 
-Peak areas are plotted against the gas flows. Calibration model parameters obtained 
-through linear regression are stored for later use.
+Peak areas are plotted against the gas flows. Calibration parameter obtained 
+through linear regression are provided as output *data.frame*. *ExtGasCal_unit* ensures a correct unit output.
 
 ```{r calibration_model, fig.width=3, fig.height=3}
-cm <- calc_cali_mod(df = cali_peaks[,c(5,4)], wf = wf)
-par(mfrow=c(1,1))
-plot(cali_peaks[,c(5,4)])
+cm <- calc_cali_mod(df = cali_peaks[,c(6,4)], wf = wf, ExtGasCal_unit = ExtGasCal_unit)
+print(cm)
+
+plot(cali_peaks[,c(6,4)])
 abline(a = cm[1,3], b = cm[1,1])
-gt::gt(cm)
 ```
 
 ## Sample analysis
 
-Repeat the processing procedure for the sample data.
+Repeat the procedure for the sample data. The factor *cf* defines the distance of the time-scan segment in data points before and after the peak boundaries that is used for computing the baseline.
 
 ```{r load_sample}
-smpl_pro <- process_data(data = td[['Samples']], c1 = anlt, fl = 9, wf = wf)
-str(smpl_pro[[1]])
+smpl_imp <- ETVapp::ETVapp_testdata[[wf]][['Samples']]
 
-ps <- 90
-pe <- 118
+smpl_pro <- process_data(data = smpl_imp, c1 = anlt, fl = 9, wf = wf)
+
+head(smpl_pro[[1]])
+
 cf <- 50
 
 smpl_peaks <- get_peakdata(
@@ -134,8 +121,9 @@ smpl_peaks <- get_peakdata(
   minpeakheight = 1000000,
   peak_start = ps, 
   peak_end = pe
-)
-gt::gt(smpl_peaks)
+  )
+
+print(smpl_peaks)
 ```
 
 Generate baseline data from a time scan excerpt and plot the sample time scan with integration parameter.
@@ -155,25 +143,26 @@ smpl_BL <- lapply(1:length(smpl_pro), function(i) {
 ```{r sample_peak_detection_plot, fig.width=3*3, fig.height=2*2, out.width='100%', fig.align='center'}
 par(mfrow=c(1,2))
 for (i in 1:2) {
-  plot(smpl_pro[[i]], type="l", ylab = "Intensity [cps]", xlab = "Time [s]")
+  plot(smpl_pro[[i]], type = "l", ylab = "Intensity [cps]", xlab = "Time [s]")
   lines(x = smpl_BL[[i]][,c("Time")], y = smpl_BL[[i]][,3], col = "blue")
   abline(v=smpl_peaks[i,2:3], col=grey(0.8))
 }
 ```
 
 Compute the sample result based on calibration model with the following code. 
-The input of a mass fraction allows for result calculation of the micro plastic 
-content (content as analyte) from the carbon mass (content as element). 
+The input of a mass fraction allows for result calculation of the microplastic 
+content (content as analyte) from the carbon mass (content as element). The units are automatically asigned to the output *data.frame* through the parameter *ExtGasCal_unit*.
 
 ```{r tab_sample_result}
 w_PE <- 0.856
 sample_mass = c(0.99, 1.02)
 
-gt::gt(tab_result(
+t(tab_result(
   smpl_peaks, 
   a = cm[1,3], 
   b = cm[1,1], 
   wf = wf,
+  ExtGasCal_unit = ExtGasCal_unit,
   mass_fraction2 = w_PE, 
   sample_mass = sample_mass
 ))
@@ -181,12 +170,11 @@ gt::gt(tab_result(
 
 ## Limits of detection and quantification
 
-Blank measurements are imported and processed as follows. For estimating the 
-limit of detection (LOD) and quantification (LOQ) according to the blank value 
-method, integrate the blank signals in the peak time window. 
+Blank measurements are imported and processed as follows. For estimating the LOD and LOQ according to the blank value method, integrate the blank signals in the peak time window. 
 
-```{r load_blanks, fig.width=2*4, fig.height=3*2, out.width='100%', fig.align='center'}
-blnk_pro <- process_data(data = td[['Blanks']], c1 = anlt, fl = 9, wf = wf)
+```{r load_blanks, fig.width=3*3, fig.height=2*3, out.width='100%', fig.align='center'}
+blnk_imp <- ETVapp::ETVapp_testdata[[wf]][['Blanks']]
+blnk_pro <- process_data(data = blnk_imp, c1 = anlt, fl = 9, wf = wf)
 
 blnk_BL <- lapply(1:length(blnk_pro), function(i) {
   flt <- (min(which(blnk_pro[[i]][,time_col]>=ps))-cf):(max(which(blnk_pro[[i]][,time_col]<=pe))+cf)
@@ -198,38 +186,34 @@ blnk_BL <- lapply(1:length(blnk_pro), function(i) {
     amend = "_BL")
 })
 
-blnk_peaks <- get_peakdata(
-  blnk_pro, 
-  int_col = anlt, 
-  PPmethod = "Peak (manual)",
-  BLmethod = "modpolyfit",
-  peak_start = ps, 
-  peak_end = pe
-)
+blnk_peaks <- ldply_base(1:length(blnk_pro), function(i) {
+  get_peakdata(
+    blnk_pro[[i]], 
+    int_col = anlt, 
+    PPmethod = "Peak (manual)",
+    BLmethod = "modpolyfit",
+    peak_start = ps, 
+    peak_end = pe
+  )
+})
 
-gt::gt(blnk_peaks)
+print(blnk_peaks)
 
 par(mfrow=c(3,3))
 for (i in 1:min(length(blnk_pro), 10)) {
   ylim <- c(0, max(sapply(blnk_pro, function(x) {max(x[,2])})))
-  plot(blnk_pro[[i]], type="l", main = names(blnk_pro)[i], ylab="Intensity [cps]", xlab = "Time [s]",ylim=ylim)
+  plot(blnk_pro[[i]], type="l", main = names(blnk_pro)[i], ylab = "Intensity [cps]", xlab = "Time [s]", ylim = ylim)
   lines(x = blnk_BL[[i]][,c("Time")], y = blnk_BL[[i]][,3], col = "blue")
   abline(v=blnk_peaks[i,2:3], col=grey(0.8))
 }
 ```
 
-The LOD and LOQ are estimated as three and ten times the standard deviation of 
-the blank values divided by the slope of the linear calibration curve. At least 
-three input values are required for statistical evaluation. Less than the 
-recommended 10 entries will still give a result. The input of a theoretical 
-sample mass will compute the LOD and LOQ per sample mass. Figures of merit are 
-provided related to carbon (measured element) and polyethylene (analyte).
+The LOD and LOQ are estimated as three and ten times the standard deviation of the blank values divided by the slope of the linear calibration curve. At least three input values are required for statistical evaluation. Less than the recommended 10 entries will still give a result. The input of a theoretical sample mass will compute the LOD and LOQ per sample mass. Figures of merit are provided related to carbon (measured element) and polyethylene (analyte). The unit of the LOD and LOQ is automatically asigned to the output *data.frame* through the parameter *ExtGasCal_unit*.
 
 ```{r get_LOX}
-gt::gt(tab_LOX(
-  x = blnk_peaks[,4], 
-  cali_slope = cm[1,1], 
-  wf = wf, 
-  mass_fraction2 = w_PE
-))
+t(tab_LOX(x = blnk_peaks[,4], 
+          cali_slope = cm[1,1], 
+          wf = wf, 
+          ExtGasCal_unit = ExtGasCal_unit,
+          mass_fraction2 = w_PE))
 ```

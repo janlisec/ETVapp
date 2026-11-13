@@ -1,13 +1,8 @@
 #' Read vendor specific text files
 #'
-#' Import time resolved ICP-MS data in various file formats from different
-#' instrument types.
+#' The function imports time resolved ICP-MS and -OES data in various file formats (.csv, .txt, and .exp) from common instrument typs.
+#' The provided code transforms raw data to data.frame with a time column and additional columns for the acquired intensities.
 #'
-#' @details The function works for .csv, .txt, and .exp files. Codes are
-#'     provided to transform raw data from common ICP-MS instruments to a
-#'     data.frame with a time column and additional columns for the acquired
-#'     intensities. You may check why data import of your files fails in the app
-#'     on this function and potentially extend it to handle your files.
 #' @param file_path Valid file path.
 #' @param simplify Use FALSE to ensure that names list is returned also for single file as input.
 #' @examples
@@ -38,12 +33,7 @@ import_data <- function (file_path, simplify = TRUE) {
 
           if ("Scan" %in% colnames(raw_data)) {
             raw_data <- utils::read.csv(file_path, skip = comment_line - 1, colClasses = "numeric") #Spectro file
-            #raw_data <- subset(raw_data, select = -c("Scan", "Analog_Temp"))
             raw_data <- raw_data[,!(colnames(raw_data) %in% c("Scan", "Analog_Temp"))]
-            # colnames(raw_data) <- sapply(strsplit(colnames(raw_data), "[.]"), function(x) {
-            #   paste0(x[1], paste(x[-1], collapse="."))
-            # })
-            # remove first seperator '.'
             colnames(raw_data) <- sub("[.]", "", colnames(raw_data))
             if (all(grep("Time", colnames(raw_data))==1)) colnames(raw_data)[1] <- "Time" else message("Check format of Spectro file. Possible incorrect 'Time' column.")
 
@@ -57,7 +47,6 @@ import_data <- function (file_path, simplify = TRUE) {
               y <- gregexpr("[[:digit:]]+$", x)
               ifelse(all(y==-1), x, substr(x, y, nchar(x)))
             })
-            #colnames(raw_data)[2:ncol(raw_data)] <- stringr::str_extract(colnames(raw_data[2:ncol(raw_data)]), "[[:digit:]]+$")
             if (all(grep("Time", colnames(raw_data))==1)) colnames(raw_data)[1] <- "Time" else message("Check format of Agilent file. Possible incorrect 'Time' column.")
 
           }
@@ -92,10 +81,6 @@ import_data <- function (file_path, simplify = TRUE) {
           raw_data <- raw_data[1:max(nrow(raw_data)-4, 1), ]
           raw_data <- apply(raw_data, 2, as.numeric)
           colnames(raw_data) <- gsub(".MR.$", "", colnames(raw_data))
-          # colnames(raw_data) <- sapply(strsplit(colnames(raw_data), "[.]"), function(x) {
-          #   paste0(x[1], paste(x[-1], collapse="."))
-          # })
-          # remove first seperator '.'
           colnames(raw_data) <- sub("[.]", "", colnames(raw_data))
           if (all(grep("Time", colnames(raw_data))==1)) colnames(raw_data)[1] <- "Time" else message("Check format of Element2 file. Possible incorrect 'Time' column.")
           raw_data <- as.data.frame(raw_data)

@@ -16,11 +16,11 @@ tab_cali(
 \arguments{
 \item{peak_data}{Data.frame containing peak information.}
 
-\item{wf}{Calibration method/Workflow.}
+\item{wf}{Calibration method/workflow.}
 
-\item{ExtCal_unit}{The measurement unit of the ExtCal workflow to correctly format the output.}
+\item{ExtCal_unit}{The standard concentration unit used in the ExtCal workflow to correctly format the output.}
 
-\item{ExtGasCal_unit}{The measurement unit of the ExtGasCal workflow to correctly format the output.}
+\item{ExtGasCal_unit}{The standard concentration unit used in the ExtGasCal workflow to correctly format the output.}
 
 \item{std_info}{A numeric value giving the analyte mass (ExtCal), the concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).}
 
@@ -32,11 +32,11 @@ A data.frame with the standard no, the isotope, the peak/signal
     information for the analyte content in the calibration standard.
 }
 \description{
-Transfer standard information to a data.frame containing peak/signal data.
+Transfers standard information to a data.frame containing peak/signal data. The unit of the standard concentration is assigned through unit parameters (ExtCal/ExtGasCal).
 }
 \details{
-Selecting "ExtGasCal" enables the input of a conversion factor to
-    calculate the gas flows. A conversion factor (mL/min to µL/s) is
+Selecting "ExtGasCal" enables the input of a factor to convert
+    volume flows in mass flows. A conversion factor (1000/60, e.g. mL/min to µL/s) is
     implemented in the function.
 }
 \examples{
@@ -63,7 +63,7 @@ tab_cali(peak_data = cali_pks, wf = "ExtGasCal", ExtGasCal_unit = "\u00b5L/min",
 # import and process cali data of `oIDMS` workflow
 spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
 cali_pks <- get_peakdata(spion_imp, int_col = "197Au",
-    PPmethod = "mean signal", peak_start = 0.003, peak_end = 60)
+    PPmethod = "mean signal", peak_start = 0.006, peak_end = 60)
 tab_cali(peak_data = cali_pks, wf = "oIDMS", std_info = c(20, 50, 100, 200, 500))
 
 }

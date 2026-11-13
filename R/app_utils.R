@@ -1,6 +1,6 @@
 # exported functions that solve minor problems
 #
-# # function reimplementations (to avoid dependencies)
+# function reimplementations (to avoid dependencies)
 # - ldply_base
 # - laply_base
 # - str_sort_num
@@ -13,11 +13,14 @@
 # - calc_cali_mod
 # - calc_transeff
 #
-# imported from IsoCor
+# additional functions, e.g. used with Shiny/not implemented
 # - get_iso_info
 # - help_the_user
-# - get_spectrum
+# - ensure_that
+# - extract_shift_and_cut
 # - spec_pre_process
+# - limit_digits
+# - find_peak_boundaries
 
 #' Base-R ldply implementation
 #'
@@ -65,7 +68,6 @@ laply_base <- function(.data, .fun, ..., .drop = TRUE) {
 #'
 #' A base R implementation to sort strings according to first number within string.
 #'
-#' @title str_sort_num
 #' @param x character vector.
 #' @examples
 #' x <- paste0("File", c(20, 1, 9, 11, 32, 100))
@@ -101,12 +103,14 @@ str_sort_num <- function(x) {
   x[do.call(order, key_df)]
 }
 
-#' Calculate the N_sp parameter
+#' Calculate the spike amount N_sp
 #'
-#' Calculate the N_sp parameter.
+#' Calculate the spike amount N_sp to compute the on-line IDMS equation.
 #'
-#' @param c_sp Concentration of spike isotope in spike stock solution [mg/L].
-#' @param V_sp Volume of spike solution [µL].
+#' @details The unit of the spike concentration is automatically assigned by generating the result table.
+#' @seealso [tab_result()] for unit assignement in \code{vignette("wf_oIDMS", package = "ETVapp")}.
+#' @param c_sp Concentration of the spike isotope in spike stock solution.
+#' @param V_sp Volume of spike solution in µL.
 #' @param VF1 Dilution factor of spike solution.
 #' @param M_sp Molar mass of spike.
 #' @param M_sa Molar mass of sample.
@@ -114,13 +118,13 @@ str_sort_num <- function(x) {
 #' @export
 calc_N_sp <- function(c_sp, V_sp, VF1, M_sp, M_sa) {
   stopifnot(is.finite(c(c_sp, V_sp, VF1, M_sp, M_sa)))
-  N_sp <- ((c_sp / VF1 * V_sp) / M_sp) * M_sa #c_sp in mg/L, V_sp in µL
+  N_sp <- ((c_sp / VF1 * V_sp) / M_sp) * M_sa
   return(N_sp)
 }
 
 #' Calculate the analyte mass as element
 #'
-#' Calculate the analyte mass as element.
+#' Calculate the analyte mass using the IDMS equation. Molecular structures are not taken into account.
 #'
 #' @param R_m A vector of isotope ratios.
 #' @param K Massbias correction factor.
@@ -141,7 +145,6 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
   stopifnot(is.finite(R_As))
   R_corr <- R_m * K
   if (all(R_corr >= R_As)) {
-    #R_corr <- R_m * K
     return((Asp_iso1 - R_corr * Asp_iso2)/(As_iso2 * R_corr - As_iso1) * N_sp)
   } else {
     message("The isotope ratio is below the limit for IDMS calculation. Increase the spike amount or select a more abundant sample isotope.")
@@ -150,16 +153,12 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
 
 #' Calculates the mass bias correction factor K
 #'
-#' Calculates the mass bias correction factor K.
-#'
-#' @description A mass bias correction factor will be determined from measurements
+#' @description A mass bias correction factor will be determined from sample or standard measurements
 #'     without added spike.
 #'
 #' @param R_m Isotope ratio.
 #' @param As_iso1 Natural abundance of the spike isotope.
 #' @param As_iso2 Natural abundance of the sample isotope.
-#'
-#' @details Ratio of the spike to sample isotope peak area from measurements without spike addition.
 #'
 #' @return Numeric values K for each R_m.
 #'
@@ -179,14 +178,14 @@ calc_massbias <- function (R_m, As_iso1, As_iso2) {
   if (length(R_m) > 0 & all(is.finite(c(R_m, As_iso1, As_iso2)))) {
     K <- (As_iso1 / As_iso2) / R_m
   } else {
-    message("Data of the IDMS type 'w/o spike' is required for mass bias determination.")
+    message("At least one isotope ratio and natural isotopic abundances are required for mass bias determination.")
   }
   return(K)
 }
 
-#' Calculates the mass flow mf_sp
+#' Calculates the mass flow
 #'
-#' Calculates the mass flow mf_sp.
+#' Calculates the spike mass flow mf_sp and returns the sample mass flow of a value using the IDMS equation.
 #'
 #' @param x Input data.
 #' @param n_trans Transport efficiency.
@@ -206,7 +205,7 @@ calc_massbias <- function (R_m, As_iso1, As_iso2) {
 #' @export
 calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = 0.0075, c_sp = 19581.71, DF = 20) {
   ensure_that(
-    min(x) < (As_iso1 / As_iso2),
+    min(x) > (As_iso1 / As_iso2),
     "The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.",
     "message"
   )
@@ -216,17 +215,12 @@ calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36,
 
 #' Calculates the calibration model
 #'
-#' Calculates the calibration model.
-#'
-#' @description \code{calc_cali_mod} will provide calibration results based on a linear
-#'     regression model.
-#' @details A calibration curve is provided by a linear fit of peak areas or mean
+#' @description A calibration curve is provided by a linear fit of peak areas or mean
 #'     signal intensities against analyte masses or gas flows from a data.frame
 #'     containing at least two entries in rows.
+#' @details The ouput unit is determined by the workflow. The wf parameter option "oIDMS" sets the concentration unit to µg/L. For "ExtCal" and "ExtGasCal" several orders of magnitude can be entered, respectively.
 #' @param df Data.frame with two columns.
-#' @param wf Calibration method/Workflow (used to make assumptions regarding units in df).
-#' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
-#' @param ExtGasCal_unit The measurement unit of the ExtGasCal workflow to correctly format the output.
+#' @inheritParams tab_LOX
 #'
 #' @return A data.frame containing slope and intercept with errors and R square.
 #'
@@ -252,7 +246,6 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
   wf <- match.arg(wf)
   ExtCal_unit <- match.arg(ExtCal_unit)
   ExtGasCal_unit <- match.arg(ExtGasCal_unit)
-  #browser()
   ExtGasCal_unit <- switch(ExtGasCal_unit,
                  "nL/min" = "s/pg",
                  "\u00b5L/min" = "s/ng",
@@ -281,16 +274,14 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
 
 #' Calculates the transport efficiency
 #'
-#' Calculates the transport efficiency.
-#'
 #' @description The transport efficiency will be calculated based on the particle
 #'     size approach from single particle-ICP-MS data.
-#' @details Determination of the transport efficiency from measurements with
-#'     gold or silver nano particle standards of known size.
+#' @details Determination of the transport efficiency from measurements with a
+#'     gold or silver nano particle standard of a known size. Densities of gold and silver are implemented in the function.
 #' @param data A data.frame containing at least two columns.
 #' @param int_col Intensity column.
 #' @param LFD Intensity limit for the detection of particle signals.
-#' @param cali_slope Calibration lm slope result for ionic standards.
+#' @param cali_slope Calibration slope result for ionic standards.
 #' @param V_fl Sample inlet flow in mL/min.
 #' @param part_mat Particle material.
 #' @param dia_part Particle diameter in nm.
@@ -303,7 +294,7 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
 #' head(spion_imp[[1]])
 #' names(spion_imp)
 #' sp_cali <- ldply_base(1:length(spion_imp), function(i) {
-#'   get_peakdata(spion_imp[[i]], "197Au", PPmethod = "mean signal", peak_start = 0.003, peak_end = 60)
+#'   get_peakdata(spion_imp[[i]], "197Au", PPmethod = "mean signal", peak_start = 0.006, peak_end = 60)
 #' })
 #' conc_ion <- c(20, 50, 100, 200, 500)
 #' fac <- 1.661 * 0.01104347 * 12/44
@@ -316,7 +307,7 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
 #' sp_data_flt <- sp_data[sp_data[,"Time"]<60,]
 #'
 #' (n_trans <- calc_transeff(sp_data, int_col = "197Au", LFD = 20000, cali_slope,
-#'   V_fl = 0.0075, part_mat = c("Au", "Ag"), dia_part = 60))
+#'   V_fl = 0.0075, part_mat = "Au", dia_part = 60))
 #' @export
 calc_transeff <- function (data, int_col, LFD = 100, cali_slope = 1, V_fl, part_mat = c("Au", "Ag"), dia_part) {
 
@@ -342,17 +333,12 @@ calc_transeff <- function (data, int_col, LFD = 100, cali_slope = 1, V_fl, part_
   data <- data[data[,int_col]>LFD, ]
   data[,"Particle"] <- data[,int_col] - sig_back
 
-  # $$JL: outcommented as not used below
-  # (4) ist ein weiterer Kontrollplot für die App
-  #data[,"Mass"] <- data[,"Particle"] / mean(data[,"Particle"]) * part_mass
-  #data[,"Diameter"] <- pracma::nthroot(6 * data[,"Mass"] / (10^15 * pi * 19.30), 3) * 10^7
-
   part_mass_fg <- stats::median(data[,"Particle"]) * fac
   out <- data.frame(
-    "Signal response [cps*L/\u00b5g]" = cali_slope, #in cps*L/µg
-    "Detected particle number [/min]" = nrow(data) * 60 / diff(range(data[,time_col])), #in /min
-    "Detected particle mass [fg]" = part_mass_fg, #in fg
-    "Calculated trans_eff [%]" = part_mass / part_mass_fg * 100, #in %
+    "Signal response [cps*L/\u00b5g]" = cali_slope,
+    "Detected particle number [/min]" = nrow(data) * 60 / diff(range(data[,time_col])),
+    "Detected particle mass [fg]" = part_mass_fg,
+    "Calculated trans_eff [%]" = part_mass / part_mass_fg * 100,
     check.names = FALSE
   )
 
@@ -361,10 +347,7 @@ calc_transeff <- function (data, int_col, LFD = 100, cali_slope = 1, V_fl, part_
 
 #' Get mass or abundance information for isotopes.
 #'
-#' Get mass or abundance information for isotopes.
-#'
-#' Will take a string and try to identify an isotope name contained within.
-#' It will return the requested info for this isotope.
+#' @description: \code{get_iso_info} takes a string, tries to identify an isotope name contained within and returns the requested info for this isotope.
 #'
 #' @param x character.
 #' @param isotopes Two column dataframe with isotope definitions.
@@ -394,7 +377,7 @@ get_iso_info <- function(x, isotopes=data.frame("isotope"=c("198Hg","32S"), "mas
   return(val)
 }
 
-#' @title help_the_user
+#' Help window
 #' @description Help Window: opens a modal with respective Help text
 #'     (rendered from Rmd source file) for users.
 #' @param filename Name of the file as string (if necessary, containing also path).
@@ -427,8 +410,9 @@ help_the_user <- function(filename) {
   invisible(NULL)
 }
 
-#' @title ensure_that.
-#' @description ensure_that.
+#' Error handling
+#' @description If test is TRUE, the function terminates. If test is FALSE, the function
+#'                continues and carries out the action based on opt.
 #' @param test Name of the file as string (if necessary, containing also path).
 #' @param msg msg.
 #' @param opt opt.
@@ -473,8 +457,8 @@ ensure_that <- function(test, msg = "Fehler", opt = c("stop", "warn", "message")
 
 
 #' @title extract_shift_and_cut.
-#' @description Will extract_shift_and_cut objects from a list of tables which
-#'     contain similar columns used as RT/mass and intensity source
+#' @description \code{extract_shift_and_cut} Will extract, shift and cut objects from a list of tables which
+#'     contain similar columns used as RT/mass and intensity source,
 #'     respectively.
 #' @param data List of data.frames with at least two numeric columns.
 #' @param rt_col Column name of the RT/mass column to be used.
@@ -509,7 +493,7 @@ extract_shift_and_cut <- function(data, rt_col = "Minutes", c1, c2 = "", cut_ran
   }), names(data))
 }
 
-#' @title spec_pre_process
+#' Process spectrum
 #' @description Applies smoothing and BL correction.
 #' @param data List of data.frames containing a "Time" and intensity columns.
 #' @param wf Calibration method/Workflow.
@@ -527,6 +511,12 @@ spec_pre_process <- function(data, c1 = "13C", c2 = "80Se", fl = 7, wf = c("IDMS
   return(out)
 }
 
+#' Limit digits
+#' @description \code{limit_digits} rounds the values to a specified number of significant digits.
+#' @param df Data.frame.
+#' @param n Number of significant digits.
+#' @param cols Column name of the column to be used.
+#' @return A list of data.frames.
 #' @keywords internal
 #' @noRd
 limit_digits <- function(df, n=6, cols=NULL) {
@@ -542,9 +532,7 @@ limit_digits <- function(df, n=6, cols=NULL) {
   return(df)
 }
 
-#' # VS: Could be another peak picking method "Peak (globmax)"?
-#' # $$JL: Yes, we can include this one as you suggest. We would need to include more parameters than in the app (p, k, min_scans, noise) right?
-#' @title find_peak_boundaries
+#' Finding peak boundaries
 #' @description \code{find_peak_boundaries} will find the start and end point
 #'     of a peak based on curve derivative.
 #' @details This function provides a simple detection algorithm for peak boundaries.

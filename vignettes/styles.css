@@ -3,4 +3,6 @@
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
   word-break: normal;
+  text-align: justify !important;
 }
+

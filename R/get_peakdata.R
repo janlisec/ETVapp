@@ -1,13 +1,12 @@
 #' Generate a table with peak data.
 #'
-#' Generate a table with peak data.
-#'
-#' @details This function provides a simple detection algorithm for peak boundaries
+#' This function provides a simple detection algorithm for peak boundaries
 #'     based on the peak height and alternatively allows for manual setting of the
 #'     peak boundaries or selecting a signal range. It has implemented a method for
 #'     baseline correction based on polynomial fitting and will compute the peak
 #'     area using the trapezoidal rule.
-
+#' @details A correction factor is used to limit the time window around the detected peak for computing the baseline.
+#'            This procedure improves the baseline correction for fluctuating signal curves.
 #' @param pro_data Data.frame with at least two numeric columns or a list of such data.frames.
 #' @param int_col Column name of the intensity column to be used.
 #' @param time_col Column name of the time column to be used.
@@ -58,11 +57,6 @@ get_peakdata <- function (pro_data, int_col, time_col = "Time",
 
     # Baseline correction
     corr_data <- blcorr_col(df = x[peak_data$Start_corr:peak_data$End_corr,c(time_col, int_col)], nm = int_col, BLmethod = BLmethod, deg = deg)
-
-    # $$JL: this will only BL correct the peak range and not the entire measurement. See difference below in the commented section
-    # x1 <- blcorr_col(df = pro_data[peak_data$Start_corr:peak_data$End_corr,,drop=FALSE], nm =  int_col, BLmethod = BLmethod, deg = deg)
-    # x2 <- blcorr_col(df = pro_data, nm =  int_col, BLmethod = BLmethod, deg = deg)[peak_data$Start_corr:peak_data$End_corr,]
-    # identical(x1,x2)
 
     # Integration of peak area
     idx <- ((peak_data[,"Peakstart"]-peak_data[,"Start_corr"])+1):(nrow(corr_data)-abs(peak_data[,"Peakend"]-peak_data[,"End_corr"]))

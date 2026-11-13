@@ -23,14 +23,16 @@ export(tab_cali)
 export(tab_result)
 import(shiny)
 importFrom(grDevices,grey)
-importFrom(graphics,abline)
-importFrom(graphics,axTicks)
-importFrom(graphics,axis)
-importFrom(graphics,box)
-importFrom(graphics,legend)
-importFrom(graphics,lines)
-importFrom(graphics,mtext)
-importFrom(graphics,par)
-importFrom(graphics,points)
-importFrom(graphics,segments)
+importFrom(graphics,
+  abline,
+  axTicks,
+  axis,
+  box,
+  legend,
+  lines,
+  mtext,
+  par,
+  points,
+  segments
+)
 importFrom(markdown,markdownToHTML)

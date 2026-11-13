@@ -1,7 +1,9 @@
 #' Column data transformation
 #'
-#' Corrects a numeric values in a data.frame column with respect to a column
-#' containing standard values and applies Savitzky-Golay smoothing.
+#' Applies Savitzky-Golay smoothing and corrects numeric values in a data.frame column with respect to a column
+#' containing standard values (internal standardization).
+#'
+#' @details For the external calibration methods (ExtCal/ExtGasCal), smoothing and optional standard correction are implemented. Calling the IDMS workflows, enables smoothing. Isotope ratios will be computed in case of on-line IDMS (oIDMS).
 #'
 #' @param data Data.frame with at least two numeric columns.
 #' @param wf Calibration method/Workflow.
@@ -30,7 +32,7 @@
 #'
 #' @export
 process_data <- function(data, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"), c1, c2 = NULL, fl = NULL, amend = FALSE) {
-# $$ JL: channel amend parameter to _col functions
+  # channel amend parameter to _col functions
   wf <- match.arg(wf)
 
   process_data_internal <- function(x) {

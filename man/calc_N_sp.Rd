@@ -2,14 +2,14 @@
 % Please edit documentation in R/app_utils.R
 \name{calc_N_sp}
 \alias{calc_N_sp}
-\title{Calculate the N_sp parameter}
+\title{Calculate the spike amount N_sp}
 \usage{
 calc_N_sp(c_sp, V_sp, VF1, M_sp, M_sa)
 }
 \arguments{
-\item{c_sp}{Concentration of spike isotope in spike stock solution [mg/L].}
+\item{c_sp}{Concentration of the spike isotope in spike stock solution.}
 
-\item{V_sp}{Volume of spike solution [µL].}
+\item{V_sp}{Volume of spike solution in µL.}
 
 \item{VF1}{Dilution factor of spike solution.}
 
@@ -18,5 +18,11 @@ calc_N_sp(c_sp, V_sp, VF1, M_sp, M_sa)
 \item{M_sa}{Molar mass of sample.}
 }
 \description{
-Calculate the N_sp parameter.
+Calculate the spike amount N_sp to compute the on-line IDMS equation.
+}
+\details{
+The unit of the spike concentration is automatically assigned by generating the result table.
+}
+\seealso{
+[tab_result()] for unit assignement in \code{vignette("wf_oIDMS", package = "ETVapp")}.
 }

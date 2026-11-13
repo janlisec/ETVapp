@@ -21,13 +21,13 @@ tab_result(
 \arguments{
 \item{peak_data}{Data.frame containing peak information.}
 
-\item{wf}{Calibration method/Workflow.}
+\item{wf}{Calibration method/workflow.}
 
-\item{ExtCal_unit}{The measurement unit of the ExtCal workflow to correctly format the output.}
+\item{ExtCal_unit}{The standard concentration unit used in the ExtCal workflow to correctly format the output.}
 
-\item{ExtGasCal_unit}{The measurement unit of the ExtGasCal_unit workflow to correctly format the output.}
+\item{ExtGasCal_unit}{The standard concentration unit used in the ExtGasCal workflow to correctly format the output.}
 
-\item{c_sp_unit}{The measurement unit of the "IDMS", "oIDMS" workflow to correctly format the output.}
+\item{c_sp_unit}{The concentration unit of the spike stock solution used in the IDMS/oIDMS workflows to correctly format the output.}
 
 \item{a}{Intercept from a calibration model (for ExtCal/ExtGasCal).}
 
@@ -39,25 +39,23 @@ tab_result(
 
 \item{mass_fraction2}{Mass fraction of the analyte element in the analyte component.}
 
-\item{sample_mass}{Sample mass in [mg].}
+\item{sample_mass}{A (theoretical) sample mass in mg.}
 }
 \value{
 A data.frame.
 }
 \description{
-Computes result data from peak data or a data.frame containing at least two
-numeric columns.
+Computes result data from a data.frame containing peak and calibration data (ExtCal/ExtGasCal),
+ or the direct input of an analyte mass as element (IDMS/oIDMS). Unit assignment is
+ realized through the input of the standard or stock solution concentration unit.
+ The input of a standard mass will compute the analyte content in the sample. For
+ moleculare and crystalline structures, the results are additionally calculated
+ "as analyte" by the input of a mass fraction.
 }
 \details{
-Result data table. Depending on the selected method, the analyte
-    mass will be calculated from the peak area and calibration data which are
-    provided in data.frames. For the on-line IDMS workflow, values of the
-    intensity column from a data.frame containing at least two columns are
-    transferred into mass flow data using calibration data from a data.frame.
-    The analyte mass will be determined via peak integration using the
-    function \code{get_peakdata}. Result data will be provided for the
-    analyte component itself and as element, as well as content value related
-    to the sample mass.
+For results < 0.001, a unit switch to the next lower order of magnitude is
+           implemented. A data.frame, e.g., computed by \code{get_peakdata}, is required for
+           peak data even if the result data is provided through an other parameter.
 }
 \examples{
 # wf "ExtCal", "ExtGasCal" use col = 4
@@ -66,7 +64,7 @@ tab_result(peak_data=pd, wf="ExtCal")
 # wf "IDMS", "oIDMS" use col = "R_m"
 tab_result(peak_data=pd, wf="IDMS", c_sp_unit="g/L")
 tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L")
-tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^3)
-tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^4)
+tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 0.75)
+tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 0.5)
 
 }

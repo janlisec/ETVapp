@@ -1,21 +1,20 @@
 #' Tabulate LOD/LOQ data
 #'
-#' Estimates the limit of detection (LOD) and quantification (LOQ) and returns
-#' a data.frame.
+#' The limit of detection (LOD) and quantification (LOQ) are estimated based on the blank value method and returned in
+#' a data.frame. Unit assignment is realized through the input of the standard or stock solution concentration unit.
+#' A theoretical standard mass will compute mass-based values. For moleculare and crystalline structures, the LOD/LOQ is additionally calculated "as analyte" by the input of a mass fraction.
 #'
-#' @details The LOD and LOQ will be calculated as three and ten times the
-#'     standard deviation of at least three peak areas divided by the slope
-#'     of a linear calibration curve (for workflow ExtCal/ExtGasCal). Results are provided
-#'     as element, analyte and relative to a sample mass.
+#' @details The LOD and LOQ will be calculated for less than the required ten remeasurements (at least three input values).
+#'          For the IDMS workflows (IDMS/oIDMS), calculation will be performed using analyte masses without the input of a calibration slope.
 #'
-#' @param x Variable containing the numeric data to infer SD (either peak area (for ExtCal/ExtGasCal) or analyte mass (for IDMS/oIDMS)).
+#' @param x Variable containing the numeric data to compute the standard deviation (either peak area (for ExtCal/ExtGasCal) or analyte mass (for IDMS/oIDMS)).
 #' @param cali_slope A slope from the calibration data.
-#' @param wf Calibration method/Workflow.
+#' @param wf Calibration method/workflow.
 #' @param mass_fraction2 Mass fraction of the analyte element in the analyte component.
-#' @param sample_mass Sample mass.
-#' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
-#' @param ExtGasCal_unit The measurement unit of the ExtGasCal_unit workflow to correctly format the output.
-#' @param c_sp_unit The measurement unit of the "IDMS", "oIDMS" workflow to correctly format the output.
+#' @param sample_mass A (theoretical) sample mass in mg.
+#' @param ExtCal_unit The standard concentration unit used in the ExtCal workflow to correctly format the output.
+#' @param ExtGasCal_unit The standard concentration unit used in the ExtGasCal workflow to correctly format the output.
+#' @param c_sp_unit The concentration unit of the spike stock solution used in the IDMS/oIDMS workflows to correctly format the output.
 #'
 #' @return A data.frame.
 #'
@@ -37,7 +36,7 @@ tab_LOX <- function(
   ExtCal_unit <- match.arg(ExtCal_unit)
   ExtGasCal_unit <- match.arg(ExtGasCal_unit)
   c_sp_unit <- match.arg(c_sp_unit)
-  #browser()
+
   ExtGasCal_unit <- switch(
     ExtGasCal_unit,
     "nL/min" = "pg",

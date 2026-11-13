@@ -47,14 +47,15 @@ of files.}
 A data.frame with the peak boundaries in seconds and the peak area in cps.
 }
 \description{
-Generate a table with peak data.
-}
-\details{
 This function provides a simple detection algorithm for peak boundaries
     based on the peak height and alternatively allows for manual setting of the
     peak boundaries or selecting a signal range. It has implemented a method for
     baseline correction based on polynomial fitting and will compute the peak
     area using the trapezoidal rule.
+}
+\details{
+A correction factor is used to limit the time window around the detected peak for computing the baseline.
+           This procedure improves the baseline correction for fluctuating signal curves.
 }
 \examples{
 raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]]

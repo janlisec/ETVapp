@@ -16,15 +16,8 @@ A data.frame containing numeric columns or a list of such data.frames
     in case that file_path is a vector.
 }
 \description{
-Import time resolved ICP-MS data in various file formats from different
-instrument types.
-}
-\details{
-The function works for .csv, .txt, and .exp files. Codes are
-    provided to transform raw data from common ICP-MS instruments to a
-    data.frame with a time column and additional columns for the acquired
-    intensities. You may check why data import of your files fails in the app
-    on this function and potentially extend it to handle your files.
+The function imports time resolved ICP-MS and -OES data in various file formats (.csv, .txt, and .exp) from common instrument typs.
+The provided code transforms raw data to data.frame with a time column and additional columns for the acquired intensities.
 }
 \examples{
 pth <- system.file(package = "ETVapp", "extdata", 'fmt')

@@ -1,15 +1,12 @@
 #' Tabulate calibration data.
 #'
-#' Transfer standard information to a data.frame containing peak/signal data.
+#' Transfers standard information to a data.frame containing peak/signal data. The unit of the standard concentration is assigned through unit parameters (ExtCal/ExtGasCal).
 #'
-#' @details Selecting "ExtGasCal" enables the input of a conversion factor to
-#'     calculate the gas flows. A conversion factor (mL/min to µL/s) is
+#' @details Selecting "ExtGasCal" enables the input of a factor to convert
+#'     volume flows in mass flows. A conversion factor (1000/60, e.g. mL/min to µL/s) is
 #'     implemented in the function.
 #'
-#' @param peak_data Data.frame containing peak information.
-#' @param wf Calibration method/Workflow.
-#' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
-#' @param ExtGasCal_unit The measurement unit of the ExtGasCal workflow to correctly format the output.
+#' @inheritParams tab_result
 #' @param std_info A numeric value giving the analyte mass (ExtCal), the concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).
 #' @param fac A factor to convert the gas flow (gas_density x mass_fraction x mass_percentage).
 #'
@@ -41,7 +38,7 @@
 #' # import and process cali data of `oIDMS` workflow
 #' spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
 #' cali_pks <- get_peakdata(spion_imp, int_col = "197Au",
-#'     PPmethod = "mean signal", peak_start = 0.003, peak_end = 60)
+#'     PPmethod = "mean signal", peak_start = 0.006, peak_end = 60)
 #' tab_cali(peak_data = cali_pks, wf = "oIDMS", std_info = c(20, 50, 100, 200, 500))
 #'
 #' @export

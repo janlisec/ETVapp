@@ -49,12 +49,12 @@ data.frames in which case the result will be a list of data frames as well.}
 A data.frame or a list of data.frames when data is a list itself.
 }
 \description{
-Calculate an isotope ratio based on peak areas.
+Time-resolved ICP-MS data will be processed, integrated and optionally baseline
+    corrected. To ensure complete peak detection, peak boundaries will be checked regarding the similarity
+    between the isotopes.
 }
 \details{
-Time-resolved ICP-MS data will be integrated and optionally baseline
-    corrected. Peak boundaries will be checked regarding the similarity
-    between the isotopes.
+The function can be run on elements of a list or on a single data.frame.
 }
 \examples{
 # for sample measurements

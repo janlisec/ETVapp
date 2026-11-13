@@ -1,7 +1,9 @@
 ---
 title: "Isotope dilution mass spectrometry (IDMS) workflow"
-output: rmarkdown::html_vignette
-author: "Vera Scharek and Jan Lisec"
+output: 
+  rmarkdown::html_vignette:
+  css: styles.css
+author: "Vera Scharek"
 vignette: >
   %\VignetteIndexEntry{Isotope dilution mass spectrometry (IDMS) workflow}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,76 +17,56 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction to IDMS
+## Introduction
 
-IDMS has first been introduced as a calibration strategy in combination with 
-ETV/ICP-MS by [Vanhaecke *et al.*](https://pubs.rsc.org/en/content/articlelanding/1997/ja/a604133g). Using IDMS corrects non-spectral 
-interferences, signal drifts caused by the ICP-MS, and fluctuations in the 
-vaporization and transport behaviour of the ETV by mixing the sample with a 
-known amount of a isotopic-enriched spike of the same element. The analyte 
-concentration can be determined through measuring the alternated isotopic 
-composition of the sample. In the following, the enriched spike isotope will 
-be referred as **isotope 1** or **spike isotope** while **isotope 2** or 
-**sample isotope** denotes the isotope used for calculating the isotope ratios. 
+IDMS has first been introduced as a calibration strategy in combination with ETV/ICP-MS by [Vanhaecke *et al.*](https://pubs.rsc.org/en/content/articlelanding/1997/ja/a604133g). Using IDMS corrects non-spectral interferences, signal drifts caused by the ICP-MS, and fluctuations in the vaporization and transport behaviour of the ETV by mixing the sample with a known amount of a isotopic-enriched spike of the same element. The analyte concentration can be determined through measuring the alternated isotopic composition of the sample. In the following, the enriched spike isotope will 
+be referred as **isotope 1** or **spike isotope** while **isotope 2** or **sample isotope** denotes the isotope used for calculating the isotope ratios. 
 
-It has to be noted that although it is possible to compute the calculations for 
-ICP-OES data only MS data will provide valid results.
+It has to be noted that although it is possible to compute the calculations for ICP-OES data only MS data will provide valid results.
 
-Example measurements of Cd in a cacao reference material are provided the 
-*ETVapp* package and can be accessed through the library.
-
-```{r setup}
-library(ETVapp)
-wf <- "IDMS"
-td <- ETVapp::ETVapp_testdata[[wf]]
-```
+Example measurements of Cd in a cacao reference material are provided the *ETVapp* package and can be accessed through the library.
 
 ## Mass bias
 
-The transmission of ions is influenced in regard to their mass during ionization, 
-passing the ion optics, mass separation and detection. To correct the mass bias, 
-a correction factor *K* is determined by the analysis of a sample (or standard) 
-without spike addition [JL: but below you extract the spike isotope?? VS: the spike isotope is part of the natural isotopic composition and enriched in the spike material]. The package provides a triplicate sample measurement for 
-this purpose which will be imported through the following code.
+The transmission of ions is influenced in regard to their mass during ionization, passing the ion optics, mass separation and detection. To correct the mass bias, a correction factor *K* is determined by the analysis of a sample (or standard) without spike addition. The package provides a triplicate sample measurement for this purpose which will be imported through the following code.
 
 ```{r load_MassBias_data}
-mb_imp <- td[['Massbias']]
-str(mb_imp[[1]])
+library(ETVapp)
+wf <- "IDMS"
+
+mb_imp <- ETVapp::ETVapp_testdata[[wf]][['Massbias']]
+head(mb_imp[[1]])
 ```
 
-Calling the function `get_isoratio()` will compute the isotope ratio of the 
-spike to the sample isotope based on peak areas.
+For a plane background signal, peaks are automatically detected based on a minimum peak height (*minpeakheight*) through the *PPmethod* option "Peak (height)".
 
-```{r calc_massbias_peaks}
+```{r get_mb_peaks}
 iso1 <- "113Cd"
 iso2 <- "111Cd"
-ps <- 70
-pe <- 132
-PPmethod <- "Peak (manual)"
-
-mb_peaks <- get_isoratio(
-    data = mb_imp, 
-    iso1_col = iso1, 
-    iso2_col = iso2, 
-    PPmethod = PPmethod, 
-    peak_start = ps, 
-    peak_end = pe
-)
-
-gt::gt(mb_peaks)
-```
-
-The following code will plot the time scans of the spike and sample isotope. The 
-grey vertical lines mark the peak integration range. The baseline is drawn in blue.
-
-```{r mass_bias_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
-time_col <- "Time"
 cf <- 50
+time_col <- "Time"
 
 mb_pro <- process_data(data = mb_imp, wf = wf, c1 = iso1, c2 = iso2, fl = NULL)
 
-mb_BL <- lapply(1:length(mb_pro), function(i) {
-  flt <- (min(which(mb_pro[[i]][,time_col]>=ps))-cf):(max(which(mb_pro[[i]][,time_col]<=pe))+cf)
+mb_peaks <- ldply_base(c(iso1, iso2), function(i) {
+      get_peakdata(mb_pro, 
+                   PPmethod = "Peak (height)", 
+                   int_col = i, 
+                   minpeakheight = 3300,
+                   BLmethod = c("modpolyfit"), 
+                   deg = 1, 
+                   cf = cf)
+    })
+
+print(mb_peaks)
+```
+
+To check the integration result, plot the time scans of the spike and sample isotope with the following code. The grey vertical lines mark the peak integration range. The baseline is drawn in blue. If necessary, adjust the peak detection parameter *minpeakheight* to ensure complete peak detection or select manual peak picking.
+
+```{r mass_bias_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
+mb_BL <- lapply(seq_along(mb_pro), function(i) {
+  flt <- (min(which(mb_pro[[i]][,time_col]>=mb_peaks[i,2]))-cf):
+    (max(which(mb_pro[[i]][,time_col]<=mb_peaks[i,3]))+cf)
   ETVapp:::blcorr_col(
     df = mb_pro[[i]][flt,c(time_col, iso1, iso2)],
     nm = iso1, 
@@ -94,6 +76,8 @@ mb_BL <- lapply(1:length(mb_pro), function(i) {
 })
 
 mb_BL <- lapply(1:length(mb_BL), function(i) {
+  flt <- (min(which(mb_pro[[i]][,time_col]>=mb_peaks[i + length(mb_pro),2]))-cf):
+    (max(which(mb_pro[[i]][,time_col]<=mb_peaks[i + length(mb_pro),3]))+cf)
   ETVapp:::blcorr_col(
     df = mb_BL[[i]],
     nm = iso2, 
@@ -102,61 +86,80 @@ mb_BL <- lapply(1:length(mb_BL), function(i) {
     amend = "_BL")
 })
 
-mb_no <- seq(1,3,1)
+mb_no <- seq(1,length(mb_pro),1)
 par(mfrow=c(2,3))
-for (i in 1:3) {
+for (i in 1:length(mb_pro)) {
   plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,iso1], type="l", 
-       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste(iso1, mb_no[i]))
+       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("113Cd", mb_no[i]))
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,c("113Cd_BL")], col = "blue")
-  abline(v=c(ps,pe), col=grey(0.8))
+  abline(v=c(mb_peaks[i,2],mb_peaks[i,3]), col=grey(0.8))
 }
-for (i in 1:3) {
+for (i in 1:length(mb_pro)) {
   plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,iso2], type="l", 
-       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste(iso2, mb_no[i]))
+       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("111Cd", mb_no[i]))
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,c("111Cd_BL")], col = "blue")
-  abline(v=c(ps,pe), col=grey(0.8))
+  abline(v=c(mb_peaks[i + length(mb_pro),2],mb_peaks[i + length(mb_pro),3]), col=grey(0.8))
 }
 ```
 
-The mass discrimination factor *K* is defined as the measured isotope ratio to 
-the true value. The following code will calculate *K* for every mass bias 
-measurement. Select a *K* value or compute the mean value for further 
-calculations (recommended).
+Calling the function `get_isoratio()` will compute the isotope ratio of the spike to the sample isotope based on peak areas.
+
+```{r calc_massbias_ratios}
+mb_ratios <- get_isoratio(
+  data = mb_imp, 
+  iso1_col = iso1, 
+  iso2_col = iso2, 
+  PPmethod = "Peak (height)",
+  minpeakheight = 3300
+  )
+
+print(mb_ratios)
+```
+
+The mass discrimination factor *K* is defined as the measured isotope ratio to the true value. The following code will calculate *K* for every mass bias measurement. Select a *K* value or compute the mean value for further calculations (recommended).
 
 ```{r calc_massbias_K}
-(K <- calc_massbias(
-  mb_peaks[,"R_m"], 
+K <- calc_massbias(
+  mb_ratios[,"R_m"], 
   As_iso1 = 12.22, 
   As_iso2 = 12.8
-))
+)
+
+print(K)
 ```
 
 ## IDMS
 
-Calculate the isotope ratios of IDMS sample measurements containing spike solution.
+Load and integrate the sample measurements containing spike solution.
 
 ```{r load_Samples}
-samp_imp <- td[['Samples']]
+samp_imp <- ETVapp::ETVapp_testdata[[wf]][['Samples']]
 
-samp_peaks <- get_isoratio(
-  data = samp_imp, 
-  iso1_col = iso1, 
-  iso2_col = iso2, 
-  PPmethod = PPmethod, 
-  peak_start = ps, 
-  peak_end = pe
-)
+samp_pro <- process_data(data = samp_imp, wf = wf, c1 = iso1, c2 = iso2, fl = NULL)
 
-gt::gt(samp_peaks)
+ps <- 74
+pe <- 132
+
+samp_peaks <- ldply_base(c(iso1, iso2), function(i) {
+      get_peakdata(samp_pro, 
+                   PPmethod = "Peak (manual)", 
+                   int_col = i,
+                   peak_start = ps,
+                   peak_end = pe,
+                   BLmethod = c("modpolyfit"), 
+                   deg = 1, 
+                   cf = cf)
+    })
+
+print(samp_peaks)
 ```
 
-Plot the sample time scans with the peak parameter for each isotope. 
+Plot the sample time scans with the peak parameter for each isotope to check correct the integration. 
 
 ```{r sample_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
-samp_pro <- process_data(data =samp_imp, wf = wf, c1 = iso1, c2 = iso2, fl = NULL)
-
-samp_BL <- lapply(1:length(mb_pro), function(i) {
-  flt <- (min(which(samp_pro[[i]][,time_col]>=ps))-cf):(max(which(samp_pro[[i]][,time_col]<=pe))+cf)
+samp_BL <- lapply(seq_along(samp_pro), function(i) {
+  flt <- (min(which(samp_pro[[i]][,time_col]>=samp_peaks[i,2]))-cf):
+    (max(which(samp_pro[[i]][,time_col]<=samp_peaks[i,3]))+cf)
   ETVapp:::blcorr_col(
     df = samp_pro[[i]][flt,c(time_col, iso1, iso2)],
     nm = iso1, 
@@ -166,6 +169,8 @@ samp_BL <- lapply(1:length(mb_pro), function(i) {
 })
 
 samp_BL <- lapply(1:length(samp_BL), function(i) {
+  flt <- (min(which(samp_pro[[i]][,time_col]>=samp_peaks[i + length(samp_pro),2]))-cf):
+    (max(which(samp_pro[[i]][,time_col]<=samp_peaks[i + length(samp_pro),3]))+cf)
   ETVapp:::blcorr_col(
     df = samp_BL[[i]],
     nm = iso2, 
@@ -174,79 +179,91 @@ samp_BL <- lapply(1:length(samp_BL), function(i) {
     amend = "_BL")
 })
 
-samp_no <- seq(1,3,1)
+samp_no <- seq(1,length(samp_pro),1)
 par(mfrow=c(2,3))
-for (i in 1:3) {
+for (i in 1:length(samp_pro)) {
   plot(samp_pro[[i]][,c("Time")], samp_pro[[i]][,iso1], type="l", 
-       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste(iso1,  "Sample", samp_no[i]))
-  lines(x = samp_BL[[i]][,c("Time")], y = samp_BL[[i]][,"113Cd_BL"], col = "blue")
-  abline(v=c(ps,pe), col=grey(0.8))
+       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("113Cd", samp_no[i]))
+  lines(x = samp_BL[[i]][,c("Time")], y = samp_BL[[i]][,c("113Cd_BL")], col = "blue")
+  abline(v=c(samp_peaks[i,2],samp_peaks[i,3]), col=grey(0.8))
 }
-for (i in 1:3) {
+for (i in 1:length(samp_pro)) {
   plot(samp_pro[[i]][,c("Time")], samp_pro[[i]][,iso2], type="l", 
-       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste(iso2, "Sample", samp_no[i]))  #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
-  lines(x = samp_BL[[i]][,c("Time")], y = samp_BL[[i]][,"111Cd_BL"], col = "blue")
-  abline(v=c(ps,pe), col=grey(0.8))
+       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("111Cd", samp_no[i]))
+  lines(x = samp_BL[[i]][,c("Time")], y = samp_BL[[i]][,c("111Cd_BL")], col = "blue")
+  abline(v=c(samp_peaks[i + length(samp_pro),2],samp_peaks[i + length(samp_pro),3]), col=grey(0.8))
 }
 ```
 
-The amount of added spike and the analyte mass is computed through the IDMS 
-equation. The function `tab_result()` will output the result table. The input 
-of a mass fraction allows for result calculation if the elemental composition 
-of the analyte is not fully captured by the acquired element,*e.g.* Sn in organo 
-tin compounds or C in micro plastics.
+Calculate the isotope ratios.
+
+```{r calc_sample_ratios}
+samp_ratios <- get_isoratio(
+  data = samp_imp, 
+  iso1_col = iso1, 
+  iso2_col = iso2, 
+  PPmethod = "Peak (manual)",
+  peak_start = ps,
+  peak_end = pe
+  )
+
+print(samp_peaks)
+```
+
+The amount of added spike *N_sp* is determined through the function `calc_N_sp`. Through the IDMS function, `calc_analyte_mass_as_element()` computes the analyte mass as element based on the measured isotope ratios, the mass discrimination factor *K*, and the known spike amount *N_sp*. The function `tab_result()` will output the result table. Enter the unit of the *iso1* in the spike stock solution through the parameter *c_sp_unit* for a correct result unit. The input of a mass fraction allows for result calculation if the elemental composition of the analyte is not fully captured by the acquired element, *e.g.* Sn in organo tin compounds or C in micro plastics.
 
 ```{r get_Samples_result}
 N_sp <- calc_N_sp(c_sp = 2.5, V_sp = 6, VF1 = 1000, M_sp = 113.01, M_sa = 112.41)
-amae <- calc_analyte_mass_as_element(R_m = samp_peaks[,"R_m"], K = mean(K), Asp_iso1 = 92.61, Asp_iso2 = 0.22, As_iso1 = 12.22, As_iso2 = 12.8, N_sp = N_sp)
+amae <- calc_analyte_mass_as_element(R_m = samp_ratios[,"R_m"], 
+                                     K = mean(K), 
+                                     Asp_iso1 = 92.61, 
+                                     Asp_iso2 = 0.22, 
+                                     As_iso1 = 12.22, 
+                                     As_iso2 = 12.8, 
+                                     N_sp = N_sp)
 
-gt::gt(tab_result(
-  peak_data = samp_peaks, 
+t(tab_result(
+  peak_data = samp_ratios, 
   wf = wf, 
+  c_sp_unit = "mg/L",
   K = mean(K), 
-  amae = amae
-))
+  amae = amae)
+)
 ```
 
 ## Limits of detection and quantification
 
-The limit of detection (LOD) and quantification (LOQ) are estimated from blank 
-measurements containing spike. Perform import and isotope ratio calculations of 
-integrated the blank signals in the peak time window as follows. The blank 
-measurements provided in the *ETVapp* package are identical to the sample 
-measurements and are included for demonstration purposes. 
+The LOD and LOQ are estimated from blank measurements containing spikes solution. Perform import and isotope ratio calculations of the integrated blank signals in the peak time window as follows. The blank measurements provided in the *ETVapp* package are identical to the sample measurements and are included for demonstration purposes. 
 
 ```{r load_blanks}
-blk_imp <- td[['Blanks']]
+blk_imp <- ETVapp::ETVapp_testdata[[wf]][['Blanks']]
 
-blk_peaks <- get_isoratio(
-  blk_imp, 
-  iso1_col = iso1, 
-  iso2_col = iso2, 
-  PPmethod = PPmethod, 
-  peak_start = ps, 
-  peak_end = pe
-)
+blk_ratios <- get_isoratio(
+    blk_imp, 
+    iso1_col = "113Cd", 
+    iso2_col = "111Cd", 
+    PPmethod = "Peak (manual)", 
+    peak_start = 74, 
+    peak_end = 132
+  )
 
-gt::gt(blk_peaks)
+print(blk_ratios)
 ```
 
-Analog to sample measurements, a (theoretical) analyte mass is computed for each 
-blank measurement. 
+Analog to sample measurements, a (theoretical) analyte mass is computed for each blank measurement using the known spike amount *N_sp*. Generate the LOD and LOQ result table. An input *data.frame* with at least three entries in rows is required for calculation of the standard deviation. Ensure the correct unit of the spike stock solution through the parameter *c_sp_unit*. 
 
 ```{r LODLOQ}
-LOX_df <- tab_result(
-  peak_data = blk_peaks, 
-  wf = wf, 
-  K = mean(K), 
-  amae = amae
+blk_amae <- calc_analyte_mass_as_element(R_m = blk_ratios[,"R_m"], 
+                                         K = mean(K), 
+                                         Asp_iso1 = 92.61, 
+                                         Asp_iso2 = 0.22, 
+                                         As_iso1 = 12.22, 
+                                         As_iso2 = 12.8, 
+                                         N_sp = N_sp)
+
+t(tab_LOX(
+  x = blk_amae, 
+  wf = wf,
+  c_sp_unit = "mg/L")
 )
-
-gt::gt(LOX_df)
-```
-Generate the LOD and LOQ result table. An input *data.frame* with at least three 
-entries in rows is required for calculation of the standard deviation. 
-
-```{r Result}
-gt::gt(tab_LOX(x = LOX_df[,"R_corr"], wf = wf))
 ```

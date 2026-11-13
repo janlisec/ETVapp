@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{calc_massflow}
 \alias{calc_massflow}
-\title{Calculates the mass flow mf_sp}
+\title{Calculates the mass flow}
 \usage{
 calc_massflow(
   x,
@@ -39,7 +39,7 @@ calc_massflow(
 A numeric vector.
 }
 \description{
-Calculates the mass flow mf_sp.
+Calculates the spike mass flow mf_sp and returns the sample mass flow of a value using the IDMS equation.
 }
 \examples{
 calc_massflow(1:10)

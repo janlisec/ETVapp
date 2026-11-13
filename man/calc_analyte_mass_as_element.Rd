@@ -30,5 +30,5 @@ calc_analyte_mass_as_element(
 \item{N_sp}{Amount of spike.}
 }
 \description{
-Calculate the analyte mass as element.
+Calculate the analyte mass using the IDMS equation. Molecular structures are not taken into account.
 }

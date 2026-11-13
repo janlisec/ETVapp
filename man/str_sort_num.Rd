@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utils.R
 \name{str_sort_num}
 \alias{str_sort_num}
-\title{str_sort_num}
+\title{Sort strings by first contained numeric}
 \usage{
 str_sort_num(x)
 }
@@ -10,9 +10,6 @@ str_sort_num(x)
 \item{x}{character vector.}
 }
 \description{
-Sort strings by first contained numeric
-}
-\details{
 A base R implementation to sort strings according to first number within string.
 }
 \examples{

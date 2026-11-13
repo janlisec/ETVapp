@@ -1,10 +1,10 @@
 #' Calculate an isotope ratio based on peak areas.
 #'
-#' Calculate an isotope ratio based on peak areas.
-#'
-#' @details Time-resolved ICP-MS data will be integrated and optionally baseline
-#'     corrected. Peak boundaries will be checked regarding the similarity
+#' Time-resolved ICP-MS data will be processed, integrated and optionally baseline
+#'     corrected. To ensure complete peak detection, peak boundaries will be checked regarding the similarity
 #'     between the isotopes.
+#'
+#' @details The function can be run on elements of a list or on a single data.frame.
 #' @param data A data.frame containing at least two columns or a list of such
 #'     data.frames in which case the result will be a list of data frames as well.
 #' @param iso1_col Spike isotope.
@@ -48,7 +48,7 @@ get_isoratio <- function (
     ##Checks
     ensure_that(
       !(diff(range(iso_peak[,2])) > 5 | diff(range(iso_peak[,3])) > 5),
-      "Divergating peak boundaries for the isotopes found. Please check the integration. Isotope ratio calculation may be affected.",
+      "Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.",
       opt = "warn"
     )
 
